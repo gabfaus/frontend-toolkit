@@ -1,0 +1,30 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local dependency/runtime artifacts
+node_modules/
+.venv/
+venv/
+dist/
+build/
+.cache/
+coverage/
+
+# External checkouts, if adopted in a later phase
+vendor/
+external/
+
+# Local integration state
+*.local.json
+*.local.toml
+.img2threejs/
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
