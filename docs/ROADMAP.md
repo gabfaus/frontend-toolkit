@@ -4,6 +4,8 @@ Cada etapa termina em revisão humana. Autorização para uma etapa não autoriz
 
 ## FTK-02 — Skills externas
 
+Status parcial: FTK-02A implementada em 2026-08-27 para revisão, sem commit. A execução funcional de scripts continua bloqueada pela ausência de Node e Python públicos no ambiente.
+
 ### Objetivo
 
 Integrar Impeccable e img2threejs de modo repo-local, independente e atualizável.
@@ -102,4 +104,3 @@ Validar o conjunto e gerar um único plugin local instalável, sem publicar.
 4. Escolher submodule versus gerenciador próprio de fontes externas; recomendação inicial: checkouts/cache externos ao pacote e manifesto de lock próprio, evitando submodules até provar necessidade.
 5. Autorizar testes repo-locais e definir se o hook do Impeccable fica fora do primeiro incremento.
 6. Disponibilizar um Python 3.10+ estável e um Node.js suportado pelo usuário/projeto; não depender do cache interno do Codex.
-

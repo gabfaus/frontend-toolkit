@@ -66,6 +66,16 @@ Decisão: desenvolver e testar em escopo de projeto; somente a FTK-05 poderá pr
 6. **21st é serviço remoto e mutável:** usa autenticação própria e contém ferramentas de leitura e escrita. A allowlist e os gates do orchestrator são obrigatórios.
 7. **21st já possui plugin Codex próprio:** instalar esse plugin junto do futuro Frontend Toolkit pode duplicar Skills e o nome do MCP. A solução inicial deve integrar somente o endpoint MCP ou declarar incompatibilidade com instalação paralela.
 
+## Preflight FTK-02A
+
+- Git público no `PATH`: `2.49.0.windows.1`, em `C:\Program Files\Git\cmd\git.exe`.
+- Node, npm e npx: ausentes do `PATH`.
+- Python: ausente; o launcher `C:\Windows\py.exe` existe, mas não encontra uma instalação.
+- Symlink de diretório: indisponível sem privilégio administrativo.
+- Junction de diretório: suportada sem elevação e escolhida para a descoberta repo-local.
+
+O runtime Node empacotado internamente pelo Codex Desktop não foi usado como dependência do toolkit.
+
 ## Fontes oficiais OpenAI
 
 - [Config basics e precedência](https://learn.chatgpt.com/docs/config-file/config-basic)
@@ -73,4 +83,3 @@ Decisão: desenvolver e testar em escopo de projeto; somente a FTK-05 poderá pr
 - [Build skills](https://learn.chatgpt.com/docs/build-skills)
 - [MCP](https://learn.chatgpt.com/docs/extend/mcp)
 - [Build plugins](https://developers.openai.com/plugins/build/plugins)
-

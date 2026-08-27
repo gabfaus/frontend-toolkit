@@ -1,6 +1,5 @@
 # Integrações
 
-Ponto de extensão reservado para manifestos e adaptadores declarativos das dependências externas.
+O arquivo `external.lock.json` fixa origem, ref, objeto da ref, commit resolvido, versão, licença, hashes e caminhos de descoberta das Skills externas.
 
-FTK-01 não contém checkouts, pacotes, executáveis ou configuração MCP ativa.
-
+Os checkouts ficam em `external/` e são ignorados. Nenhuma configuração MCP está ativa.

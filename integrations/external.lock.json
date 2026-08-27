@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "resolvedAt": "2026-08-27",
+  "dependencies": [
+    {
+      "id": "impeccable",
+      "kind": "codex-skill",
+      "upstream": "https://github.com/pbakaus/impeccable.git",
+      "ref": "skill-v4.1.2",
+      "refObjectSha": "5e91b04d272cc551349867dd90409d068c703bf5",
+      "commitSha": "63b04e2530f5c7b41ea83c133daab24f34912456",
+      "declaredVersion": "4.1.2",
+      "license": "Apache-2.0",
+      "licenseFile": "external/impeccable/LICENSE",
+      "licenseSha256": "fc0673369dae07c045c46869d3d4c9113678c77fcc7d3b4e3a39ac074cfa68b6",
+      "checkoutPath": "external/impeccable",
+      "skillSourcePath": "external/impeccable/plugin/skills/impeccable",
+      "skillEntrySha256": "24beebe50add5e77f76e921155b42da8c75db339284fbe460f33c585aadaa7cc",
+      "discoveryPath": ".agents/skills/impeccable",
+      "discoveredName": "impeccable:impeccable",
+      "integrationMethod": "windows-directory-junction",
+      "hooksEnabled": false
+    },
+    {
+      "id": "img2threejs",
+      "kind": "codex-skill",
+      "upstream": "https://github.com/img2threejs/img2threejs.git",
+      "ref": "v1.5.1",
+      "refObjectSha": "dede5909be4e494b228c801a55dda47439143932",
+      "commitSha": "dede5909be4e494b228c801a55dda47439143932",
+      "declaredVersion": "1.5.1",
+      "license": "Apache-2.0",
+      "licenseFile": "external/img2threejs/LICENSE",
+      "licenseSha256": "07682150aca711c917b9c2b9e3b1d7be39c450375badef752bf0a92400c46cab",
+      "checkoutPath": "external/img2threejs",
+      "skillSourcePath": "external/img2threejs",
+      "skillEntrySha256": "6a2c8c1a027dd193f54a7ae9c97fb1c1913fd956086e122ff9c3df1dddfd13bb",
+      "discoveryPath": ".agents/skills/img2threejs",
+      "discoveredName": "img2threejs",
+      "integrationMethod": "windows-directory-junction",
+      "hooksEnabled": false
+    }
+  ]
+}

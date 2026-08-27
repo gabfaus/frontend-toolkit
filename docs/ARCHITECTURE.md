@@ -72,6 +72,8 @@ frontend-toolkit-plugin/
 
 O pacote não deve duplicar Skills que já sejam instaladas por outro plugin nem incorporar repositórios completos quando um endpoint ou skill versionada for suficiente.
 
+Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
+
 ## Alternativas consideradas
 
 1. **Copiar os quatro projetos para um monorepo:** simplifica um snapshot inicial, mas cria forks implícitos, atualizações difíceis e risco de licença/proveniência. Rejeitada.
@@ -85,4 +87,3 @@ O pacote não deve duplicar Skills que já sejam instaladas por outro plugin nem
 - [MCP no Codex](https://learn.chatgpt.com/docs/extend/mcp)
 - [Hooks](https://learn.chatgpt.com/docs/hooks)
 - [Plugin structure](https://developers.openai.com/plugins/build/plugins)
-

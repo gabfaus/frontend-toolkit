@@ -11,3 +11,4 @@ Estratégia futura:
 
 Nenhum runtime ou framework de testes foi instalado na FTK-01.
 
+Na FTK-02A, `test-skill-integration.ps1` valida os checkouts, metadata, recursos, coexistência e ausência de hook sem depender de framework externo.

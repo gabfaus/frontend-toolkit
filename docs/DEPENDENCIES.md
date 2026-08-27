@@ -1,11 +1,11 @@
 # Dependências externas
 
-Este arquivo é um inventário de planejamento. Nenhuma dependência foi baixada, instalada ou incorporada na FTK-01.
+Este arquivo começou como inventário da FTK-01. Na FTK-02A, Impeccable e img2threejs foram resolvidos em checkouts repo-locais ignorados e permanecem fora do histórico Git.
 
 | Componente | Papel | Origem | Licença observada | Runtime / acesso | Secret previsto |
 |---|---|---|---|---|---|
-| Impeccable | Skill de design/UX e detector opcional | `pbakaus/impeccable` | Apache-2.0 | instalador Node/npx; Skill; hook opcional | nenhum para detector/CLI descritos |
-| img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs` | Apache-2.0 | Python 3.10+; visão/browser do host; Three.js no projeto-alvo | nenhum declarado pelo upstream |
+| Impeccable | Skill de design/UX e detector opcional | `pbakaus/impeccable`, `skill-v4.1.2`, commit `63b04e2530f5c7b41ea83c133daab24f34912456` | Apache-2.0 | Node >=22.18 para scripts/CLI; hook opcional e inativo | nenhum para a integração atual |
+| img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs`, `v1.5.1`, commit `dede5909be4e494b228c801a55dda47439143932` | Apache-2.0 | Python 3.10+; visão/browser do host; Three.js no projeto-alvo | nenhum declarado pelo upstream |
 | Shadcn UI MCP Server | MCP de contexto/componentes | `Jpisnice/shadcn-ui-mcp-server` | MIT | Node.js >= 18; stdio via npx ou servidor local | `GITHUB_PERSONAL_ACCESS_TOKEN` recomendado, sem scopes segundo upstream |
 | 21st MCP | MCP remoto do serviço atual | `https://21st.dev/api/mcp` | serviço sujeito a termos; plugin Codex de referência é Apache-2.0 | HTTP MCP; acesso de rede | `API_KEY_21ST` |
 
@@ -60,4 +60,3 @@ Decisão: FTK-02 a FTK-04 permanecem repo-local. FTK-05 deverá oferecer instala
 - [Shadcn UI MCP Server](https://github.com/Jpisnice/shadcn-ui-mcp-server)
 - [21st MCP](https://docs.21st.dev/mcp)
 - [21st Codex plugin de referência](https://github.com/21st-dev/codex-plugin)
-

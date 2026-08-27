@@ -14,9 +14,13 @@ build/
 .cache/
 coverage/
 
-# External checkouts, if adopted in a later phase
+# External checkouts remain independent and are reproduced from the lock manifest
 vendor/
 external/
+
+# Repo-local discovery links materialized from integrations/external.lock.json
+.agents/skills/impeccable/
+.agents/skills/img2threejs/
 
 # Local integration state
 *.local.json
