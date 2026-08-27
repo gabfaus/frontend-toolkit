@@ -4,7 +4,7 @@ Cada etapa termina em revisão humana. Autorização para uma etapa não autoriz
 
 ## FTK-02 — Skills externas
 
-Status parcial: FTK-02A implementada em 2026-08-27 para revisão, sem commit. A execução funcional de scripts continua bloqueada pela ausência de Node e Python públicos no ambiente.
+Status parcial: FTK-02A fechada em commit e FTK-02B implementada em 2026-08-27 para revisão, sem staging ou commit. Node 24.20.0 LTS e CPython 3.14.7 públicos foram validados por caminhos explícitos.
 
 ### Objetivo
 
@@ -16,7 +16,7 @@ Integrar Impeccable e img2threejs de modo repo-local, independente e atualizáve
 - decidir entre checkout externo pinado, submodule ou mecanismo de instalação controlado;
 - mapear Skills para `.agents/skills` sem alterar o upstream;
 - separar a Skill Impeccable de seu hook opcional;
-- validar Python 3.10+ para img2threejs e Node para o instalador do Impeccable;
+- validar Python 3.10+ para img2threejs e Node >=22.18 para o Impeccable (concluído na FTK-02B);
 - criar testes de descoberta, invocação, atualização e remoção;
 - registrar hashes, licença e atribuição.
 

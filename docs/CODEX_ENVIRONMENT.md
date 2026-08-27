@@ -76,6 +76,15 @@ Decisão: desenvolver e testar em escopo de projeto; somente a FTK-05 poderá pr
 
 O runtime Node empacotado internamente pelo Codex Desktop não foi usado como dependência do toolkit.
 
+## Resultado FTK-02B
+
+- Node 24.20.0 LTS e npm 11.19.0 foram instalados por ZIP oficial em `%LOCALAPPDATA%\Programs\FrontendToolkit`, sem PATH.
+- CPython 3.14.7 foi instalado pelo instalador tradicional oficial da PSF em `%LOCALAPPDATA%\Programs\Python\Python314`, sem mudar launcher ou PATH.
+- O Python Install Manager 26.3.240.0 foi reportado somente no contexto de implantação elevado; `pymanager` não ficou acessível ao processo Codex, motivando o fallback oficial.
+- Os hashes de PATH de usuário e máquina e o hash de `~/.codex/config.toml` permaneceram iguais ao preflight.
+- O sandbox Codex bloqueia executar binários em `%LOCALAPPDATA%` sem aprovação; testes funcionais diretos foram executados fora do sandbox com escopo explícito.
+- Consulte `docs/FTK-02B-RUNTIMES.md` e `integrations/toolchain.lock.json` para caminhos portáveis, checksums e evidências.
+
 ## Fontes oficiais OpenAI
 
 - [Config basics e precedência](https://learn.chatgpt.com/docs/config-file/config-basic)

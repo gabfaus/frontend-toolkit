@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "validatedAt": "2026-08-27",
+  "architecture": "x64",
+  "runtimes": [
+    {
+      "id": "node",
+      "targetVersion": "24.20.0",
+      "observedVersion": "24.20.0",
+      "channel": "LTS (Krypton)",
+      "officialOrigin": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-win-x64.zip",
+      "artifactSha256": "6cac9ffbca8f6a47091e4b5c772e0606049c3871cb67d900c0cedde630e545ba",
+      "installationMethod": "official ZIP extracted per-user; PATH unchanged",
+      "portableResolution": "%LOCALAPPDATA%/Programs/FrontendToolkit/node-v24.20.0-win-x64/node.exe",
+      "consumerRequirement": "Impeccable >=22.18.0",
+      "bundledPackageManager": "npm 11.19.0"
+    },
+    {
+      "id": "python",
+      "targetVersion": "3.14.7",
+      "observedVersion": "3.14.7",
+      "implementation": "CPython",
+      "officialOrigin": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-amd64.exe",
+      "artifactSha256": "9d9eb2709ef81bf5cd30db3c2096bdbc4ea10087c22e62f27d356b36f6ae9649",
+      "installationMethod": "official traditional installer per-user; PATH and launcher unchanged",
+      "portableResolution": "%LOCALAPPDATA%/Programs/Python/Python314/python.exe",
+      "consumerRequirement": "img2threejs >=3.10",
+      "installManagerObservation": "26.3.240.0 package reported in elevated deployment context; pymanager unavailable to the Codex process"
+    }
+  ]
+}

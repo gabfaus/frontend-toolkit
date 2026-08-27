@@ -4,8 +4,8 @@ Este arquivo começou como inventário da FTK-01. Na FTK-02A, Impeccable e img2t
 
 | Componente | Papel | Origem | Licença observada | Runtime / acesso | Secret previsto |
 |---|---|---|---|---|---|
-| Impeccable | Skill de design/UX e detector opcional | `pbakaus/impeccable`, `skill-v4.1.2`, commit `63b04e2530f5c7b41ea83c133daab24f34912456` | Apache-2.0 | Node >=22.18 para scripts/CLI; hook opcional e inativo | nenhum para a integração atual |
-| img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs`, `v1.5.1`, commit `dede5909be4e494b228c801a55dda47439143932` | Apache-2.0 | Python 3.10+; visão/browser do host; Three.js no projeto-alvo | nenhum declarado pelo upstream |
+| Impeccable | Skill de design/UX e detector opcional | `pbakaus/impeccable`, `skill-v4.1.2`, commit `63b04e2530f5c7b41ea83c133daab24f34912456` | Apache-2.0 | Node >=22.18; validado com Node 24.20.0 LTS; hook inativo | nenhum para a integração atual |
+| img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs`, `v1.5.1`, commit `dede5909be4e494b228c801a55dda47439143932` | Apache-2.0 | Python 3.10+; validado com CPython 3.14.7 | nenhum declarado pelo upstream |
 | Shadcn UI MCP Server | MCP de contexto/componentes | `Jpisnice/shadcn-ui-mcp-server` | MIT | Node.js >= 18; stdio via npx ou servidor local | `GITHUB_PERSONAL_ACCESS_TOKEN` recomendado, sem scopes segundo upstream |
 | 21st MCP | MCP remoto do serviço atual | `https://21st.dev/api/mcp` | serviço sujeito a termos; plugin Codex de referência é Apache-2.0 | HTTP MCP; acesso de rede | `API_KEY_21ST` |
 
@@ -27,6 +27,8 @@ Este arquivo começou como inventário da FTK-01. Na FTK-02A, Impeccable e img2t
 6. Submeter diff para revisão humana antes de promover.
 
 Não haverá atualização automática silenciosa. Dependências invocadas por pacote devem usar versão fixa, não `latest`.
+
+Os runtimes seguem o mesmo gate e estão pinados em `integrations/toolchain.lock.json`. Eles ficam fora do Git e são chamados por caminho explícito; não dependem dos runtimes internos do Codex.
 
 ## Secrets
 
