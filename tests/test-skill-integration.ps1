@@ -7,15 +7,37 @@ $lock = Get-Content -Raw -LiteralPath $lockPath | ConvertFrom-Json
 $observedNames = @()
 
 foreach ($dependency in $lock.dependencies) {
+    $checkoutPath = Join-Path $repoRoot $dependency.checkoutPath
     $discoveryPath = Join-Path $repoRoot $dependency.discoveryPath
+    $sourcePath = (Resolve-Path (Join-Path $repoRoot $dependency.skillSourcePath)).Path
     $skillPath = Join-Path $discoveryPath 'SKILL.md'
     $link = Get-Item -Force -LiteralPath $discoveryPath
 
     if ($link.LinkType -ne 'Junction') {
         throw "$($dependency.id) is not exposed through a junction."
     }
+    $linkTarget = (Resolve-Path -LiteralPath $link.Target).Path
+    if ($linkTarget -ne $sourcePath) {
+        throw "$($dependency.id) junction target mismatch: $linkTarget"
+    }
     if (-not (Test-Path -LiteralPath $skillPath -PathType Leaf)) {
         throw "$($dependency.id) has no accessible SKILL.md."
+    }
+
+    $checkoutSha = (& git -C $checkoutPath rev-parse HEAD).Trim()
+    if ($checkoutSha -ne $dependency.commitSha) {
+        throw "$($dependency.id) checkout SHA mismatch: $checkoutSha"
+    }
+    if (& git -C $checkoutPath status --porcelain) {
+        throw "$($dependency.id) checkout is dirty."
+    }
+    $skillHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $skillPath).Hash.ToLowerInvariant()
+    if ($skillHash -ne $dependency.skillEntrySha256) {
+        throw "$($dependency.id) SKILL.md hash mismatch."
+    }
+    $licenseHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $dependency.licenseFile)).Hash.ToLowerInvariant()
+    if ($licenseHash -ne $dependency.licenseSha256) {
+        throw "$($dependency.id) license hash mismatch."
     }
 
     $content = Get-Content -Raw -LiteralPath $skillPath

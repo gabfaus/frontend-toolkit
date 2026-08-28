@@ -85,6 +85,14 @@ O runtime Node empacotado internamente pelo Codex Desktop não foi usado como de
 - O sandbox Codex bloqueia executar binários em `%LOCALAPPDATA%` sem aprovação; testes funcionais diretos foram executados fora do sandbox com escopo explícito.
 - Consulte `docs/FTK-02B-RUNTIMES.md` e `integrations/toolchain.lock.json` para caminhos portáveis, checksums e evidências.
 
+## Resultado FTK-02C
+
+- `resolve-toolchain.ps1` passou a resolver Node/Python exclusivamente pelo lock e por `%LOCALAPPDATA%`.
+- `invoke-codex-test.ps1` injeta Node somente no processo filho e fornece Python por `FTK_PYTHON_PATH`.
+- A CLI `0.150.0-alpha.8` voltou a inserir trust do projeto mesmo com `--ephemeral --ignore-user-config`; o harness provou que essa era a única inserção, recusou qualquer diff desconhecido e restaurou os bytes originais.
+- A ajuda local promete não carregar `config.toml`, mas não afirma que o arquivo será read-only. A documentação oficial encontrada também não define essa garantia; a intenção da escrita permanece inconclusiva.
+- A visão do PATH de usuário difere entre o sandbox normal e o processo elevado. Os hashes ficaram estáveis dentro de cada teste e a toolchain não depende de PATH persistente.
+
 ## Fontes oficiais OpenAI
 
 - [Config basics e precedência](https://learn.chatgpt.com/docs/config-file/config-basic)

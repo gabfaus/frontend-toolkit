@@ -4,7 +4,7 @@ Cada etapa termina em revisão humana. Autorização para uma etapa não autoriz
 
 ## FTK-02 — Skills externas
 
-Status parcial: FTK-02A fechada em commit e FTK-02B implementada em 2026-08-27 para revisão, sem staging ou commit. Node 24.20.0 LTS e CPython 3.14.7 públicos foram validados por caminhos explícitos.
+Status: FTK-02A e FTK-02B fechadas em commits; FTK-02C de isolamento e reprodutibilidade implementada em 2026-08-27 para revisão, sem staging ou commit.
 
 ### Objetivo
 

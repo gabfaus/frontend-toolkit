@@ -1,22 +1,11 @@
-param(
-    [string]$NodePath = (Join-Path $env:LOCALAPPDATA 'Programs\FrontendToolkit\node-v24.20.0-win-x64\node.exe'),
-    [string]$PythonPath = (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python314\python.exe')
-)
-
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $toolchain = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/toolchain.lock.json') | ConvertFrom-Json
-
-foreach ($path in @($NodePath, $PythonPath)) {
-    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-        throw "Runtime not found: $path"
-    }
-}
-
-$nodeVersion = (& $NodePath --version).TrimStart('v')
-$pythonVersion = (& $PythonPath -c 'import platform; print(platform.python_version())').Trim()
+$resolved = & (Join-Path $repoRoot 'scripts/resolve-toolchain.ps1')
+$nodeVersion = $resolved.NodeVersion
+$pythonVersion = $resolved.PythonVersion
 if ($nodeVersion -ne '24.20.0') { throw "Expected Node 24.20.0, found $nodeVersion" }
 if ($pythonVersion -ne '3.14.7') { throw "Expected Python 3.14.7, found $pythonVersion" }
 
