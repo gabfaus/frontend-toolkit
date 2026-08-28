@@ -30,7 +30,7 @@ Integrar Impeccable e img2threejs de modo repo-local, independente e atualizáve
 
 ## FTK-03 — MCPs
 
-Status: FTK-03A **CLOSED** no commit `a5c95e57f8dac92f639b3f798f9798bcb046c077` e FTK-03B **CLOSED** no commit `51fa9c4e6c5fa7b98d424b20f8586abe7a815e63`. FTK-03C está funcional e pronta para revisão de fechamento, sem staging ou commit: as quatro capacidades coexistiram na CLI estável `0.150.1` com namespaces distintos e somente consultas read-only.
+Status: **CLOSED**. FTK-03A foi fechada no commit `a5c95e57f8dac92f639b3f798f9798bcb046c077`, FTK-03B em `51fa9c4e6c5fa7b98d424b20f8586abe7a815e63` e FTK-03C em `07f2a38abddf83f3659f5b6604c8a06b24033ee8`.
 
 ### Objetivo
 
@@ -57,6 +57,8 @@ Integrar Shadcn UI e 21st com secrets externos ao Git e política mínima de fer
 
 ## FTK-04 — Frontend Orchestrator
 
+Status: FTK-04A funcional e pronta para revisão de fechamento, sem staging ou commit. A V1 repo-local contém política canônica, gates 21st, fallbacks e dez cenários; execução funcional autônoma permanece para FTK-04B.
+
 ### Objetivo
 
 Criar a Skill própria que roteia tarefas e combina resultados sem duplicar capacidades externas.
@@ -67,7 +69,7 @@ Criar a Skill própria que roteia tarefas e combina resultados sem duplicar capa
 - estabelecer gates para descoberta, planejamento, mutação, revisão visual e entrega;
 - definir precedência quando Impeccable, Shadcn e 21st sugerirem abordagens diferentes;
 - bloquear publicação, exclusão e instalação implícitas;
-- declarar dependências MCP em `agents/openai.yaml` quando o formato estiver validado;
+- avaliar metadata/declaração de dependências para o packaging somente quando a FTK-05 autorizar;
 - criar cenários de integração e degradação graciosa.
 
 ### Critérios de saída

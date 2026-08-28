@@ -20,3 +20,5 @@ Na FTK-03A, `test-shadcn-mcp.ps1` valida pin/integridade, handshake, inventário
 Na FTK-03B, `test-21st-mcp.ps1` possui modos `WithoutCredential` e `WithCredential`. O primeiro valida estaticamente e para no credential gate; o segundo acrescenta handshake HTTP, inventário de 35 tools, `search("dashboard")` gratuita e execução isolada via `scripts/invoke-21st-codex-test.ps1`, sem expor a chave ou chamar tools pagas/mutáveis.
 
 Na FTK-03C, `test-mcp-coexistence.ps1` mantém os mesmos modos de credential gate e chama `scripts/invoke-combined-codex-test.ps1`. O harness compara inventários sem alterar o lock, descobre as duas Skills e habilita apenas Shadcn e 21st. Três sessões sintéticas validam Shadcn-only, 21st `search`-only e a sequência explicitamente roteada Shadcn → 21st. Routing autônomo permanece fora do escopo.
+
+Na FTK-04A, `test-frontend-orchestrator.ps1` valida frontmatter, referências acessíveis, política JSON das quatro capabilities, allowlist 21st, gates de autorização, fallbacks e a matriz JSON de dez cenários. O teste usa Codex CLI estável 0.150.1 apenas para discovery conjunto das três Skills; não executa routing autônomo nem chama MCP.

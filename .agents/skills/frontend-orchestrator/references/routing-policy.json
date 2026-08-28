@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "skill": "frontend-orchestrator",
+  "principle": "minimum-necessary-capabilities",
+  "intentPrecedence": [
+    {"id": "explicit-user-intent", "priority": 1},
+    {"id": "primary-intent", "priority": 2},
+    {"id": "add-only-for-distinct-need", "priority": 3}
+  ],
+  "capabilities": {
+    "impeccable": {
+      "discoveredName": "impeccable:impeccable",
+      "role": "design-ux-review",
+      "defaultFor": ["design", "ux", "visual-critique", "layout", "typography", "responsive-review", "polish"],
+      "excludeFor": ["purely-technical-without-visual-dimension"]
+    },
+    "shadcn": {
+      "server": "shadcn",
+      "role": "official-component-registry",
+      "priorityRule": "official-components-first",
+      "defaultFor": ["official-component", "canonical-pattern", "implementation-support"]
+    },
+    "21st": {
+      "server": "21st",
+      "role": "inspiration-discovery",
+      "defaultAllowedTools": ["search"],
+      "defaultFor": ["inspiration", "alternatives", "visual-discovery"],
+      "explicitAuthorizationRequiredFor": [
+        "metered", "generation", "ai-credits", "copy-install-quota", "retrieval-quota",
+        "mutation", "publish", "edit", "delete", "bookmark-or-list", "account-or-profile", "uncertain"
+      ],
+      "unclassifiedToolPolicy": "do-not-execute-without-explicit-authorization",
+      "inventoryPolicy": "compare-baseline-with-current-metadata"
+    },
+    "img2threejs": {
+      "discoveredName": "img2threejs",
+      "role": "threejs-3d-reconstruction",
+      "activation": "explicit-or-clearly-implied-3d-only",
+      "defaultFor": ["threejs", "image-to-3d", "procedural-reconstruction", "3d-asset", "3d-scene"]
+    }
+  },
+  "combinations": [
+    {
+      "id": "new-interface",
+      "order": ["impeccable", "shadcn", "21st/search-if-beneficial", "codex-implementation", "impeccable-review-if-needed"],
+      "mandatoryAll": false
+    },
+    {
+      "id": "existing-interface",
+      "order": ["impeccable", "shadcn-if-replacement-needed", "21st/search-if-inspiration-needed"],
+      "mandatoryAll": false
+    },
+    {
+      "id": "interface-with-3d",
+      "order": ["img2threejs", "impeccable-if-integration-review-needed", "shadcn-if-controls-needed", "21st/search-if-beneficial"],
+      "mandatoryAll": false
+    }
+  ],
+  "fallbacks": [
+    {"id": "impeccable-unavailable", "policy": "disclose-specialized-review-unavailable"},
+    {"id": "shadcn-unavailable", "policy": "do-not-silently-substitute-21st-as-official"},
+    {"id": "21st-unavailable", "policy": "continue-with-impeccable-and-shadcn-when-sufficient"},
+    {"id": "img2threejs-unavailable", "policy": "do-not-claim-3d-execution"}
+  ],
+  "prohibitedAdditions": ["21st-plugin", "21st-skills", "magic-mcp", "jpisnice", "routing-skills", "hooks"]
+}

@@ -26,7 +26,7 @@ Cada integração terá um adaptador declarativo sob `integrations/`, com identi
 
 ### `frontend-orchestrator`
 
-Skill própria que futuramente deverá:
+Skill própria repo-local criada na FTK-04A para:
 
 - classificar a intenção: arquitetura visual, implementação, revisão, componentes ou 3D;
 - selecionar a menor combinação de capacidades necessária;
@@ -37,6 +37,8 @@ Skill própria que futuramente deverá:
 
 Ela não reimplementará Impeccable, img2threejs, Shadcn UI ou 21st.
 
+A V1 aplica o princípio de menor capacidade: intenção explícita do usuário primeiro, depois a capability principal, e combinações somente para necessidades distintas. Shadcn tem prioridade para componentes oficiais; 21st serve a inspiração/discovery e expõe apenas busca gratuita/read-only por padrão; img2threejs só entra em trabalho 3D explícito ou claramente implícito. Routing autônomo funcional da matriz pertence à FTK-04B.
+
 ### Skills externas
 
 - **Impeccable:** linguagem e workflow de design/UX, auditoria e refinamento de frontend. A integração Codex também pode incluir hook de detecção; esse hook exige análise e aprovação separadas.
@@ -45,14 +47,14 @@ Ela não reimplementará Impeccable, img2threejs, Shadcn UI ou 21st.
 ### MCPs externos
 
 - **Shadcn MCP oficial:** ferramentas do registry oficial para descobrir e consultar componentes; o servidor Jpisnice permanece candidato de fallback inativo até comparação futura.
-- **21st MCP oficial:** endpoint remoto `https://21st.dev/api/mcp`, autenticado por bearer obtido de `API_KEY_21ST`. A primeira integração expõe somente busca; o antigo Magic MCP e seu proxy de compatibilidade não fazem parte do toolkit.
+- **21st MCP oficial:** endpoint remoto `https://21st.dev/api/mcp`, autenticado por bearer obtido de `API_KEY_21ST`. A operação default do orchestrator é somente busca atualmente classificada como gratuita/read-only; custo, quota, mutação ou classificação incerta exigem autorização explícita. O antigo Magic MCP e seu proxy de compatibilidade não fazem parte do toolkit.
 
 ## Limites e confiança
 
 - Skills orientam o agente e podem executar scripts incluídos na própria dependência.
 - MCPs ampliam a superfície de ação; ferramentas de escrita, instalação, publicação ou exclusão devem exigir intenção explícita e política de aprovação.
 - Hooks executam automaticamente em eventos do Codex e, por isso, são opcionais, revisados e habilitados apenas no projeto confiável.
-- A configuração de desenvolvimento deve ser local ao repositório. Instalação de usuário será um artefato explícito da FTK-05, nunca um efeito colateral da FTK-02 ou FTK-03.
+- A configuração de desenvolvimento deve ser local ao repositório. Instalação de usuário será um artefato explícito da FTK-05, nunca um efeito colateral das etapas de integração ou routing.
 
 ## Empacotamento futuro
 
