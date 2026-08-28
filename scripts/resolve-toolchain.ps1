@@ -26,7 +26,7 @@ foreach ($runtime in $lock.runtimes) {
     }
     $runtimeById[$runtime.id] = $runtime
 }
-foreach ($requiredId in @('node', 'python')) {
+foreach ($requiredId in @('node', 'python', 'codex-cli')) {
     if (-not $runtimeById.ContainsKey($requiredId)) {
         throw "Required runtime missing from toolchain lock: $requiredId"
     }
@@ -34,7 +34,10 @@ foreach ($requiredId in @('node', 'python')) {
 
 $nodePath = Expand-PortablePath $runtimeById.node.portableResolution
 $pythonPath = Expand-PortablePath $runtimeById.python.portableResolution
-foreach ($runtimePath in @($nodePath, $pythonPath)) {
+$codexRuntime = $runtimeById['codex-cli']
+$stableCodexPath = Expand-PortablePath $codexRuntime.portableResolution
+$codeModeHostPath = Expand-PortablePath $codexRuntime.companionPortableResolution
+foreach ($runtimePath in @($nodePath, $pythonPath, $stableCodexPath, $codeModeHostPath)) {
     if (-not (Test-Path -LiteralPath $runtimePath -PathType Leaf)) {
         throw "Pinned runtime executable not found: $runtimePath"
     }
@@ -54,6 +57,16 @@ if ($pythonVersion -ne $runtimeById.python.targetVersion) {
 if ($runtimeById.node.observedVersion -ne $nodeVersion -or $runtimeById.python.observedVersion -ne $pythonVersion) {
     throw 'Observed runtime versions no longer match integrations/toolchain.lock.json.'
 }
+$stableCodexVersion = ((& $stableCodexPath --version).Trim() -replace '^codex-cli\s+', '')
+if ($stableCodexVersion -ne $codexRuntime.targetVersion -or $codexRuntime.observedVersion -ne $stableCodexVersion) {
+    throw "Stable Codex version mismatch: expected $($codexRuntime.targetVersion), found $stableCodexVersion at $stableCodexPath"
+}
+if ((Get-FileHash -Algorithm SHA256 -LiteralPath $stableCodexPath).Hash.ToLowerInvariant() -ne $codexRuntime.artifactSha256) {
+    throw 'Stable Codex executable integrity mismatch.'
+}
+if ((Get-FileHash -Algorithm SHA256 -LiteralPath $codeModeHostPath).Hash.ToLowerInvariant() -ne $codexRuntime.companionSha256) {
+    throw 'Stable Codex code-mode host integrity mismatch.'
+}
 
 $result = [pscustomobject]@{
     NodePath = $nodePath
@@ -61,6 +74,9 @@ $result = [pscustomobject]@{
     NodeVersion = $nodeVersion
     PythonPath = $pythonPath
     PythonVersion = $pythonVersion
+    StableCodexPath = $stableCodexPath
+    StableCodexVersion = $stableCodexVersion
+    CodeModeHostPath = $codeModeHostPath
     Architecture = $lock.architecture
     LockPath = $lockPath
 }

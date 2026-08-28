@@ -1,5 +1,8 @@
 param(
     [string]$Prompt = 'Use $impeccable:impeccable and $img2threejs. Read only their SKILL.md files. Run node --version and then run the executable in FTK_PYTHON_PATH with --version. Do not create or edit files, install anything, authenticate, use MCPs, or run hooks. Return exactly four lines: impeccable discovered, img2threejs discovered, Node version, Python version.',
+    [string]$WorkingDirectory = '',
+    [string[]]$ConfigOverride = @(),
+    [switch]$LoadUserConfig,
     [switch]$ValidateOnly
 )
 
@@ -8,7 +11,12 @@ $ErrorActionPreference = 'Stop'
 
 function Get-BytesHash {
     param([Parameter(Mandatory)][byte[]]$Bytes)
-    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($Bytes)).ToLowerInvariant()
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash($Bytes))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $sha256.Dispose()
+    }
 }
 
 function Get-FileState {
@@ -47,6 +55,8 @@ function Test-KnownTrustInsertion {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+if (-not $WorkingDirectory) { $WorkingDirectory = $repoRoot }
+$WorkingDirectory = (Resolve-Path -LiteralPath $WorkingDirectory).Path
 $toolchain = & (Join-Path $PSScriptRoot 'resolve-toolchain.ps1')
 if ($toolchain.NodeVersion -ne '24.20.0' -or $toolchain.PythonVersion -ne '3.14.7') {
     throw 'Resolved toolchain does not match the FTK-02 pin.'
@@ -77,12 +87,19 @@ $codexExitCode = -1
 try {
     $env:PATH = "$($toolchain.NodeDirectory);$processPathBefore"
     $env:FTK_PYTHON_PATH = $toolchain.PythonPath
-    $args = @(
-        'exec', '--ephemeral', '--ignore-user-config',
-        '--sandbox', 'danger-full-access', '--skip-git-repo-check', $Prompt
-    )
-    $codexOutput = (& $codexCommand.Source @args 2>&1 | Out-String).TrimEnd()
-    $codexExitCode = $LASTEXITCODE
+    $args = @('exec', '--ephemeral')
+    if (-not $LoadUserConfig) { $args += '--ignore-user-config' }
+    $args += @('--sandbox', 'danger-full-access', '--skip-git-repo-check', '--cd', $WorkingDirectory)
+    foreach ($override in $ConfigOverride) { $args += @('-c', $override) }
+    $args += $Prompt
+    $errorPreferenceBefore = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $codexOutput = (& $codexCommand.Source @args 2>&1 | Out-String).TrimEnd()
+        $codexExitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $errorPreferenceBefore
+    }
 } finally {
     $env:PATH = $processPathBefore
     $env:FTK_PYTHON_PATH = $pythonPathBefore
@@ -92,7 +109,7 @@ $after = Get-FileState $configPath
 $mutation = 'none'
 if ($before.Hash -ne $after.Hash) {
     $knownInsertion = $before.Exists -and $after.Exists -and
-        (Test-KnownTrustInsertion -Before $before.Bytes -After $after.Bytes -RepositoryPath $repoRoot)
+        (Test-KnownTrustInsertion -Before $before.Bytes -After $after.Bytes -RepositoryPath $WorkingDirectory)
     if (-not $knownInsertion) {
         throw "Codex user config changed in an unrecognized way; no restoration attempted. Before=$($before.Hash) After=$($after.Hash)"
     }

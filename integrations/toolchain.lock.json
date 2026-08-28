@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "validatedAt": "2026-08-27",
+  "validatedAt": "2026-08-28",
   "architecture": "x64",
   "runtimes": [
     {
@@ -26,6 +26,23 @@
       "portableResolution": "%LOCALAPPDATA%/Programs/Python/Python314/python.exe",
       "consumerRequirement": "img2threejs >=3.10",
       "installManagerObservation": "26.3.240.0 package reported in elevated deployment context; pymanager unavailable to the Codex process"
+    },
+    {
+      "id": "codex-cli",
+      "targetVersion": "0.150.1",
+      "observedVersion": "0.150.1",
+      "channel": "public stable",
+      "officialOrigin": "https://github.com/openai/codex/releases/tag/rust-v0.150.1",
+      "installationMethod": "official standalone release artifacts installed per-user; PATH unchanged",
+      "portableResolution": "%LOCALAPPDATA%/Programs/FrontendToolkit/codex/0.150.1/codex.exe",
+      "artifact": "codex-x86_64-pc-windows-msvc.exe",
+      "artifactSha256": "cbd657ddfe151d1a6ebad660beffdbd3265dc5aff4b3a6095124d3e2f0156f2f",
+      "companion": "codex-code-mode-host.exe",
+      "companionOriginArtifact": "codex-code-mode-host-x86_64-pc-windows-msvc.exe",
+      "companionPortableResolution": "%LOCALAPPDATA%/Programs/FrontendToolkit/codex/0.150.1/codex-code-mode-host.exe",
+      "companionSha256": "e5244cdb261a66a23aba07563349e2e023f1e806505a4810fd2bdf793cbe3272",
+      "purpose": "FTK-03A.1 stable Codex MCP compatibility validation",
+      "compatibilityNotes": "Coexists with bundled codex-cli 0.150.0-alpha.8; explicit path only; MCP tools require the official code-mode host companion."
     }
   ]
 }

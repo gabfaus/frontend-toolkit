@@ -62,7 +62,7 @@ Decisão: desenvolver e testar em escopo de projeto; somente a FTK-05 poderá pr
 2. **CLI alpha e visão distinta do Desktop:** o empacotamento deve ser testado em uma matriz Desktop + CLI; não presumir que cache interno equivale a marketplace configurado.
 3. **Impeccable usa hook Codex:** instalação completa cria `.codex/hooks.json` e requer trust/aprovação. Skill e hook devem ser avaliados separadamente.
 4. **img2threejs documenta caminho legado `~/.codex/skills`:** a documentação atual do Codex recomenda `.agents/skills`. FTK-02 precisa testar a integração repo-local em vez de copiar literalmente o caminho upstream.
-5. **Shadcn MCP recomenda token GitHub:** é possível operar sem ele em alguns cenários, mas limites de API e confiabilidade precisam ser medidos. O modo de framework deve ser explícito.
+5. **Shadcn MCP oficial:** o pacote `shadcn@4.19.0` funcionou sem secret com o registry padrão. O teste precisa de um `components.json` sintético e, neste ambiente, da CA do sistema via variável process-local.
 6. **21st é serviço remoto e mutável:** usa autenticação própria e contém ferramentas de leitura e escrita. A allowlist e os gates do orchestrator são obrigatórios.
 7. **21st já possui plugin Codex próprio:** instalar esse plugin junto do futuro Frontend Toolkit pode duplicar Skills e o nome do MCP. A solução inicial deve integrar somente o endpoint MCP ou declarar incompatibilidade com instalação paralela.
 
@@ -92,6 +92,14 @@ O runtime Node empacotado internamente pelo Codex Desktop não foi usado como de
 - A CLI `0.150.0-alpha.8` voltou a inserir trust do projeto mesmo com `--ephemeral --ignore-user-config`; o harness provou que essa era a única inserção, recusou qualquer diff desconhecido e restaurou os bytes originais.
 - A ajuda local promete não carregar `config.toml`, mas não afirma que o arquivo será read-only. A documentação oficial encontrada também não define essa garantia; a intenção da escrita permanece inconclusiva.
 - A visão do PATH de usuário difere entre o sandbox normal e o processo elevado. Os hashes ficaram estáveis dentro de cada teste e a toolchain não depende de PATH persistente.
+
+## Resultado FTK-03A
+
+- A CLI bundled `0.150.0-alpha.8` não expôs as tools MCP em `exec` e permanece intacta.
+- A CLI pública estável `0.150.1` foi instalada lado a lado em `%LOCALAPPDATA%/Programs/FrontendToolkit/codex/0.150.1`, sem PATH, junto do companion oficial `codex-code-mode-host.exe` exigido pela exposição das tools.
+- A CLI estável reutilizou naturalmente o login ChatGPT existente. O profile temporário `-p` foi reconhecido por `mcp list` e removido após o teste.
+- `search_items_in_registries` foi exposta e concluída em `codex exec`, retornando `button`; nenhum teste interativo foi necessário.
+- Node é resolvido pelo lock e adicionado somente ao PATH filho; `NODE_OPTIONS=--use-system-ca` fica no ambiente MCP e Python permanece explícito em `FTK_PYTHON_PATH`.
 
 ## Fontes oficiais OpenAI
 

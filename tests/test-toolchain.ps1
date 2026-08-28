@@ -8,10 +8,12 @@ $nodeVersion = $resolved.NodeVersion
 $pythonVersion = $resolved.PythonVersion
 if ($nodeVersion -ne '24.20.0') { throw "Expected Node 24.20.0, found $nodeVersion" }
 if ($pythonVersion -ne '3.14.7') { throw "Expected Python 3.14.7, found $pythonVersion" }
+if ($resolved.StableCodexVersion -ne '0.150.1') { throw "Expected stable Codex 0.150.1, found $($resolved.StableCodexVersion)" }
 
 $expected = @{
     node = $nodeVersion
     python = $pythonVersion
+    'codex-cli' = $resolved.StableCodexVersion
 }
 foreach ($runtime in $toolchain.runtimes) {
     if ($runtime.observedVersion -ne $expected[$runtime.id]) {
@@ -28,5 +30,5 @@ foreach ($checkout in @('external/impeccable', 'external/img2threejs')) {
 if (Test-Path -LiteralPath (Join-Path $repoRoot '.codex/hooks.json')) { throw 'Hook unexpectedly active.' }
 if (Test-Path -LiteralPath (Join-Path $repoRoot '.codex/config.toml')) { throw 'Project MCP/config unexpectedly present.' }
 
-Write-Output "PASS: Node $nodeVersion and Python $pythonVersion match the toolchain lock."
+Write-Output "PASS: Node $nodeVersion, Python $pythonVersion and stable Codex $($resolved.StableCodexVersion) match the toolchain lock."
 Write-Output 'PASS: external checkouts are clean; hooks and project MCP config are absent.'

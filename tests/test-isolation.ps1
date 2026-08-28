@@ -3,9 +3,12 @@ $ErrorActionPreference = 'Stop'
 
 function Get-StringHash {
     param([AllowEmptyString()][string]$Value)
-    return [Convert]::ToHexString(
-        [Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($Value))
-    ).ToLowerInvariant()
+    $sha256 = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha256.ComputeHash([Text.Encoding]::UTF8.GetBytes($Value)))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $sha256.Dispose()
+    }
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path

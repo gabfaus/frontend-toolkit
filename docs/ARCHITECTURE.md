@@ -16,7 +16,7 @@ frontend-orchestrator (roteamento, sequência e políticas)
        |
        +--> Impeccable (design, UX e auditoria)
        +--> img2threejs (reconstrução procedural 3D)
-       +--> Shadcn UI MCP (contexto de componentes)
+       +--> Shadcn MCP oficial (registry e componentes)
        +--> 21st MCP (catálogo, geração e operações do serviço)
 ```
 
@@ -44,7 +44,7 @@ Ela não reimplementará Impeccable, img2threejs, Shadcn UI ou 21st.
 
 ### MCPs externos
 
-- **Shadcn UI MCP Server:** ferramentas e contexto sobre componentes shadcn em React, Svelte, Vue e React Native.
+- **Shadcn MCP oficial:** ferramentas do registry oficial para descobrir e consultar componentes; o servidor Jpisnice permanece candidato de fallback inativo até comparação futura.
 - **21st MCP:** serviço remoto atual do 21st. O antigo Magic MCP e seu proxy de compatibilidade não farão parte do toolkit.
 
 ## Limites e confiança

@@ -4,7 +4,7 @@ Cada etapa termina em revisão humana. Autorização para uma etapa não autoriz
 
 ## FTK-02 — Skills externas
 
-Status: FTK-02A e FTK-02B fechadas em commits; FTK-02C de isolamento e reprodutibilidade implementada em 2026-08-27 para revisão, sem staging ou commit.
+Status: **CLOSED**. FTK-02A, FTK-02B e FTK-02C foram fechadas em commits e os testes permanecem reproduzíveis.
 
 ### Objetivo
 
@@ -30,13 +30,15 @@ Integrar Impeccable e img2threejs de modo repo-local, independente e atualizáve
 
 ## FTK-03 — MCPs
 
+Status: FTK-03A funcional e pronta para revisão de fechamento, sem staging ou commit. O servidor oficial `4.19.0` passa diretamente e via Codex CLI pública estável `0.150.1`; 21st permanece fora do escopo.
+
 ### Objetivo
 
 Integrar Shadcn UI e 21st com secrets externos ao Git e política mínima de ferramentas.
 
 ### Trabalho previsto
 
-- escolher versão fixa do pacote Shadcn e transporte inicial `stdio`;
+- manter versão fixa do pacote Shadcn e transporte inicial `stdio` (FTK-03A concluída tecnicamente);
 - definir framework/defaults e timeout do Shadcn;
 - configurar 21st por HTTP diretamente, sem `magic-mcp`;
 - usar somente nomes de variáveis de ambiente para credenciais;

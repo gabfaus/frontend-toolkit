@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "resolvedAt": "2026-08-27",
+  "servers": [
+    {
+      "id": "shadcn",
+      "status": "active-v1",
+      "provider": "shadcn/ui",
+      "transport": "stdio",
+      "package": "shadcn",
+      "version": "4.19.0",
+      "registry": "https://registry.npmjs.org/",
+      "tarball": "https://registry.npmjs.org/shadcn/-/shadcn-4.19.0.tgz",
+      "integrity": "sha512-EQF6R+CUXTsEP2BpyhxrUEAFesrtFD1POvVOf5jM+wkgtA4kG1EW1+1Wlmi9LqiprSL681JJXBcS0u8WkVVVyQ==",
+      "license": "MIT",
+      "upstream": "https://github.com/shadcn-ui/ui/tree/main/packages/shadcn",
+      "documentation": "https://ui.shadcn.com/docs/mcp",
+      "runtimeRequirement": "node >=20.18.1",
+      "validatedRuntime": "node 24.20.0",
+      "command": "npx",
+      "args": ["--yes", "shadcn@4.19.0", "mcp"],
+      "startupTimeoutSeconds": 120,
+      "processEnvironment": { "NODE_OPTIONS": "--use-system-ca" },
+      "secretsRequiredForDefaultRegistry": []
+    },
+    {
+      "id": "21st",
+      "status": "planned-ftk-03b"
+    }
+  ],
+  "inactiveCandidates": [
+    {
+      "id": "jpisnice-shadcn-ui-mcp-server",
+      "status": "candidate-fallback-not-active-in-v1",
+      "upstream": "https://github.com/Jpisnice/shadcn-ui-mcp-server"
+    }
+  ],
+  "prohibited": ["magic-mcp"]
+}

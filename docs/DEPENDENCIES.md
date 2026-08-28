@@ -6,7 +6,8 @@ Este arquivo começou como inventário da FTK-01. Na FTK-02A, Impeccable e img2t
 |---|---|---|---|---|---|
 | Impeccable | Skill de design/UX e detector opcional | `pbakaus/impeccable`, `skill-v4.1.2`, commit `63b04e2530f5c7b41ea83c133daab24f34912456` | Apache-2.0 | Node >=22.18; validado com Node 24.20.0 LTS; hook inativo | nenhum para a integração atual |
 | img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs`, `v1.5.1`, commit `dede5909be4e494b228c801a55dda47439143932` | Apache-2.0 | Python 3.10+; validado com CPython 3.14.7 | nenhum declarado pelo upstream |
-| Shadcn UI MCP Server | MCP de contexto/componentes | `Jpisnice/shadcn-ui-mcp-server` | MIT | Node.js >= 18; stdio via npx ou servidor local | `GITHUB_PERSONAL_ACCESS_TOKEN` recomendado, sem scopes segundo upstream |
+| Shadcn MCP oficial | MCP de registry/componentes | pacote `shadcn@4.19.0`, projeto `shadcn-ui/ui` | MIT | Node.js >=20.18.1; validado via stdio com Node 24.20.0 | nenhum para o registry padrão |
+| Jpisnice Shadcn UI MCP Server | candidato comunitário de fallback, inativo na v1 | `Jpisnice/shadcn-ui-mcp-server` | não revalidada nesta etapa | não instalado nem executado | não avaliado |
 | 21st MCP | MCP remoto do serviço atual | `https://21st.dev/api/mcp` | serviço sujeito a termos; plugin Codex de referência é Apache-2.0 | HTTP MCP; acesso de rede | `API_KEY_21ST` |
 
 ## Estratégia de aquisição
@@ -30,13 +31,15 @@ Não haverá atualização automática silenciosa. Dependências invocadas por p
 
 Os runtimes seguem o mesmo gate e estão pinados em `integrations/toolchain.lock.json`. Eles ficam fora do Git e são chamados por caminho explícito; não dependem dos runtimes internos do Codex.
 
+A matriz de compatibilidade MCP usa Codex CLI pública estável `0.150.1` e seu `codex-code-mode-host` oficial, instalados lado a lado por caminho explícito. A CLI bundled do Desktop não é dependência do Toolkit e não foi alterada.
+
 ## Secrets
 
 - O repositório contém apenas nomes de variáveis, nunca valores.
 - Configuração MCP deve usar `bearer_token_env_var`, `env_vars` ou `env_http_headers` conforme o transporte.
 - Arquivos `.env` e variantes estão ignorados; se um `.env.example` surgir no futuro, conterá placeholders não sensíveis.
 - Tokens serão criados e inseridos pelo usuário somente na etapa autorizada.
-- O token GitHub do Shadcn deve ter o menor privilégio possível e nunca ser passado em argumento de linha de comando, pois argumentos podem aparecer em logs e listas de processos.
+- O registry padrão do MCP oficial Shadcn funcionou sem secret. Registries privados futuros deverão referenciar variáveis de ambiente, nunca valores no Git ou em argumentos.
 
 ## Licenças e atribuições
 
@@ -59,6 +62,7 @@ Decisão: FTK-02 a FTK-04 permanecem repo-local. FTK-05 deverá oferecer instala
 
 - [Impeccable](https://github.com/pbakaus/impeccable)
 - [img2threejs](https://github.com/img2threejs/img2threejs)
-- [Shadcn UI MCP Server](https://github.com/Jpisnice/shadcn-ui-mcp-server)
+- [Shadcn MCP oficial](https://ui.shadcn.com/docs/mcp)
+- [Jpisnice Shadcn UI MCP Server — candidato inativo](https://github.com/Jpisnice/shadcn-ui-mcp-server)
 - [21st MCP](https://docs.21st.dev/mcp)
 - [21st Codex plugin de referência](https://github.com/21st-dev/codex-plugin)
