@@ -30,7 +30,7 @@ Integrar Impeccable e img2threejs de modo repo-local, independente e atualizáve
 
 ## FTK-03 — MCPs
 
-Status: FTK-03A **CLOSED** no commit `a5c95e57f8dac92f639b3f798f9798bcb046c077`. FTK-03B está funcional e pronta para revisão de fechamento, sem staging ou commit; o endpoint 21st passou diretamente e via Codex CLI pública estável `0.150.1` com somente busca gratuita/read-only.
+Status: FTK-03A **CLOSED** no commit `a5c95e57f8dac92f639b3f798f9798bcb046c077` e FTK-03B **CLOSED** no commit `51fa9c4e6c5fa7b98d424b20f8586abe7a815e63`. FTK-03C está funcional e pronta para revisão de fechamento, sem staging ou commit: as quatro capacidades coexistiram na CLI estável `0.150.1` com namespaces distintos e somente consultas read-only.
 
 ### Objetivo
 
@@ -48,7 +48,9 @@ Integrar Shadcn UI e 21st com secrets externos ao Git e política mínima de fer
 
 ### Critérios de saída
 
-- cada MCP inicializa isoladamente no ambiente-alvo; a coexistência simultânea exige gate posterior;
+- cada MCP inicializa isoladamente e ambos funcionam simultaneamente no ambiente-alvo;
+- Impeccable e img2threejs permanecem descobertos na mesma fixture combinada;
+- namespaces distintos preservam a seleção explícita e o uso sequencial Shadcn → 21st;
 - ausência de secrets produz erro seguro e compreensível;
 - ferramentas mutáveis não executam sem intenção explícita;
 - nenhum pacote global ou autenticação automática.

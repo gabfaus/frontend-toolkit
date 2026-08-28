@@ -108,6 +108,14 @@ O runtime Node empacotado internamente pelo Codex Desktop não foi usado como de
 - `search("dashboard")` concluiu diretamente e via `codex exec`; a allowlist expôs somente `search`, Shadcn ficou desabilitado e MCPs herdados foram desabilitados apenas no processo efêmero.
 - Nenhuma tool paga, de conta, geração ou escrita foi chamada. Configuração persistente, PATH, Skills, checkouts e hooks permaneceram íntegros.
 
+## Resultado FTK-03C
+
+- Um profile temporário habilitou simultaneamente Shadcn e 21st, desabilitou MCPs herdados apenas por override process-local e preservou as Skills `impeccable:impeccable` e `img2threejs`.
+- A CLI estável `0.150.1` e o companion oficial observaram sete tools Shadcn e 35 tools 21st; o inventário remoto permaneceu idêntico ao snapshot FTK-03B.
+- Os testes Shadcn-only, 21st `search`-only e sequencial Shadcn → 21st passaram com namespaces distintos. Nenhuma tool paga, mutável ou fora da allowlist foi chamada.
+- Uma primeira janela foi invalidada porque a configuração de status line mudou concorrentemente. Sem restaurar a escolha do usuário, o teste foi repetido a partir do novo baseline e comprovou configuração Codex e PATH persistente estáveis.
+- O teardown possui retry curto e limitado para a liberação assíncrona da fixture no Windows; profile e fixture são removidos e seus caminhos permanecem protegidos por validação e hash.
+
 ## Fontes oficiais OpenAI
 
 - [Config basics e precedência](https://learn.chatgpt.com/docs/config-file/config-basic)
