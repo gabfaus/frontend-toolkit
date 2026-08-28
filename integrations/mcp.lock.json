@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "resolvedAt": "2026-08-27",
+  "resolvedAt": "2026-08-28",
   "servers": [
     {
       "id": "shadcn",
@@ -25,7 +25,97 @@
     },
     {
       "id": "21st",
-      "status": "planned-ftk-03b"
+      "status": "validated-ftk-03b-awaiting-review",
+      "provider": "21st.dev",
+      "transport": "streamable-http",
+      "endpoint": "https://21st.dev/api/mcp",
+      "authentication": {
+        "mechanism": "bearer-token-env-var",
+        "envVar": "API_KEY_21ST",
+        "codexConfigKey": "bearer_token_env_var"
+      },
+      "upstream": "https://21st.dev",
+      "documentation": "https://docs.21st.dev/mcp",
+      "officialCodexPluginReference": "https://github.com/21st-dev/codex-plugin",
+      "validatedAt": "2026-08-28",
+      "validatedCodexVersion": "0.150.1",
+      "validatedRuntime": "node 24.20.0",
+      "observedProtocolVersion": "2025-06-18",
+      "observedServerInfo": {
+        "name": "21st",
+        "version": "0.1.0",
+        "note": "Observed server metadata, not a pinned package or immutable service version."
+      },
+      "endpointPin": "exact",
+      "configurationPin": {
+        "url": "https://21st.dev/api/mcp",
+        "bearerTokenEnvVar": "API_KEY_21ST"
+      },
+      "observedToolSurface": {
+        "observedAt": "2026-08-28",
+        "count": 35,
+        "discoveryReadOnly": [
+          "search",
+          "search_picker",
+          "get_inspiration",
+          "search_logo",
+          "list_bookmarks",
+          "list_bookmark_lists",
+          "get_bookmark_list",
+          "list_teams",
+          "list_team_libraries",
+          "list_team_lists",
+          "list_team_components"
+        ],
+        "retrieval": [
+          "get_component",
+          "get_theme",
+          "get_generation",
+          "get_take"
+        ],
+        "accountUsageReadOnly": [
+          "get_usage",
+          "get_profile"
+        ],
+        "generationMetered": [
+          "generate",
+          "iterate_generation"
+        ],
+        "mutationWrite": [
+          "record_inspiration_feedback",
+          "bookmark",
+          "create_bookmark_list",
+          "add_to_list",
+          "edit_component",
+          "submit_component",
+          "withdraw_component",
+          "resubmit_component",
+          "remove_component_from_catalog",
+          "delete_component",
+          "edit_theme",
+          "delete_theme",
+          "edit_template",
+          "delete_template",
+          "edit_profile",
+          "upload_profile_media"
+        ],
+        "driftWarning": "The remote tool surface can change independently of Frontend Toolkit Git history and must be revalidated."
+      },
+      "functionalValidation": {
+        "tool": "search",
+        "query": "dashboard",
+        "result": "results-returned",
+        "costClass": "free-metadata-search",
+        "mutating": false
+      },
+      "costAndSafety": {
+        "freeOperationsUsed": ["search"],
+        "meteredOperationsAvoided": ["get_component", "generate", "iterate_generation"],
+        "accountOperationsAvoided": ["get_usage", "get_profile"],
+        "writeOperationsUsed": [],
+        "notes": "Search metadata is free. Component code retrieval can consume daily quota; AI generation and iteration consume credits."
+      },
+      "updatePolicy": "Manual review only: revalidate endpoint, authentication schema, tool inventory, selected tool behavior, relevant prices/limits, and the official plugin upstream. No polling or automatic updates."
     }
   ],
   "inactiveCandidates": [

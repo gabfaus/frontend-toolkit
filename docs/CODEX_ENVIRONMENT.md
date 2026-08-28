@@ -101,6 +101,13 @@ O runtime Node empacotado internamente pelo Codex Desktop não foi usado como de
 - `search_items_in_registries` foi exposta e concluída em `codex exec`, retornando `button`; nenhum teste interativo foi necessário.
 - Node é resolvido pelo lock e adicionado somente ao PATH filho; `NODE_OPTIONS=--use-system-ca` fica no ambiente MCP e Python permanece explícito em `FTK_PYTHON_PATH`.
 
+## Resultado FTK-03B
+
+- A CLI estável `0.150.1` aceitou `url` + `bearer_token_env_var` em profile temporário e registrou o endpoint `https://21st.dev/api/mcp` sem gravar a chave.
+- O handshake direto negociou MCP `2025-06-18`, identificou `21st` `0.1.0` e observou 35 tools; o transporte não forneceu session id e foi encerrado como stateless.
+- `search("dashboard")` concluiu diretamente e via `codex exec`; a allowlist expôs somente `search`, Shadcn ficou desabilitado e MCPs herdados foram desabilitados apenas no processo efêmero.
+- Nenhuma tool paga, de conta, geração ou escrita foi chamada. Configuração persistente, PATH, Skills, checkouts e hooks permaneceram íntegros.
+
 ## Fontes oficiais OpenAI
 
 - [Config basics e precedência](https://learn.chatgpt.com/docs/config-file/config-basic)

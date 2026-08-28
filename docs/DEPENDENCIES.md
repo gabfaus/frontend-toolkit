@@ -8,7 +8,7 @@ Este arquivo começou como inventário da FTK-01. Na FTK-02A, Impeccable e img2t
 | img2threejs | Skill de reconstrução procedural Three.js | `img2threejs/img2threejs`, `v1.5.1`, commit `dede5909be4e494b228c801a55dda47439143932` | Apache-2.0 | Python 3.10+; validado com CPython 3.14.7 | nenhum declarado pelo upstream |
 | Shadcn MCP oficial | MCP de registry/componentes | pacote `shadcn@4.19.0`, projeto `shadcn-ui/ui` | MIT | Node.js >=20.18.1; validado via stdio com Node 24.20.0 | nenhum para o registry padrão |
 | Jpisnice Shadcn UI MCP Server | candidato comunitário de fallback, inativo na v1 | `Jpisnice/shadcn-ui-mcp-server` | não revalidada nesta etapa | não instalado nem executado | não avaliado |
-| 21st MCP | MCP remoto do serviço atual | `https://21st.dev/api/mcp` | serviço sujeito a termos; plugin Codex de referência é Apache-2.0 | HTTP MCP; acesso de rede | `API_KEY_21ST` |
+| 21st MCP oficial | catálogo remoto de componentes, temas e templates | endpoint `https://21st.dev/api/mcp`; plugin `21st-dev/codex-plugin` somente como referência | serviço sujeito a termos; plugin de referência Apache-2.0 | Streamable HTTP; 35 tools observadas em 2026-08-28; busca gratuita validada | bearer por `API_KEY_21ST` |
 
 ## Estratégia de aquisição
 
@@ -40,6 +40,7 @@ A matriz de compatibilidade MCP usa Codex CLI pública estável `0.150.1` e seu 
 - Arquivos `.env` e variantes estão ignorados; se um `.env.example` surgir no futuro, conterá placeholders não sensíveis.
 - Tokens serão criados e inseridos pelo usuário somente na etapa autorizada.
 - O registry padrão do MCP oficial Shadcn funcionou sem secret. Registries privados futuros deverão referenciar variáveis de ambiente, nunca valores no Git ou em argumentos.
+- O MCP 21st lê `API_KEY_21ST` somente do ambiente do processo. O valor não pertence ao Git, profile, documentação, logs ou argumentos CLI.
 
 ## Licenças e atribuições
 

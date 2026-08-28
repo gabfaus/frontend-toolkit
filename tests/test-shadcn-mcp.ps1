@@ -19,7 +19,8 @@ $shadcn = $lock.servers | Where-Object id -eq 'shadcn'
 if ($shadcn.status -ne 'active-v1' -or $shadcn.version -ne '4.19.0') { throw 'Unexpected Shadcn MCP pin.' }
 if ($shadcn.integrity -ne 'sha512-EQF6R+CUXTsEP2BpyhxrUEAFesrtFD1POvVOf5jM+wkgtA4kG1EW1+1Wlmi9LqiprSL681JJXBcS0u8WkVVVyQ==') { throw 'Unexpected Shadcn package integrity.' }
 if ($shadcn.processEnvironment.NODE_OPTIONS -ne '--use-system-ca') { throw 'Shadcn MCP system CA environment is not locked.' }
-if (($lock.servers | Where-Object id -eq '21st').status -ne 'planned-ftk-03b') { throw '21st must remain planned only.' }
+$twentyFirst = $lock.servers | Where-Object id -eq '21st'
+if ($twentyFirst.status -ne 'validated-ftk-03b-awaiting-review' -or $twentyFirst.transport -ne 'streamable-http') { throw '21st must remain a separately validated remote provider.' }
 if (($lock.inactiveCandidates | Where-Object id -eq 'jpisnice-shadcn-ui-mcp-server').status -ne 'candidate-fallback-not-active-in-v1') { throw 'Community candidate must remain inactive.' }
 if ($lock.prohibited -notcontains 'magic-mcp') { throw 'Magic MCP prohibition is missing.' }
 

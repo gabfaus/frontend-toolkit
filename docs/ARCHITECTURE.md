@@ -45,7 +45,7 @@ Ela não reimplementará Impeccable, img2threejs, Shadcn UI ou 21st.
 ### MCPs externos
 
 - **Shadcn MCP oficial:** ferramentas do registry oficial para descobrir e consultar componentes; o servidor Jpisnice permanece candidato de fallback inativo até comparação futura.
-- **21st MCP:** serviço remoto atual do 21st. O antigo Magic MCP e seu proxy de compatibilidade não farão parte do toolkit.
+- **21st MCP oficial:** endpoint remoto `https://21st.dev/api/mcp`, autenticado por bearer obtido de `API_KEY_21ST`. A primeira integração expõe somente busca; o antigo Magic MCP e seu proxy de compatibilidade não fazem parte do toolkit.
 
 ## Limites e confiança
 
