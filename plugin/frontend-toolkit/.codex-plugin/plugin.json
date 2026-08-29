@@ -1,7 +1,7 @@
 {
   "name": "frontend-toolkit",
-  "version": "0.1.0",
-  "description": "Route frontend work across bundled workflows and guarded Shadcn and 21st MCP integrations.",
+  "version": "1.0.0",
+  "description": "Route frontend, UX, component and image-to-3D work across three Skills and guarded Shadcn and 21st MCP integrations.",
   "author": {
     "name": "Gabriel"
   },
@@ -11,8 +11,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Frontend Toolkit",
-    "shortDescription": "Governed frontend routing and tools",
-    "longDescription": "Routes frontend, UX, component and image-to-3D work through the minimum necessary capability with explicit cost and mutation gates.",
+    "shortDescription": "Frontend, UX, components and image-to-3D",
+    "longDescription": "Coordinates frontend-orchestrator, Impeccable, img2threejs, Shadcn and 21st through the minimum necessary capability with explicit cost and mutation gates.",
     "developerName": "Gabriel",
     "category": "Developer Tools",
     "capabilities": ["Read", "Write"],

@@ -81,7 +81,7 @@ Criar a Skill própria que roteia tarefas e combina resultados sem duplicar capa
 
 ## FTK-05 — Testes e empacotamento
 
-Status: **READY FOR HUMAN CLOSURE REVIEW**. FTK-05A foi fechada no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba` e FTK-05B no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`. FTK-05C concluiu governança, Apache-2.0, validators, instalação autenticada isolada, smokes, lifecycle e teardown; permanece sem staging/commit/publicação.
+Status: **CLOSED** em 2026-08-29. FTK-05A foi fechada no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`, FTK-05B em `06f9b93ecec7c576837f5f9193ab250a34cb460a` e FTK-05C em `5ea184ac809ff8368c82c148a68af60aec5c5ebc`.
 
 ### Objetivo
 
@@ -104,7 +104,25 @@ Validar o conjunto e gerar um único plugin local instalável, sem publicar.
 - matriz de compatibilidade documentada;
 - revisão humana aprova licenças, permissões, secrets e distribuição.
 
-FTK-05C atendeu tecnicamente esses critérios em 2026-08-29. O fechamento formal depende de revisão humana e commit futuro específico; publicação open source não faz parte da FTK-05.
+FTK-05C atendeu tecnicamente esses critérios em 2026-08-29. A revisão humana aprovou o fechamento; a Frontend Toolkit V1 ficou tecnicamente concluída. Publicação open source não fez parte da FTK-05.
+
+## FTK-06 — Public Release Readiness
+
+Status: **CLOSED** após revisão humana em 2026-08-29. **Frontend Toolkit V1 — PUBLIC RELEASE READY.** Não há tag, release, publicação ou push.
+
+### Objetivo
+
+Tornar o repositório autoexplicativo para terceiros, produzir um candidato local `v1.0.0` determinístico e provar build/instalação a partir de uma cópia limpa do conteúdo versionável, sem alterar a arquitetura funcional da V1.
+
+### Critérios de saída
+
+- documentação pública cobre instalação, uso, atualização, remoção, segurança, contribuição e troubleshooting;
+- SemVer, changelog e checklist de release estão versionados;
+- auditorias de secrets, privacidade, paths pessoais e inventário Git passam;
+- clone/cópia limpa reconstrói os upstreams e gera o mesmo artifact hash;
+- instalação limpa descobre três Skills e dois MCPs, preserva cost gate e realiza teardown;
+- candidato local `v1.0.0` preserva licenças, notices e proveniência;
+- nenhuma tag, release, publicação, push ou snapshot no source é criado.
 
 ## Requisitos para iniciar FTK-02
 

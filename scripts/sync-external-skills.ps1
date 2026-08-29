@@ -27,8 +27,15 @@ function Resolve-RepoPath {
 function Invoke-Git {
     param([Parameter(Mandatory)][string[]]$Arguments)
 
-    $output = & git @Arguments 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $output = & git @Arguments 2>&1
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    if ($exitCode -ne 0) {
         throw "git $($Arguments -join ' ') failed:`n$($output -join [Environment]::NewLine)"
     }
     return $output
@@ -47,7 +54,7 @@ foreach ($dependency in $lock.dependencies) {
 
         $checkoutParent = Split-Path -Parent $checkoutPath
         New-Item -ItemType Directory -Path $checkoutParent -Force | Out-Null
-        Invoke-Git @('clone', '--depth', '1', '--branch', $dependency.ref, $dependency.upstream, $checkoutPath) | Out-Null
+        Invoke-Git @('clone', '--quiet', '--depth', '1', '--branch', $dependency.ref, $dependency.upstream, $checkoutPath) | Out-Null
     }
 
     $origin = (Invoke-Git @('-C', $checkoutPath, 'remote', 'get-url', 'origin') | Select-Object -First 1).Trim()

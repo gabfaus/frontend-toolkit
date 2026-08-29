@@ -1,47 +1,113 @@
 # Frontend Toolkit
 
-Fundação local e reutilizável para trabalhos de frontend, design, UX, componentes e 3D no Codex.
+Frontend Toolkit é um plugin open source para Codex que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-Status atual: **FTK-05B CLOSED** no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`; **FTK-05C READY FOR HUMAN REVIEW**. A V1 está tecnicamente pronta para fechamento, sem publicação, push ou commit da FTK-05C.
+O projeto está licenciado sob Apache-2.0. A V1 técnica está concluída; a primeira publicação pública pretendida é `v1.0.0`, ainda sem tag ou release.
 
-## Arquitetura-alvo
+## O que o plugin oferece
 
 ```text
 Frontend Toolkit
-├── frontend-orchestrator  # Skill própria repo-local V1
-├── impeccable             # Skill externa
-├── img2threejs             # Skill externa
-├── shadcn                  # MCP oficial pinado
-└── 21st                    # MCP remoto oficial
+├── frontend-orchestrator   roteamento, precedência e gates de segurança
+├── Impeccable              design, UX, crítica e refinamento visual
+├── img2threejs             imagem para modelo procedural Three.js
+├── Shadcn MCP              consulta ao registry oficial de componentes
+└── 21st MCP                inspiração e descoberta remota
 ```
 
-O toolkit é uma camada de composição. Os projetos externos continuam independentes, com origem, versão e licença rastreadas; o plugin de distribuição materializa snapshots imutáveis e determinísticos dos SHAs pinados, sem transformá-los em fonte de verdade.
+- **frontend-orchestrator:** escolhe a menor combinação de capacidades necessária e preserva a intenção explícita do usuário.
+- **Impeccable:** cobre composição, hierarquia, acessibilidade, responsividade e qualidade de interface.
+- **img2threejs:** transforma referências visuais em modelos Three.js construídos em código, com estado confinado ao projeto autorizado.
+- **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
+- **21st MCP:** serviço remoto em `https://21st.dev/api/mcp`, autenticado somente pela variável `API_KEY_21ST`.
 
-## Conteúdo desta fase
+Impeccable e img2threejs permanecem projetos upstream independentes. O repositório-fonte não contém suas cópias: o artefato de release gera snapshots imutáveis dos SHAs pinados, preserva licenças/proveniência e pode ser reproduzido deterministicamente.
 
-- `AGENTS.md`: limites permanentes de trabalho no repositório.
-- `docs/ARCHITECTURE.md`: arquitetura, responsabilidades e decisões.
-- `docs/CODEX_ENVIRONMENT.md`: mecanismos nativos e diagnóstico do ambiente atual.
-- `docs/DEPENDENCIES.md`: inventário, requisitos, atualização, secrets e licenças.
-- `docs/ROADMAP.md`: plano FTK-02 a FTK-05 e critérios de saída.
-- `docs/FTK-02A-SKILLS.md`: versões, vínculos, runtimes e resultados da integração de Skills.
-- `docs/FTK-02B-RUNTIMES.md`: toolchain pública, instalação isolada, smoke tests e limitações.
-- `docs/FTK-02C-ISOLATION.md`: resolução reproduzível e harness transacional para testes Codex.
-- `docs/FTK-03A-SHADCN-MCP.md`: decisão, pin, contrato e isolamento do MCP oficial.
-- `docs/FTK-03B-21ST-MCP.md`: endpoint, autenticação, superfície remota, custos e validação do 21st.
-- `docs/FTK-03C-MCP-COEXISTENCE.md`: discovery simultâneo, namespaces, consultas isoladas e uso sequencial dos dois MCPs.
-- `docs/FTK-04A-FRONTEND-ORCHESTRATOR.md`: política V1 de routing, custos, fallbacks, cenários e limites da Skill própria.
-- `docs/FTK-04B-FUNCTIONAL-ROUTING.md`: execução funcional dos dez cenários, separação capability/tool, confinamento e teardown.
-- `docs/FTK-05A-PLUGIN-PACKAGING.md`: formato oficial, estratégia de distribuição, manifests, segurança e riscos do plugin.
-- `docs/FTK-05B-CLEAN-INSTALLATION.md`: comparação empírica, instalação isolada, snapshots determinísticos e recomendação de distribuição.
-- `docs/FTK-05C-FINAL-HARDENING.md`: licença, validators oficiais, autenticação isolada, smokes instalados, lifecycle e teardown final.
-- `docs/adr/0001-composition-over-vendoring.md`: decisão arquitetural principal.
-- `integrations/`: lock reproduzível e documentação das fontes externas.
-- `scripts/`: sincronização fail-closed, geração determinística e smoke do plugin instalado.
-- `.agents/skills/frontend-orchestrator/`: Skill própria descoberta durante desenvolvimento repo-local.
-- `skills/`: orientação para a futura distribuição, sem cópias upstream.
-- `tests/`: validação estrutural, distribuição, validators oficiais, hardening e routing.
+## Política de custo e mutação do 21st
 
-## Próximo gate
+Somente `21st/search` é autorizado automaticamente. Geração, iteração, consumo de créditos ou quota, recuperação/cópia/instalação de código, publicação, edição, exclusão, bookmarks, listas, conta/perfil, qualquer mutation e qualquer tool nova ou de efeito incerto exigem autorização explícita.
 
-FTK-05A e FTK-05B estão formalmente fechadas. FTK-05C aguarda revisão humana; governança, Apache-2.0, atribuições, determinismo, instalação limpa, smokes, cost gate, update/reinstall e teardown passaram. A publicação open source será uma etapa futura separada.
+O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiais do 21st ou hooks. Quando suportado pelo ambiente, recomenda-se também limitar tecnicamente o MCP 21st a `search`; essa configuração do consumidor complementa, mas não substitui, a política semântica do orchestrator.
+
+## Requisitos
+
+- Windows x64 e PowerShell 5.1 ou posterior para os scripts versionados;
+- Git no `PATH` para construir a partir do source;
+- Codex CLI `0.150.1` (versão validada);
+- Node.js `24.20.0` (validado; Shadcn requer Node `>=20.18.1`);
+- CPython `3.14.7` (validado; img2threejs requer Python `>=3.10`);
+- acesso de rede para reconstruir upstreams, iniciar Shadcn e acessar o 21st;
+- `API_KEY_21ST` opcional e externa, necessária apenas para uso autenticado do 21st.
+
+As versões e hashes validados estão em `integrations/toolchain.lock.json`, `integrations/external.lock.json` e `integrations/mcp.lock.json`.
+
+## Instalação a partir do source
+
+Depois de clonar este repositório:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.0.0
+codex plugin marketplace add "$PWD\release-artifacts\v1.0.0"
+codex plugin add frontend-toolkit@frontend-toolkit-local
+```
+
+O primeiro comando baixa somente os refs pinados para `external/`. O segundo cria localmente uma marketplace com o plugin completo e os snapshots; `release-artifacts/` é ignorado pelo Git. O source continua sem snapshots.
+
+Veja [Instalação](docs/INSTALLATION.md) para validação, configuração de menor privilégio, instalação por artefato e autenticação isolada.
+
+## Configuração do 21st
+
+Forneça `API_KEY_21ST` externamente pelo ambiente ou por um gerenciador de secrets. Nunca grave o valor em `.mcp.json`, `config.toml`, scripts, logs ou no repositório. A ausência da variável não impede discovery das três Skills nem uso do Shadcn; apenas deixa o smoke autenticado do 21st indisponível.
+
+Para conferir somente a presença da variável, sem revelar seu conteúdo:
+
+```powershell
+Test-Path Env:API_KEY_21ST
+```
+
+## Uso
+
+Descreva a tarefa normalmente; não é necessário nomear uma ferramenta. Exemplos:
+
+- `Qual componente oficial você recomenda para abrir um formulário em um modal?`
+- `Revise a hierarquia visual e a acessibilidade desta tela.`
+- `Quero transformar esta imagem em um asset para usar com Three.js.`
+- `Procure inspiração para componentes de dashboard moderno.`
+
+Se uma ação do 21st puder consumir créditos, quota ou modificar estado, o plugin deve parar e pedir autorização antes da chamada.
+
+## Atualização e remoção
+
+Atualizações seguem SemVer e exigem regenerar o candidato a partir dos locks revisados. Durante desenvolvimento local, o cachebuster oficial mantém a versão base e acrescenta `+codex.YYYYMMDDHHMMSS`; ele não substitui a versão pública.
+
+```powershell
+codex plugin remove frontend-toolkit@frontend-toolkit-local --json
+codex plugin marketplace remove frontend-toolkit-local
+```
+
+Veja [Atualização](docs/UPDATING.md) para upgrade, rollback e mudanças de upstream.
+
+## Troubleshooting essencial
+
+- **Plugin não aparece:** confirme `codex plugin list`, a marketplace `frontend-toolkit-local` e abra uma nova sessão após instalar/atualizar.
+- **Shadcn não inicia:** confirme `node --version`, `npx --version`, rede e o pin `shadcn@4.19.0`.
+- **21st não autentica:** confirme apenas a presença de `API_KEY_21ST`; não imprima o valor.
+- **Build falha em upstream:** remova somente o checkout externo defeituoso, execute novamente a sincronização e confira SHA/licença contra o lock.
+- **Validator pede PyYAML:** `PyYAML==6.0.3` é dependência temporária do validator oficial, não do produto; use `tests/test-plugin-official-validation.ps1 -Execute`.
+
+## Segurança, contribuição e licenças
+
+- [Política de segurança](SECURITY.md)
+- [Guia de contribuição](CONTRIBUTING.md)
+- [Versionamento](docs/VERSIONING.md)
+- [Checklist de release](docs/RELEASE-CHECKLIST.md)
+- [Changelog](CHANGELOG.md)
+- [Apache License 2.0](LICENSE)
+- [Atribuições de terceiros](THIRD_PARTY_NOTICES.md)
+
+Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2threejs preservam Apache-2.0 upstream; Shadcn é MIT e resolvido em runtime; 21st é serviço remoto e nenhum código seu é incorporado.
+
+## Status
+
+FTK-06 está **CLOSED** após revisão humana em 2026-08-29. Frontend Toolkit V1 está **PUBLIC RELEASE READY** para `v1.0.0`; o projeto ainda não foi publicado, tagueado nem lançado.

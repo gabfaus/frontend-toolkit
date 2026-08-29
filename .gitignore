@@ -4,6 +4,9 @@
 !.env.example
 *.pem
 *.key
+auth.json
+config.toml
+profiles/
 
 # Local dependency/runtime artifacts
 node_modules/
@@ -13,6 +16,10 @@ dist/
 build/
 .cache/
 coverage/
+runtimes/
+fixtures/
+release-artifacts/
+*.log
 
 # External checkouts remain independent and are reproduced from the lock manifest
 vendor/
@@ -26,6 +33,7 @@ external/
 *.local.json
 *.local.toml
 .img2threejs/
+.codex/
 
 # OS and editors
 .DS_Store

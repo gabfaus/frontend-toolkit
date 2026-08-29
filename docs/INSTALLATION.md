@@ -1,0 +1,96 @@
+# Instalação pública
+
+## Escolha do formato
+
+A release pública deve entregar uma marketplace local contendo um único plugin. O repositório-fonte não versiona snapshots externos; `scripts/build-release-candidate.ps1` os gera dos SHAs pinados e cria o candidato instalável.
+
+O artefato contém:
+
+```text
+frontend-toolkit-v1.0.0/
+├── .agents/plugins/marketplace.json
+├── plugins/frontend-toolkit/
+│   ├── .codex-plugin/plugin.json
+│   ├── .mcp.json
+│   ├── skills/frontend-orchestrator/
+│   ├── skills/impeccable/
+│   ├── skills/img2threejs/
+│   ├── third_party/
+│   └── SNAPSHOT_PROVENANCE.json
+└── RELEASE_MANIFEST.json
+```
+
+## Requisitos
+
+Para instalar um artefato pronto: Codex CLI `0.150.1`, Node.js compatível com Shadcn e Python compatível com img2threejs. Para construir do source também são necessários Git, PowerShell e acesso aos upstreams registrados.
+
+Versões validadas:
+
+- Codex CLI `0.150.1`;
+- Node.js `24.20.0`;
+- CPython `3.14.7`;
+- Windows x64 e PowerShell 5.1+.
+
+## Construir do source
+
+Na raiz de um clone limpo:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.0.0
+```
+
+A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licenças. O builder falha se o destino existir, sobrepuser o source ou se qualquer checkout divergir do lock.
+
+## Instalar em uma ação
+
+```powershell
+codex plugin marketplace add "$PWD\release-artifacts\v1.0.0"
+codex plugin add frontend-toolkit@frontend-toolkit-local
+```
+
+Abra uma nova sessão do Codex depois da instalação. O plugin deve expor exatamente:
+
+- Skills: `frontend-orchestrator`, `impeccable:impeccable`, `img2threejs`;
+- MCPs: `shadcn`, `21st`.
+
+## Configurar autenticação e menor privilégio
+
+O Codex usa seu fluxo normal de autenticação ChatGPT. Em testes ou automação, use um `CODEX_HOME` isolado e autentique com o fluxo oficial; nunca copie `auth.json` ou tokens.
+
+`API_KEY_21ST` é opcional e deve vir do ambiente ou de um gerenciador de secrets. Não grave o valor em arquivos. Sem a variável, Skills e Shadcn continuam disponíveis.
+
+Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
+
+```toml
+[plugins."frontend-toolkit@frontend-toolkit-local".mcp_servers.shadcn]
+enabled = true
+enabled_tools = ["search_items_in_registries"]
+
+[plugins."frontend-toolkit@frontend-toolkit-local".mcp_servers."21st"]
+enabled = true
+enabled_tools = ["search"]
+```
+
+Essa barreira técnica é configuração do usuário e não pode ser imposta pelo manifesto distribuído. O orchestrator continua responsável pelo gate semântico.
+
+## Verificar a instalação
+
+```powershell
+codex plugin list
+```
+
+Em uma nova sessão, use os prompts de smoke documentados em `docs/RELEASE-CHECKLIST.md`. Não conceda autorização ao prompt de geração do cost gate.
+
+## Instalar um artefato publicado futuramente
+
+Baixe o artefato `v1.0.0`, valide seu SHA-256 contra a release e use a pasta extraída como marketplace no comando `codex plugin marketplace add`. A URL e o hash oficiais só devem ser documentados depois da publicação; não há artefato público nesta etapa.
+
+## Desinstalar
+
+```powershell
+codex plugin remove frontend-toolkit@frontend-toolkit-local --json
+codex plugin marketplace remove frontend-toolkit-local
+```
+
+Remova separadamente apenas o diretório de artefato que você criou. Não remova caches ou perfis que pertençam a outros plugins.

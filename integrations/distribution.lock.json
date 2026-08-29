@@ -5,7 +5,7 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "af07a70e4a25f649ca2bc18e281c9f162dd25212a6914e2911498ce6655d8695",
+  "observedSnapshotTreeSha256": "1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924",
   "snapshotPersistence": "ephemeral-only",
   "components": [
     {
@@ -30,5 +30,5 @@
     "pluginCreator": "source-and-distribution-pass",
     "skillCreator": "frontend-orchestrator-pass; external snapshots use canonical plugin validation because upstream frontmatter extensions are rejected by quick_validate.py"
   },
-  "notes": "Observed tree hash covers the source plugin, the project Apache-2.0 LICENSE and generated external snapshots. Regenerate and update this observation whenever packaging content changes."
+  "notes": "Observed v1.0.0 tree hash covers the source plugin, the project Apache-2.0 LICENSE and generated external snapshots. Regenerate and update this observation whenever packaging content changes."
 }

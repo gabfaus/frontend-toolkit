@@ -104,7 +104,8 @@ try {
     & $pythonPath $cachebusterHelper $marketplacePlugin | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Cachebuster update failed.' }
     $updatedVersion = (Get-Content -Raw -LiteralPath (Join-Path $marketplacePlugin '.codex-plugin/plugin.json') | ConvertFrom-Json).version
-    if ($updatedVersion -notmatch '^0\.1\.0\+codex\.[0-9]{14}$') { throw "Unexpected updated version: $updatedVersion" }
+    $baseVersion = [regex]::Escape((Get-Content -Raw -LiteralPath (Join-Path $snapshotOne '.codex-plugin/plugin.json') | ConvertFrom-Json).version)
+    if ($updatedVersion -notmatch "^$baseVersion\+codex\.[0-9]{14}$") { throw "Unexpected updated version: $updatedVersion" }
     $update = (& $script:CodexPath plugin add frontend-toolkit@ftk05b_fixture --json | ConvertFrom-Json)
     if ($LASTEXITCODE -ne 0 -or $update.version -ne $updatedVersion -or -not (Test-Path -LiteralPath $update.installedPath)) { throw 'Plugin update failed.' }
     $updatedPath = $update.installedPath

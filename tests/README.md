@@ -30,4 +30,6 @@ Na FTK-05B, `test-plugin-distribution.ps1` gera duas snapshots efêmeras por `sc
 
 Na FTK-05C, `test-plugin-official-validation.ps1` cria uma venv descartável com CPython 3.14.7 e `PyYAML==6.0.3`, executa o validator canônico no source e na distribuição, valida `frontend-orchestrator` com `quick_validate.py` e registra a incompatibilidade conhecida desse validator standalone com metadata upstream. `test-plugin-hardening.ps1` agrega licença, notices, locks, packaging, distribuição e contratos dos smokes.
 
+Na FTK-06, `test-public-release.ps1` valida documentação pública, SemVer, metadata, privacidade, secrets, ausência de snapshots no source e, com `-Execute`, gera dois candidatos independentes, compara árvore/hash e remove integralmente a fixture.
+
 `scripts/invoke-installed-plugin-smoke.ps1` requer um `CODEX_HOME` autenticado oficialmente sob `%TEMP%`; nunca cria ou copia autenticação. Ele executa novas sessões para orchestrator, Shadcn read-only, 21st/search quando a variável externa está disponível, img2threejs confinado e cost gate sem MCP. Instalação, remoção, reinstalação e cachebuster continuam cobertos por `test-plugin-distribution.ps1`; o ensaio autenticado FTK-05C repetiu esse lifecycle na fixture completa.

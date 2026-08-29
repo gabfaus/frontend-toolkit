@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "candidateVersion": "1.0.0",
+  "builder": "scripts/build-release-candidate.ps1",
+  "marketplaceName": "frontend-toolkit-local",
+  "sourceSnapshots": "ephemeral-only",
+  "artifactSnapshots": "generated-from-pinned-upstreams",
+  "observedPluginTreeSha256": "1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924",
+  "publicationStatus": "not-published",
+  "tagStatus": "not-created",
+  "releaseStatus": "not-created"
+}

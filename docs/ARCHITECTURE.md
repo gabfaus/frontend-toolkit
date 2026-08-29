@@ -73,9 +73,15 @@ plugin/frontend-toolkit/
 
 O formato oficial não documenta dependências entre plugins ou Skills. A FTK-05B provou que pré-requisitos separados não atendem à instalação única e que snapshots gerados dos SHAs bloqueados atendem. A FTK-05C adotou definitivamente essa arquitetura: checkouts como fonte de verdade, artefato fora da árvore versionada, hash agregado, LICENSE/NOTICE/proveniência e nenhuma edição manual. `AGENTS.md` contém a exceção estreita e o código próprio usa Apache-2.0.
 
-O artefato gerado acrescenta `LICENSE`, `SNAPSHOT_PROVENANCE.json`, `skills/impeccable`, `skills/img2threejs` e `third_party/impeccable/{LICENSE,NOTICE.md}`. A árvore observada é `af07a70e4a25f649ca2bc18e281c9f162dd25212a6914e2911498ce6655d8695`.
+O artefato gerado acrescenta `LICENSE`, `SNAPSHOT_PROVENANCE.json`, `skills/impeccable`, `skills/img2threejs` e `third_party/impeccable/{LICENSE,NOTICE.md}`. O candidato `v1.0.0` tem árvore observada `1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924`.
 
 O schema oficial permite política MCP plugin-scoped em config do consumidor, inclusive `enabled_tools`, mas não no manifesto distribuído. A fixture FTK-05C restringiu Shadcn à consulta de registry e 21st a `search`; o orchestrator continua sendo a barreira semântica obrigatória porque o pacote não pode impor preferências de usuário.
+
+## Distribuição pública FTK-06
+
+O repositório público permanece source-only. `scripts/build-release-candidate.ps1` compõe uma marketplace local determinística ao redor do snapshot, registra a árvore completa e o hash do plugin em `RELEASE_MANIFEST.json` e não adiciona timestamps. O artefato de release — não a árvore-fonte — contém os dois snapshots externos.
+
+SemVer governa a versão pública em `plugin.json`; metadata `+codex.<timestamp>` serve apenas ao cache local. O lock `integrations/release.lock.json` registra a versão candidata, o hash observado e os estados fail-closed de tag/publicação/release.
 
 Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
 

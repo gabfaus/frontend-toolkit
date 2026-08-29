@@ -1,6 +1,6 @@
 # FTK-05C — Final Plugin Hardening
 
-Status: **READY FOR HUMAN REVIEW** em 2026-08-29. FTK-05B foi fechada antes desta etapa no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`. FTK-05C não foi staged, commitada, publicada ou enviada por push.
+Status: **CLOSED** em 2026-08-29 no commit `5ea184ac809ff8368c82c148a68af60aec5c5ebc`. Nenhum artefato foi publicado e nenhum push foi feito.
 
 ## Resultado
 
@@ -121,4 +121,4 @@ O teardown removeu o `CODEX_HOME`, `auth.json`, marketplace, snapshot, caches of
 
 ## Conclusão técnica
 
-Todos os critérios funcionais da FTK-05 foram atendidos. A FTK-05 está **pronta para fechamento**, condicionada somente à revisão humana e ao futuro commit autorizado da FTK-05C. Publicação, tag, release, push e marketplace público permanecem fora de escopo.
+Todos os critérios funcionais da FTK-05 foram atendidos. A revisão humana aprovou FTK-05C e a FTK-05 foi formalmente fechada. Publicação, tag, release, push e marketplace público permaneceram fora de escopo.
