@@ -1,6 +1,6 @@
 # FTK-05A — Plugin Packaging
 
-Status: **READY FOR HUMAN REVIEW** em 2026-08-29. Nenhum plugin foi instalado, publicado ou commitado nesta etapa.
+Status: **CLOSED** em 2026-08-29 no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`.
 
 ## Contrato oficial verificado
 

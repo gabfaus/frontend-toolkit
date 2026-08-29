@@ -81,7 +81,7 @@ Criar a Skill própria que roteia tarefas e combina resultados sem duplicar capa
 
 ## FTK-05 — Testes e empacotamento
 
-Status: **IN PROGRESS**. FTK-05A está **READY FOR HUMAN REVIEW** em 2026-08-29, sem instalação, publicação, staging ou commit. O plugin-fonte contém orchestrator e MCPs; as Skills externas permanecem pré-requisitos pinados porque o schema oficial não oferece dependências transitivas e o repositório proíbe copiar upstreams nesta etapa.
+Status: **IN PROGRESS**. FTK-05A foi fechada no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`. FTK-05B está **READY FOR HUMAN REVIEW**: snapshots gerados venceram empiricamente a estratégia de pré-requisitos para instalação única, mas a exceção de governança e a licença do código próprio permanecem bloqueios de fechamento.
 
 ### Objetivo
 

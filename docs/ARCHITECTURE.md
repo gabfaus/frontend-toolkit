@@ -71,7 +71,7 @@ plugin/frontend-toolkit/
 └── THIRD_PARTY_NOTICES.md
 ```
 
-O formato oficial não documenta dependências entre plugins ou Skills. Por isso, a FTK-05A empacota a Skill própria e declara Impeccable/img2threejs como pré-requisitos externos pinados. Isso evita duplicação e respeita a proibição de copiar upstreams, mas posterga instalação limpa/offline para uma decisão da FTK-05B.
+O formato oficial não documenta dependências entre plugins ou Skills. A FTK-05B provou que pré-requisitos separados não atendem à instalação única e que snapshots gerados dos SHAs bloqueados atendem. A arquitetura recomendada mantém os checkouts como fonte de verdade e gera o artefato fora da árvore versionada, com hashes e licenças validados, sem edição manual. Sua adoção definitiva depende de exceção explícita em `AGENTS.md` e decisão de licença própria.
 
 Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
 

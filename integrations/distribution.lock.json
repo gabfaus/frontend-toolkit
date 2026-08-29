@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "validatedAt": "2026-08-29",
+  "strategy": "generated-distribution-snapshots",
+  "sourcePlugin": "plugin/frontend-toolkit",
+  "generator": "scripts/build-plugin-snapshot.ps1",
+  "externalLock": "integrations/external.lock.json",
+  "observedSnapshotTreeSha256": "95b00da184ce918ac8ff2bab7ffc6df913f08359edc159545bad1b0ec2b975ab",
+  "snapshotPersistence": "ephemeral-only",
+  "components": [
+    {
+      "id": "impeccable",
+      "sourceSelection": ["LICENSE", "plugin/skills/impeccable"],
+      "distributionSkillPath": "skills/impeccable",
+      "distributionLicensePath": "third_party/impeccable/LICENSE"
+    },
+    {
+      "id": "img2threejs",
+      "sourceSelection": ["repository-tree"],
+      "distributionSkillPath": "skills/img2threejs",
+      "distributionLicensePath": "skills/img2threejs/LICENSE"
+    }
+  ],
+  "hooksEnabled": false,
+  "twentyFirstAutomaticTools": ["search"],
+  "notes": "Observed tree hash covers the FTK-05A source plugin plus generated external snapshots. Regenerate and update this observation whenever the source plugin changes."
+}

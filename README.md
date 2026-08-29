@@ -2,7 +2,7 @@
 
 Fundação local e reutilizável para trabalhos de frontend, design, UX, componentes e 3D no Codex.
 
-Status atual: **FTK-04 CLOSED** no commit `34990919abac4bf07bae7b61dded0b57e8ae26b7`; **FTK-05A READY FOR HUMAN REVIEW**. O packaging fonte foi criado sem instalação, publicação, staging ou commit.
+Status atual: **FTK-05A CLOSED** no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`; **FTK-05B READY FOR HUMAN REVIEW**. A instalação limpa favoreceu snapshots externos gerados, ainda condicionados a decisão de governança e licença.
 
 ## Arquitetura-alvo
 
@@ -33,6 +33,7 @@ O toolkit será uma camada de composição. Os projetos externos continuarão in
 - `docs/FTK-04A-FRONTEND-ORCHESTRATOR.md`: política V1 de routing, custos, fallbacks, cenários e limites da Skill própria.
 - `docs/FTK-04B-FUNCTIONAL-ROUTING.md`: execução funcional dos dez cenários, separação capability/tool, confinamento e teardown.
 - `docs/FTK-05A-PLUGIN-PACKAGING.md`: formato oficial, estratégia de distribuição, manifests, segurança e riscos do plugin.
+- `docs/FTK-05B-CLEAN-INSTALLATION.md`: comparação empírica, instalação isolada, snapshots determinísticos e recomendação de distribuição.
 - `docs/adr/0001-composition-over-vendoring.md`: decisão arquitetural principal.
 - `integrations/`: lock reproduzível e documentação das fontes externas.
 - `scripts/`: sincronização fail-closed dos checkouts e junctions.
@@ -42,4 +43,4 @@ O toolkit será uma camada de composição. Os projetos externos continuarão in
 
 ## Próximo gate
 
-A FTK-04 está formalmente CLOSED. A FTK-05A aguarda revisão humana; FTK-05B permanece não autorizada.
+A FTK-05A está formalmente CLOSED. A FTK-05B aguarda revisão humana; FTK-05 ainda não pode fechar enquanto governança de snapshots e licença própria permanecerem abertas.

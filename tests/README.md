@@ -25,3 +25,5 @@ Na FTK-04A, `test-frontend-orchestrator.ps1` valida frontmatter, referências ac
 Na FTK-04B, `scripts/invoke-frontend-routing-test.ps1` separa `FTK_ROUTE` (capability) da evidência MCP (tool concreta). Os dez cenários passaram; o cenário 10 usa imagem sintética, estado limitado a `.img2threejs/`, guard de checkouts e teardown completo, com zero operação 21st paga/mutável.
 
 Na FTK-05A, `test-plugin-packaging.ps1` valida o manifesto do plugin, a Skill própria empacotada, os MCPs pinados, a referência secreta somente por `API_KEY_21ST`, a ausência de hooks/Magic/Jpisnice e o lock dos dois pré-requisitos externos. Não instala nem inicializa o plugin.
+
+Na FTK-05B, `test-plugin-distribution.ps1` gera duas snapshots efêmeras por `scripts/build-plugin-snapshot.ps1`, compara o hash agregado, instala por marketplace repo-local em `CODEX_HOME` temporário, valida três Skills e dois MCPs no cache, atualiza por cachebuster, remove, reinstala e confirma teardown/config/PATH/checkouts. Nenhum MCP é iniciado.
