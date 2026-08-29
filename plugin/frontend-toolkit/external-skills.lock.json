@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "strategy": "external-prerequisites",
+  "dependencies": [
+    {
+      "id": "impeccable",
+      "requiredSkillName": "impeccable:impeccable",
+      "upstream": "https://github.com/pbakaus/impeccable.git",
+      "ref": "skill-v4.1.2",
+      "commitSha": "63b04e2530f5c7b41ea83c133daab24f34912456",
+      "license": "Apache-2.0",
+      "bundled": false
+    },
+    {
+      "id": "img2threejs",
+      "requiredSkillName": "img2threejs",
+      "upstream": "https://github.com/img2threejs/img2threejs.git",
+      "ref": "v1.5.1",
+      "commitSha": "dede5909be4e494b228c801a55dda47439143932",
+      "license": "Apache-2.0",
+      "bundled": false
+    }
+  ]
+}

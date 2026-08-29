@@ -56,23 +56,22 @@ A V1 aplica o princípio de menor capacidade: intenção explícita do usuário 
 - Hooks executam automaticamente em eventos do Codex e, por isso, são opcionais, revisados e habilitados apenas no projeto confiável.
 - A configuração de desenvolvimento deve ser local ao repositório. Instalação de usuário será um artefato explícito da FTK-05, nunca um efeito colateral das etapas de integração ou routing.
 
-## Empacotamento futuro
+## Empacotamento FTK-05A
 
 O formato nativo atual de plugin exige `.codex-plugin/plugin.json` e permite, na raiz do plugin, `skills/`, `hooks/`, `.mcp.json`, `.app.json` e `assets/`. A FTK-05 deverá gerar essa camada a partir dos adaptadores validados.
 
-Estrutura de distribuição prevista, ainda não criada:
+Estrutura fonte criada em `plugin/frontend-toolkit/`:
 
 ```text
-frontend-toolkit-plugin/
+plugin/frontend-toolkit/
 ├── .codex-plugin/plugin.json
 ├── skills/
-├── hooks/hooks.json          # somente se aprovado
 ├── .mcp.json
-├── assets/
+├── external-skills.lock.json
 └── THIRD_PARTY_NOTICES.md
 ```
 
-O pacote não deve duplicar Skills que já sejam instaladas por outro plugin nem incorporar repositórios completos quando um endpoint ou skill versionada for suficiente.
+O formato oficial não documenta dependências entre plugins ou Skills. Por isso, a FTK-05A empacota a Skill própria e declara Impeccable/img2threejs como pré-requisitos externos pinados. Isso evita duplicação e respeita a proibição de copiar upstreams, mas posterga instalação limpa/offline para uma decisão da FTK-05B.
 
 Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
 

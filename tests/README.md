@@ -23,3 +23,5 @@ Na FTK-03C, `test-mcp-coexistence.ps1` mantém os mesmos modos de credential gat
 
 Na FTK-04A, `test-frontend-orchestrator.ps1` valida frontmatter, referências acessíveis, política JSON das quatro capabilities, allowlist 21st, gates de autorização, fallbacks e a matriz JSON de dez cenários. O teste usa Codex CLI estável 0.150.1 apenas para discovery conjunto das três Skills; não executa routing autônomo nem chama MCP.
 Na FTK-04B, `scripts/invoke-frontend-routing-test.ps1` separa `FTK_ROUTE` (capability) da evidência MCP (tool concreta). Os dez cenários passaram; o cenário 10 usa imagem sintética, estado limitado a `.img2threejs/`, guard de checkouts e teardown completo, com zero operação 21st paga/mutável.
+
+Na FTK-05A, `test-plugin-packaging.ps1` valida o manifesto do plugin, a Skill própria empacotada, os MCPs pinados, a referência secreta somente por `API_KEY_21ST`, a ausência de hooks/Magic/Jpisnice e o lock dos dois pré-requisitos externos. Não instala nem inicializa o plugin.

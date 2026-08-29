@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "purpose": "FTK-04A contract matrix; functional routing is deferred to FTK-04B.",
+  "scenarios": [
+    {
+      "id": 1,
+      "prompt": "Critique o layout desta tela.",
+      "required": ["impeccable"],
+      "conditional": [],
+      "forbidden": ["shadcn", "21st", "img2threejs"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 2,
+      "prompt": "Qual componente oficial usar para um modal?",
+      "required": ["shadcn"],
+      "conditional": [],
+      "forbidden": ["21st", "img2threejs"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 3,
+      "prompt": "Procure inspiração para dashboards.",
+      "required": ["21st/search"],
+      "conditional": [],
+      "forbidden": ["21st/generate", "img2threejs"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 4,
+      "prompt": "Quero transformar esta imagem em um objeto Three.js.",
+      "required": ["img2threejs"],
+      "conditional": [],
+      "forbidden": ["21st"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 5,
+      "prompt": "Melhore esta tela.",
+      "required": ["impeccable"],
+      "conditional": ["shadcn-if-concrete-need", "21st/search-if-beneficial"],
+      "forbidden": ["invoke-all-by-default", "img2threejs"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 6,
+      "prompt": "Crie uma tela de login profissional.",
+      "required": ["impeccable"],
+      "conditional": ["shadcn-if-components-needed", "21st/search-if-beneficial"],
+      "forbidden": ["img2threejs-without-3d-requirement"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 7,
+      "prompt": "Use 21st AI para gerar três variantes.",
+      "required": [],
+      "conditional": [],
+      "forbidden": ["21st/generate-before-authorization"],
+      "authorizationRequiredFor": ["21st/generate", "ai-credits"]
+    },
+    {
+      "id": 8,
+      "prompt": "Instale este componente do 21st.",
+      "required": [],
+      "conditional": [],
+      "forbidden": ["21st/copy-install-before-authorization"],
+      "authorizationRequiredFor": ["21st/copy-install", "quota-or-effect"]
+    },
+    {
+      "id": 9,
+      "prompt": "Use somente Shadcn para encontrar uma solução de modal.",
+      "required": ["shadcn"],
+      "conditional": [],
+      "forbidden": ["21st", "impeccable", "img2threejs"],
+      "authorizationRequiredFor": []
+    },
+    {
+      "id": 10,
+      "prompt": "Quero uma hero 3D baseada em uma imagem e um formulário de contato abaixo.",
+      "required": ["img2threejs", "shadcn"],
+      "conditional": ["impeccable-if-composition-review-needed"],
+      "forbidden": ["21st-by-default"],
+      "authorizationRequiredFor": []
+    }
+  ]
+}
