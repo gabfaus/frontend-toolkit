@@ -57,7 +57,7 @@ Integrar Shadcn UI e 21st com secrets externos ao Git e política mínima de fer
 
 ## FTK-04 — Frontend Orchestrator
 
-Status: FTK-04A funcional e pronta para revisão de fechamento, sem staging ou commit. A V1 repo-local contém política canônica, gates 21st, fallbacks e dez cenários; execução funcional autônoma permanece para FTK-04B.
+Status: **CLOSED** em 2026-08-29. FTK-04A foi fechada em `03d0676317594c0c2623c1ed40f9abcebd384528`; os dez cenários FTK-04B foram aprovados com zero operação 21st paga/mutável, estado 3D confinado e teardown completo.
 
 ### Objetivo
 

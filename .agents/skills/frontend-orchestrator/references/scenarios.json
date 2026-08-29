@@ -68,7 +68,7 @@
     },
     {
       "id": 9,
-      "prompt": "Use somente Shadcn.",
+      "prompt": "Use somente Shadcn para encontrar uma solução de modal.",
       "required": ["shadcn"],
       "conditional": [],
       "forbidden": ["21st", "impeccable", "img2threejs"],
@@ -76,7 +76,7 @@
     },
     {
       "id": 10,
-      "prompt": "Crie hero 3D e formulário.",
+      "prompt": "Quero uma hero 3D baseada em uma imagem e um formulário de contato abaixo.",
       "required": ["img2threejs", "shadcn"],
       "conditional": ["impeccable-if-composition-review-needed"],
       "forbidden": ["21st-by-default"],

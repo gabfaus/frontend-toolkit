@@ -2,7 +2,7 @@
 
 Fundação local e reutilizável para trabalhos de frontend, design, UX, componentes e 3D no Codex.
 
-Status atual: **FTK-04A — funcional e pronta para revisão de fechamento**. FTK-03 foi encerrada com a coexistência commitada em `07f2a38abddf83f3659f5b6604c8a06b24033ee8`. A primeira versão repo-local da Skill `frontend-orchestrator` define routing, fallbacks e gates de custo sem executar routing autônomo amplo.
+Status atual: **FTK-04 CLOSED** em 2026-08-29. A FTK-04A foi fechada em `03d0676317594c0c2623c1ed40f9abcebd384528`; os dez cenários funcionais da FTK-04B foram aprovados sem operação 21st paga/mutável ou estado persistente.
 
 ## Arquitetura-alvo
 
@@ -31,6 +31,7 @@ O toolkit será uma camada de composição. Os projetos externos continuarão in
 - `docs/FTK-03B-21ST-MCP.md`: endpoint, autenticação, superfície remota, custos e validação do 21st.
 - `docs/FTK-03C-MCP-COEXISTENCE.md`: discovery simultâneo, namespaces, consultas isoladas e uso sequencial dos dois MCPs.
 - `docs/FTK-04A-FRONTEND-ORCHESTRATOR.md`: política V1 de routing, custos, fallbacks, cenários e limites da Skill própria.
+- `docs/FTK-04B-FUNCTIONAL-ROUTING.md`: execução funcional dos dez cenários, separação capability/tool, confinamento e teardown.
 - `docs/adr/0001-composition-over-vendoring.md`: decisão arquitetural principal.
 - `integrations/`: lock reproduzível e documentação das fontes externas.
 - `scripts/`: sincronização fail-closed dos checkouts e junctions.
@@ -40,4 +41,4 @@ O toolkit será uma camada de composição. Os projetos externos continuarão in
 
 ## Próximo gate
 
-A FTK-04A aguarda revisão humana para fechamento. Suas mudanças não estão staged nem commitadas; não iniciar FTK-04B, executar a matriz funcional, empacotar ou criar plugin sem autorização específica.
+A FTK-04 está formalmente CLOSED. FTK-05A é um gate separado; nenhum artefato FTK-05 pertence ao commit de fechamento da FTK-04.

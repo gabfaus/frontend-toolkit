@@ -1,6 +1,6 @@
 # FTK-04A — frontend-orchestrator V1
 
-Status: **funcional e pronta para revisão de fechamento** em 2026-08-28. As mudanças desta etapa não estão staged nem commitadas.
+Status: **CLOSED** no commit `03d0676317594c0c2623c1ed40f9abcebd384528`.
 
 ## Objetivo
 
@@ -84,8 +84,8 @@ Substituição só ocorre quando a alternativa é realmente equivalente e segura
 6. login profissional → Impeccable e Shadcn quando necessário; 21st opcional;
 7. gerar variantes com 21st AI → gate de AI credits;
 8. instalar componente 21st → gate de quota/efeito;
-9. somente Shadcn → excluir 21st;
-10. hero 3D e formulário → img2threejs + Shadcn, Impeccable condicional.
+9. modal somente Shadcn → consulta oficial sem outras capabilities;
+10. hero 3D baseada em imagem e formulário de contato → img2threejs + Shadcn, Impeccable condicional.
 
 A matriz é contrato estático nesta fase. Execução funcional, avaliação de decisões do agente e correções comportamentais pertencem à FTK-04B.
 
@@ -125,6 +125,6 @@ Não houve colisão de nome, alteração de `~/.codex/config.toml`, PATH persist
 - A duplicação parcial dos harnesses MCP permanece dívida para FTK-04/05; não foi refatorada.
 - Packaging, manifesto, dependências declarativas e instalação pertencem à FTK-05.
 
-## Próximo gate recomendado
+## Gate subsequente executado
 
-FTK-04B deve executar a matriz em fixtures sintéticas e sem mutação, observando decisões reais do agente. Começar pelos casos de capability única e intenção explícita; depois testar combinações e gates 21st sem executar operações pagas. Qualquer teste de geração/copy deve parar antes da chamada e comprovar o pedido de autorização.
+A FTK-04B executou e aprovou a matriz em fixtures sintéticas, com estado 3D efêmero confinado, gates 21st sem operações pagas/mutáveis e teardown completo.

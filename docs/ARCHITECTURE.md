@@ -37,7 +37,7 @@ Skill própria repo-local criada na FTK-04A para:
 
 Ela não reimplementará Impeccable, img2threejs, Shadcn UI ou 21st.
 
-A V1 aplica o princípio de menor capacidade: intenção explícita do usuário primeiro, depois a capability principal, e combinações somente para necessidades distintas. Shadcn tem prioridade para componentes oficiais; 21st serve a inspiração/discovery e expõe apenas busca gratuita/read-only por padrão; img2threejs só entra em trabalho 3D explícito ou claramente implícito. Routing autônomo funcional da matriz pertence à FTK-04B.
+A V1 aplica o princípio de menor capacidade: intenção explícita do usuário primeiro, depois a capability principal, e combinações somente para necessidades distintas. Shadcn tem prioridade para componentes oficiais; 21st serve a inspiração/discovery e expõe apenas busca gratuita/read-only por padrão; img2threejs só entra em trabalho 3D explícito ou claramente implícito. O routing autônomo da matriz foi validado funcionalmente na FTK-04B.
 
 ### Skills externas
 
