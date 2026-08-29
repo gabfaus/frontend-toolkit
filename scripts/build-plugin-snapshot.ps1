@@ -33,6 +33,7 @@ $stageRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk05b-stage-' + [guid]::New
 try {
     New-Item -ItemType Directory -Path (Split-Path $destinationPath), $stageRoot -Force | Out-Null
     Copy-Item -LiteralPath $pluginSource -Destination $destinationPath -Recurse
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $destinationPath 'LICENSE')
 
     $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'
     $img2threejs = $externalLock.dependencies | Where-Object id -eq 'img2threejs'
@@ -51,7 +52,7 @@ try {
     $img2threejsCheckout = (Resolve-Path (Join-Path $repoRoot $img2threejs.checkoutPath)).Path
     $impeccableTar = Join-Path $stageRoot 'impeccable.tar'
     $img2threejsTar = Join-Path $stageRoot 'img2threejs.tar'
-    & git -c "safe.directory=$($impeccableCheckout.Replace('\','/'))" -C $impeccableCheckout archive --format=tar --output=$impeccableTar $impeccable.commitSha -- LICENSE plugin/skills/impeccable
+    & git -c "safe.directory=$($impeccableCheckout.Replace('\','/'))" -C $impeccableCheckout archive --format=tar --output=$impeccableTar $impeccable.commitSha -- LICENSE NOTICE.md plugin/skills/impeccable
     Assert-NativeSuccess 'Impeccable archive'
     & git -c "safe.directory=$($img2threejsCheckout.Replace('\','/'))" -C $img2threejsCheckout archive --format=tar --output=$img2threejsTar --prefix=img2threejs/ $img2threejs.commitSha
     Assert-NativeSuccess 'img2threejs archive'
@@ -67,11 +68,14 @@ try {
     Copy-Item -LiteralPath (Join-Path $impeccableExtract 'plugin/skills/impeccable') -Destination (Join-Path $destinationPath 'skills/impeccable') -Recurse
     New-Item -ItemType Directory -Path (Join-Path $destinationPath 'third_party/impeccable') | Out-Null
     Copy-Item -LiteralPath (Join-Path $impeccableExtract 'LICENSE') -Destination (Join-Path $destinationPath 'third_party/impeccable/LICENSE')
+    Copy-Item -LiteralPath (Join-Path $impeccableExtract 'NOTICE.md') -Destination (Join-Path $destinationPath 'third_party/impeccable/NOTICE.md')
     Copy-Item -LiteralPath (Join-Path $img2threejsExtract 'img2threejs') -Destination (Join-Path $destinationPath 'skills/img2threejs') -Recurse
 
     $impeccableLicenseHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $destinationPath 'third_party/impeccable/LICENSE')).Hash.ToLowerInvariant()
+    $impeccableNoticeHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $destinationPath 'third_party/impeccable/NOTICE.md')).Hash.ToLowerInvariant()
     $img2threejsLicenseHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $destinationPath 'skills/img2threejs/LICENSE')).Hash.ToLowerInvariant()
     if ($impeccableLicenseHash -ne $impeccable.licenseSha256) { throw 'Impeccable license hash mismatch.' }
+    if ($impeccableNoticeHash -ne $impeccable.noticeSha256) { throw 'Impeccable NOTICE hash mismatch.' }
     if ($img2threejsLicenseHash -ne $img2threejs.licenseSha256) { throw 'img2threejs license hash mismatch.' }
 
     $artifactLockPath = Join-Path $destinationPath 'external-skills.lock.json'
@@ -84,16 +88,11 @@ try {
         schemaVersion = 1
         generator = 'scripts/build-plugin-snapshot.ps1'
         dependencies = @(
-            [ordered]@{ id = 'impeccable'; commitSha = $impeccable.commitSha; skillPath = 'skills/impeccable'; license = 'Apache-2.0'; licenseSha256 = $impeccable.licenseSha256 },
+            [ordered]@{ id = 'impeccable'; commitSha = $impeccable.commitSha; skillPath = 'skills/impeccable'; license = 'Apache-2.0'; licenseSha256 = $impeccable.licenseSha256; noticeSha256 = $impeccable.noticeSha256 },
             [ordered]@{ id = 'img2threejs'; commitSha = $img2threejs.commitSha; skillPath = 'skills/img2threejs'; license = 'Apache-2.0'; licenseSha256 = $img2threejs.licenseSha256 }
         )
     }
     [IO.File]::WriteAllText((Join-Path $destinationPath 'SNAPSHOT_PROVENANCE.json'), (($provenance | ConvertTo-Json -Depth 10) + "`n"), (New-Object Text.UTF8Encoding($false)))
-    $noticePath = Join-Path $destinationPath 'THIRD_PARTY_NOTICES.md'
-    $notice = [IO.File]::ReadAllText($noticePath)
-    $notice = $notice.Replace('The FTK-05A source package does not copy third-party Skill source code.', 'This generated distribution artifact contains unmodified Skill snapshots materialized from the locked upstream commits. The source package does not treat these snapshots as source of truth.')
-    [IO.File]::WriteAllText($noticePath, $notice, (New-Object Text.UTF8Encoding($false)))
-
     Write-Output ([pscustomobject]@{
         Destination = $destinationPath
         Skills = 'frontend-orchestrator,impeccable,img2threejs'

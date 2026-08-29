@@ -13,6 +13,8 @@
       "license": "Apache-2.0",
       "licenseFile": "external/impeccable/LICENSE",
       "licenseSha256": "fc0673369dae07c045c46869d3d4c9113678c77fcc7d3b4e3a39ac074cfa68b6",
+      "noticeFile": "external/impeccable/NOTICE.md",
+      "noticeSha256": "9bc6cf69fa566aaaf6fa5cf40397597eab8b39f497de61728da7bcf0930db207",
       "checkoutPath": "external/impeccable",
       "skillSourcePath": "external/impeccable/plugin/skills/impeccable",
       "skillEntrySha256": "24beebe50add5e77f76e921155b42da8c75db339284fbe460f33c585aadaa7cc",

@@ -42,13 +42,13 @@ A escolha é deliberadamente conservadora. Ela preserva o contrato do repositór
 
 ## Licenças e atribuições
 
-Impeccable 4.1.2 e img2threejs 1.5.1 são pré-requisitos Apache-2.0 pinados pelos commits registrados em `external-skills.lock.json`. Shadcn 4.19.0 é MIT. O serviço remoto 21st não tem código incorporado. O código próprio permanece `UNLICENSED` até decisão humana de licença; isso bloqueia publicação, mas não o teste local futuro.
+Impeccable 4.1.2 e img2threejs 1.5.1 são pré-requisitos Apache-2.0 pinados pelos commits registrados em `external-skills.lock.json`. Shadcn 4.19.0 é MIT. O serviço remoto 21st não tem código incorporado. Na FTK-05A o código próprio permaneceu `UNLICENSED`; a decisão posterior aprovada na FTK-05C adotou Apache-2.0 e preservou separadamente licenças e notices de terceiros.
 
 ## Validação e riscos residuais
 
 `tests/test-plugin-packaging.ps1` valida manifesto, semver, paths, presença do orchestrator, pins MCP, autenticação 21st apenas por nome de variável, ausência de hooks/Magic/Jpisnice e proveniência dos pré-requisitos. O validador oficial `plugin-creator` também deve ser executado quando PyYAML estiver disponível; nenhuma dependência foi instalada apenas para satisfazer esse teste.
 
-Riscos para FTK-05B:
+Riscos registrados para FTK-05B, posteriormente tratados pela FTK-05C:
 
 - pré-requisitos externos não são instalados automaticamente pelo schema oficial;
 - `npx --yes` pode precisar de rede/cache apesar do pin de versão e integridade registrada;

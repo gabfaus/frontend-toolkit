@@ -1,6 +1,6 @@
 # FTK-05B — Clean Installation & Distribution Validation
 
-Status: **READY FOR HUMAN REVIEW** em 2026-08-29. Nenhum plugin foi instalado no ambiente principal, publicado, staged ou commitado.
+Status: **CLOSED** em 2026-08-29 no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`. Nenhum plugin foi instalado no ambiente principal, publicado ou enviado por push.
 
 ## Resultado
 
@@ -54,9 +54,11 @@ Distribuir um único plugin contendo snapshots gerados de Impeccable e img2three
 
 O routing comportamental não foi reexecutado com modelo durante a instalação: a Skill empacotada é byte-equivalente à FTK-04B já aprovada, e a fixture confirmou o mesmo `routing-policy.json`. Os MCPs foram descobertos pelo pacote, mas não inicializados, evitando rede, quota e qualquer risco 21st.
 
-## Bloqueios para fechar FTK-05
+## Bloqueios registrados ao final da FTK-05B
 
 1. `AGENTS.md` ainda proíbe copiar dependências externas. A evidência agora justifica uma exceção estreita para artefatos gerados, mas essa mudança de governança exige aprovação humana específica.
 2. A licença do código próprio continua `UNLICENSED`, o que bloqueia distribuição/publicação.
 3. O validador canônico `plugin-creator` ainda requer PyYAML indisponível no ambiente; a dependência não foi instalada.
 4. Um smoke comportamental em nova sessão instalada permanece pendente de um fluxo de autenticação isolado que não copie secrets do perfil principal.
+
+Os quatro itens foram resolvidos na FTK-05C: exceção estreita em `AGENTS.md`, Apache-2.0, validators oficiais em venv descartável e smokes instalados após ChatGPT device auth isolada. Consulte `docs/FTK-05C-FINAL-HARDENING.md`.

@@ -20,7 +20,7 @@ frontend-orchestrator (roteamento, sequência e políticas)
        +--> 21st MCP (catálogo, geração e operações do serviço)
 ```
 
-Cada integração terá um adaptador declarativo sob `integrations/`, com identidade estável, origem, versão compatível, capacidades permitidas e requisitos. O código externo ficará fora deste repositório ou será materializado apenas por um mecanismo futuro de instalação com pinagem e atribuição explícitas.
+Cada integração tem um adaptador declarativo sob `integrations/`, com identidade estável, origem, versão compatível, capacidades permitidas e requisitos. O código externo permanece em checkouts independentes durante desenvolvimento e é materializado somente em snapshots de distribuição gerados dos SHAs pinados, atribuídos e descartáveis.
 
 ## Responsabilidades
 
@@ -56,7 +56,7 @@ A V1 aplica o princípio de menor capacidade: intenção explícita do usuário 
 - Hooks executam automaticamente em eventos do Codex e, por isso, são opcionais, revisados e habilitados apenas no projeto confiável.
 - A configuração de desenvolvimento deve ser local ao repositório. Instalação de usuário será um artefato explícito da FTK-05, nunca um efeito colateral das etapas de integração ou routing.
 
-## Empacotamento FTK-05A
+## Empacotamento FTK-05
 
 O formato nativo atual de plugin exige `.codex-plugin/plugin.json` e permite, na raiz do plugin, `skills/`, `hooks/`, `.mcp.json`, `.app.json` e `assets/`. A FTK-05 deverá gerar essa camada a partir dos adaptadores validados.
 
@@ -71,7 +71,11 @@ plugin/frontend-toolkit/
 └── THIRD_PARTY_NOTICES.md
 ```
 
-O formato oficial não documenta dependências entre plugins ou Skills. A FTK-05B provou que pré-requisitos separados não atendem à instalação única e que snapshots gerados dos SHAs bloqueados atendem. A arquitetura recomendada mantém os checkouts como fonte de verdade e gera o artefato fora da árvore versionada, com hashes e licenças validados, sem edição manual. Sua adoção definitiva depende de exceção explícita em `AGENTS.md` e decisão de licença própria.
+O formato oficial não documenta dependências entre plugins ou Skills. A FTK-05B provou que pré-requisitos separados não atendem à instalação única e que snapshots gerados dos SHAs bloqueados atendem. A FTK-05C adotou definitivamente essa arquitetura: checkouts como fonte de verdade, artefato fora da árvore versionada, hash agregado, LICENSE/NOTICE/proveniência e nenhuma edição manual. `AGENTS.md` contém a exceção estreita e o código próprio usa Apache-2.0.
+
+O artefato gerado acrescenta `LICENSE`, `SNAPSHOT_PROVENANCE.json`, `skills/impeccable`, `skills/img2threejs` e `third_party/impeccable/{LICENSE,NOTICE.md}`. A árvore observada é `af07a70e4a25f649ca2bc18e281c9f162dd25212a6914e2911498ce6655d8695`.
+
+O schema oficial permite política MCP plugin-scoped em config do consumidor, inclusive `enabled_tools`, mas não no manifesto distribuído. A fixture FTK-05C restringiu Shadcn à consulta de registry e 21st a `search`; o orchestrator continua sendo a barreira semântica obrigatória porque o pacote não pode impor preferências de usuário.
 
 Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
 

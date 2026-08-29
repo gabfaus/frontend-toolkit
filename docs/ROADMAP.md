@@ -81,7 +81,7 @@ Criar a Skill própria que roteia tarefas e combina resultados sem duplicar capa
 
 ## FTK-05 — Testes e empacotamento
 
-Status: **IN PROGRESS**. FTK-05A foi fechada no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`. FTK-05B está **READY FOR HUMAN REVIEW**: snapshots gerados venceram empiricamente a estratégia de pré-requisitos para instalação única, mas a exceção de governança e a licença do código próprio permanecem bloqueios de fechamento.
+Status: **READY FOR HUMAN CLOSURE REVIEW**. FTK-05A foi fechada no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba` e FTK-05B no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`. FTK-05C concluiu governança, Apache-2.0, validators, instalação autenticada isolada, smokes, lifecycle e teardown; permanece sem staging/commit/publicação.
 
 ### Objetivo
 
@@ -103,6 +103,8 @@ Validar o conjunto e gerar um único plugin local instalável, sem publicar.
 - instalação local é reproduzível e reversível;
 - matriz de compatibilidade documentada;
 - revisão humana aprova licenças, permissões, secrets e distribuição.
+
+FTK-05C atendeu tecnicamente esses critérios em 2026-08-29. O fechamento formal depende de revisão humana e commit futuro específico; publicação open source não faz parte da FTK-05.
 
 ## Requisitos para iniciar FTK-02
 

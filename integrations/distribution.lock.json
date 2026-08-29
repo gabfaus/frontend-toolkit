@@ -5,14 +5,15 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "95b00da184ce918ac8ff2bab7ffc6df913f08359edc159545bad1b0ec2b975ab",
+  "observedSnapshotTreeSha256": "af07a70e4a25f649ca2bc18e281c9f162dd25212a6914e2911498ce6655d8695",
   "snapshotPersistence": "ephemeral-only",
   "components": [
     {
       "id": "impeccable",
-      "sourceSelection": ["LICENSE", "plugin/skills/impeccable"],
+      "sourceSelection": ["LICENSE", "NOTICE.md", "plugin/skills/impeccable"],
       "distributionSkillPath": "skills/impeccable",
-      "distributionLicensePath": "third_party/impeccable/LICENSE"
+      "distributionLicensePath": "third_party/impeccable/LICENSE",
+      "distributionNoticePath": "third_party/impeccable/NOTICE.md"
     },
     {
       "id": "img2threejs",
@@ -23,5 +24,11 @@
   ],
   "hooksEnabled": false,
   "twentyFirstAutomaticTools": ["search"],
-  "notes": "Observed tree hash covers the FTK-05A source plugin plus generated external snapshots. Regenerate and update this observation whenever the source plugin changes."
+  "validatorRuntime": {
+    "python": "CPython 3.14.7",
+    "temporaryDependency": "PyYAML==6.0.3",
+    "pluginCreator": "source-and-distribution-pass",
+    "skillCreator": "frontend-orchestrator-pass; external snapshots use canonical plugin validation because upstream frontmatter extensions are rejected by quick_validate.py"
+  },
+  "notes": "Observed tree hash covers the source plugin, the project Apache-2.0 LICENSE and generated external snapshots. Regenerate and update this observation whenever packaging content changes."
 }

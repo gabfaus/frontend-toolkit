@@ -2,7 +2,7 @@
 
 Fundação local e reutilizável para trabalhos de frontend, design, UX, componentes e 3D no Codex.
 
-Status atual: **FTK-05A CLOSED** no commit `ffa7d57e07503741b71455bff6fa6bdbed3255ba`; **FTK-05B READY FOR HUMAN REVIEW**. A instalação limpa favoreceu snapshots externos gerados, ainda condicionados a decisão de governança e licença.
+Status atual: **FTK-05B CLOSED** no commit `06f9b93ecec7c576837f5f9193ab250a34cb460a`; **FTK-05C READY FOR HUMAN REVIEW**. A V1 está tecnicamente pronta para fechamento, sem publicação, push ou commit da FTK-05C.
 
 ## Arquitetura-alvo
 
@@ -15,7 +15,7 @@ Frontend Toolkit
 └── 21st                    # MCP remoto oficial
 ```
 
-O toolkit será uma camada de composição. Os projetos externos continuarão independentes, com origem, versão e licença rastreadas; não haverá fusão de seus códigos-fonte.
+O toolkit é uma camada de composição. Os projetos externos continuam independentes, com origem, versão e licença rastreadas; o plugin de distribuição materializa snapshots imutáveis e determinísticos dos SHAs pinados, sem transformá-los em fonte de verdade.
 
 ## Conteúdo desta fase
 
@@ -34,13 +34,14 @@ O toolkit será uma camada de composição. Os projetos externos continuarão in
 - `docs/FTK-04B-FUNCTIONAL-ROUTING.md`: execução funcional dos dez cenários, separação capability/tool, confinamento e teardown.
 - `docs/FTK-05A-PLUGIN-PACKAGING.md`: formato oficial, estratégia de distribuição, manifests, segurança e riscos do plugin.
 - `docs/FTK-05B-CLEAN-INSTALLATION.md`: comparação empírica, instalação isolada, snapshots determinísticos e recomendação de distribuição.
+- `docs/FTK-05C-FINAL-HARDENING.md`: licença, validators oficiais, autenticação isolada, smokes instalados, lifecycle e teardown final.
 - `docs/adr/0001-composition-over-vendoring.md`: decisão arquitetural principal.
 - `integrations/`: lock reproduzível e documentação das fontes externas.
-- `scripts/`: sincronização fail-closed dos checkouts e junctions.
+- `scripts/`: sincronização fail-closed, geração determinística e smoke do plugin instalado.
 - `.agents/skills/frontend-orchestrator/`: Skill própria descoberta durante desenvolvimento repo-local.
 - `skills/`: orientação para a futura distribuição, sem cópias upstream.
-- `tests/`: validação estrutural e de descoberta das Skills.
+- `tests/`: validação estrutural, distribuição, validators oficiais, hardening e routing.
 
 ## Próximo gate
 
-A FTK-05A está formalmente CLOSED. A FTK-05B aguarda revisão humana; FTK-05 ainda não pode fechar enquanto governança de snapshots e licença própria permanecerem abertas.
+FTK-05A e FTK-05B estão formalmente fechadas. FTK-05C aguarda revisão humana; governança, Apache-2.0, atribuições, determinismo, instalação limpa, smokes, cost gate, update/reinstall e teardown passaram. A publicação open source será uma etapa futura separada.

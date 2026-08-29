@@ -35,6 +35,8 @@ if (-not (Test-Path -LiteralPath $builder)) { throw 'Snapshot builder is missing
 foreach ($dependency in $externalLock.dependencies) {
     if ($dependency.commitSha -notmatch '^[0-9a-f]{40}$' -or $dependency.license -ne 'Apache-2.0') { throw "Invalid external lock: $($dependency.id)" }
 }
+$impeccableLock = $externalLock.dependencies | Where-Object id -eq 'impeccable'
+if ($impeccableLock.noticeSha256 -notmatch '^[0-9a-f]{64}$') { throw 'Impeccable NOTICE is not locked.' }
 if ($ValidateOnly) {
     Write-Output 'PASS: FTK-05B distribution lock, pins, licenses and generator contract validated.'
     return
@@ -61,6 +63,12 @@ try {
     $treeHashTwo = Get-TreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }
     if ($treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) { throw "Snapshot observation drifted: $treeHashOne" }
+    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'third_party/impeccable/LICENSE', 'third_party/impeccable/NOTICE.md', 'skills/img2threejs/LICENSE')) {
+        if (-not (Test-Path -LiteralPath (Join-Path $snapshotOne $required))) { throw "Distribution attribution missing: $required" }
+    }
+    $provenance = Get-Content -Raw -LiteralPath (Join-Path $snapshotOne 'SNAPSHOT_PROVENANCE.json') | ConvertFrom-Json
+    $impeccableProvenance = $provenance.dependencies | Where-Object id -eq 'impeccable'
+    if ($impeccableProvenance.noticeSha256 -ne $impeccableLock.noticeSha256) { throw 'Impeccable NOTICE provenance drifted.' }
 
     New-Item -ItemType Directory -Path $marketplaceDirectory, (Split-Path $marketplacePlugin) -Force | Out-Null
     Copy-Item -LiteralPath $snapshotOne -Destination $marketplacePlugin -Recurse
