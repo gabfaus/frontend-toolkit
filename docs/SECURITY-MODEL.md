@@ -147,7 +147,7 @@ Severity scale used by this review: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, and `IN
 | ID | Severity | Component | Finding | Exploitability | Mitigation/status |
 |---|---|---|---|---|---|
 | G7S-001 | CRITICAL | img2threejs | Project-provided environment file is sourced as shell code | direct when optional pipeline is invoked with malicious config | open release blocker |
-| G7S-002 | HIGH | img2threejs | State path accepts absolute, traversal, and link-target escape | statically confirmed from caller input through canonicalization to write, without containment | open release blocker |
+| G7S-002 | HIGH | img2threejs | State path accepts absolute, traversal, and link-target escape | original upstream flow remains blocked; FTK guard passes focused synthetic containment tests | implementation complete — pending SR2D integration/revalidation |
 | G7S-003 | HIGH | Impeccable | External instruction claims authority over host policy | reachable when context helper runs | open release blocker |
 | G7S-004 | HIGH | Impeccable | Update, telemetry, and potentially paid image network effects are not consistently approval-gated | reachable on Skill flows | open release blocker |
 | G7S-005 | MEDIUM | Shadcn | Untrusted custom registry may cause environment-backed header disclosure | requires project registry selection | require explicit registry/header approval |

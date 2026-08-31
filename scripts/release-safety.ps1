@@ -115,6 +115,7 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'skills/impeccable/SKILL.md'
         'skills/img2threejs/SKILL.md'
         'security/effect-policy.json'
+        'security/img2threejs-state-guard.ps1'
         'security/invoke-capability.ps1'
     )
 }
