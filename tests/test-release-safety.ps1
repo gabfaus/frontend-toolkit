@@ -12,6 +12,18 @@ $releaseBuilder = Join-Path $repoRoot 'scripts/build-release-candidate.ps1'
 
 $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $directoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
+$requiredSecurityFiles = @(
+    'security/effect-policy.json'
+    'security/img2threejs-foundation.ps1'
+    'security/img2threejs-state-guard.ps1'
+    'security/img2threejs-structural-validation.ps1'
+    'security/invoke-capability.ps1'
+)
+$actualSecurityFiles = @(Get-ChildItem -LiteralPath (Join-Path $pluginSource 'security') -File -Force |
+    ForEach-Object { 'security/' + $_.Name })
+$allowlistedSecurityFiles = @($fileAllowlist | Where-Object { $_.StartsWith('security/', [StringComparison]::Ordinal) })
+Assert-ExactStringSet -Name 'FTK-owned security files' -Actual $actualSecurityFiles -Expected $requiredSecurityFiles
+Assert-ExactStringSet -Name 'FTK-owned security allowlist' -Actual $allowlistedSecurityFiles -Expected $requiredSecurityFiles
 Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $pluginSource -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist -AllowWorkingTree
 
 $snapshotText = Get-Content -Raw -LiteralPath $snapshotBuilder
