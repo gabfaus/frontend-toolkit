@@ -134,7 +134,7 @@ try {
     $env:FTK_PYTHON_PATH = $pythonPathBefore
 }
 
-foreach ($expectedName in @('frontend-orchestrator','impeccable:impeccable','img2threejs')) {
+foreach ($expectedName in @('frontend-orchestrator','impeccable','img2threejs')) {
     if (-not $prompt.Contains(("- " + $expectedName + ":"))) { throw "Codex did not advertise Skill: $expectedName" }
 }
 if ((Get-FileHashOrAbsent $configPath) -ne $configHashBefore) { throw 'Codex user config changed during orchestrator discovery.' }
@@ -143,4 +143,4 @@ if ([Environment]::GetEnvironmentVariable('Path','Machine') -ne $machinePathBefo
 
 Write-Output 'PASS: frontend-orchestrator metadata, references and machine-readable routing policy validated.'
 Write-Output 'PASS: ten scenario contracts cover minimum capability, user intent, fallbacks and 21st authorization gates.'
-Write-Output 'PASS: Codex CLI 0.150.1 discovers frontend-orchestrator with impeccable:impeccable and img2threejs.'
+Write-Output 'PASS: Codex CLI 0.150.1 discovers frontend-orchestrator with impeccable and img2threejs adapters.'

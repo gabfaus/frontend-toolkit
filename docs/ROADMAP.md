@@ -132,3 +132,25 @@ Tornar o repositório autoexplicativo para terceiros, produzir um candidato loca
 4. Escolher submodule versus gerenciador próprio de fontes externas; recomendação inicial: checkouts/cache externos ao pacote e manifesto de lock próprio, evitando submodules até provar necessidade.
 5. Autorizar testes repo-locais e definir se o hook do Impeccable fica fora do primeiro incremento.
 6. Disponibilizar um Python 3.10+ estável e um Node.js suportado pelo usuário/projeto; não depender do cache interno do Codex.
+
+## G7-S — Plugin / Skills / MCP Security Review
+
+Status: **BLOCKED** em 2026-08-31. G7-A1R permanece **CLOSED**; esta revisão não reabre nem altera o gate anterior.
+
+A revisão defensiva confirmou por análise estática e data-flow dois bloqueadores em img2threejs: paths controláveis chegam a escrita após canonicalização sem containment em `<projeto>/.img2threejs`, e configuração controlável pelo projeto chega a `source` do Bash sem parser estrutural ou gate técnico do Toolkit. Também permanecem abertos dois findings High em Impeccable sobre conflito de autoridade e efeitos externos/rede/custo sem consentimento consistente.
+
+Shadcn foi revisado com configuração sintética inerte, sem valor de ambiente, credencial ou transferência; somente o registry oficial explicitamente nomeado compõe o smoke read-only. No 21st, apenas `search` permanece automaticamente autorizado; toda tool nova, desconhecida, paga, sujeita a quota ou mutável é `UNKNOWN — AUTHORIZATION REQUIRED`.
+
+Critério de retomada: excluir os componentes bloqueados da distribuição, adotar upstream corrigido e revisto, ou obter decisão humana explícita para manter um derivado com proveniência, ciclo de patches e testes próprios. Política do orchestrator e sandbox do host são defesa em profundidade, não substitutos para enforcement técnico.
+
+O G7-S não autoriza instalação, empacotamento, publicação, tag, commit, push nem início de G7-A2.
+
+## G7-SR1 — Adapter foundation
+
+Status: **IMPLEMENTED; AWAITING HUMAN REVIEW** em 2026-08-31.
+
+G7-SR1 implementa somente a fundação da arquitetura `frontend-orchestrator -> FTK capability/security adapters -> upstream snapshots`. As três Skills descobertas são próprias do FTK; Impeccable e img2threejs permanecem funcionalmente representados por adapters, enquanto os snapshots pinados são materializados fora de discovery em `third_party/upstreams/`. O manifest comum registra oito classes de efeito e nega `UNKNOWN`; o launcher comum aceita somente IDs de operações registradas e não oferece entrypoint de script arbitrário.
+
+G7S-001, G7S-002, G7S-003 e G7S-004 permanecem **OPEN**. G7-SR2 deve implementar parser estrutural, auditoria completa dos sinks `CHARACTER_*` e containment canônico de state. G7-SR3 deve implementar parser de contexto estrutural/versionado, isolamento de environment por allowlist, prova ou substituição externa dos controles de update/telemetria e autorização paga realmente mediada pelo host. Nenhuma flag declarativa isolada constitui autorização.
+
+Este gate não autoriza G7-SR2, G7-SR3, G7-A2, instalação real, staging, commit, push, tag, release ou publicação.

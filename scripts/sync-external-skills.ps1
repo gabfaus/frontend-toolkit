@@ -43,8 +43,9 @@ function Invoke-Git {
 
 foreach ($dependency in $lock.dependencies) {
     $checkoutPath = Resolve-RepoPath $dependency.checkoutPath
-    $skillSourcePath = Resolve-RepoPath $dependency.skillSourcePath
-    $discoveryPath = Resolve-RepoPath $dependency.discoveryPath
+    $upstreamSkillSourcePath = Resolve-RepoPath $dependency.upstreamSkillSourcePath
+    $adapterPath = Resolve-RepoPath $dependency.adapterPath
+    $pluginAdapterPath = Resolve-RepoPath ('plugin/frontend-toolkit/' + $dependency.distributionAdapterPath)
     $licensePath = Resolve-RepoPath $dependency.licenseFile
 
     if (-not (Test-Path -LiteralPath $checkoutPath)) {
@@ -72,14 +73,14 @@ foreach ($dependency in $lock.dependencies) {
         throw "External checkout is dirty: $($dependency.id)"
     }
 
-    $skillEntry = Join-Path $skillSourcePath 'SKILL.md'
-    if (-not (Test-Path -LiteralPath $skillEntry -PathType Leaf)) {
-        throw "Missing SKILL.md for $($dependency.id): $skillEntry"
+    $upstreamSkillEntry = Join-Path $upstreamSkillSourcePath 'SKILL.md'
+    if (-not (Test-Path -LiteralPath $upstreamSkillEntry -PathType Leaf)) {
+        throw "Missing upstream SKILL.md for $($dependency.id): $upstreamSkillEntry"
     }
 
-    $entryHash = (Get-FileHash -LiteralPath $skillEntry -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ($entryHash -ne $dependency.skillEntrySha256) {
-        throw "SKILL.md hash mismatch for $($dependency.id): $entryHash"
+    $upstreamEntryHash = (Get-FileHash -LiteralPath $upstreamSkillEntry -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($upstreamEntryHash -ne $dependency.upstreamSkillEntrySha256) {
+        throw "Upstream SKILL.md hash mismatch for $($dependency.id): $upstreamEntryHash"
     }
 
     if (-not (Test-Path -LiteralPath $licensePath -PathType Leaf)) {
@@ -90,23 +91,18 @@ foreach ($dependency in $lock.dependencies) {
         throw "License hash mismatch for $($dependency.id): $licenseHash"
     }
 
-    if (Test-Path -LiteralPath $discoveryPath) {
-        $link = Get-Item -Force -LiteralPath $discoveryPath
-        if ($link.LinkType -ne 'Junction') {
-            throw "Discovery path is not a junction: $discoveryPath"
+    foreach ($candidate in @($adapterPath, $pluginAdapterPath)) {
+        $adapter = Get-Item -Force -LiteralPath $candidate
+        if (-not $adapter.PSIsContainer -or $adapter.LinkType -or
+            ($adapter.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw "Adapter must be an FTK-owned physical directory: $candidate"
         }
-
-        $actualTarget = [System.IO.Path]::GetFullPath([string]$link.Target)
-        $expectedTarget = [System.IO.Path]::GetFullPath($skillSourcePath)
-        if ($actualTarget -ne $expectedTarget) {
-            throw "Junction target mismatch for $($dependency.id): $actualTarget"
+        $adapterEntry = Join-Path $candidate 'SKILL.md'
+        $adapterHash = (Get-FileHash -LiteralPath $adapterEntry -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($adapterHash -ne $dependency.adapterEntrySha256) {
+            throw "FTK adapter hash mismatch for $($dependency.id): $adapterHash"
         }
-    } elseif (-not $ValidateOnly) {
-        New-Item -ItemType Directory -Path (Split-Path -Parent $discoveryPath) -Force | Out-Null
-        New-Item -ItemType Junction -Path $discoveryPath -Target $skillSourcePath | Out-Null
-    } else {
-        throw "Missing discovery junction for $($dependency.id): $discoveryPath"
     }
 
-    Write-Output "$($dependency.id): ref=$($dependency.ref) commit=$head discovery=$discoveryPath"
+    Write-Output "$($dependency.id): ref=$($dependency.ref) commit=$head adapter=$adapterPath snapshot=$($dependency.upstreamSnapshotPath)"
 }

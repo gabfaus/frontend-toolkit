@@ -46,7 +46,8 @@ $secretHits = @($files | Where-Object { [IO.File]::ReadAllText($_.FullName) -mat
 if ($secretHits.Count) { throw "Potential secret found: $($secretHits.FullName -join ', ')" }
 
 $sourceSkills = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/skills') -Directory | ForEach-Object Name)
-if ($sourceSkills.Count -ne 1 -or $sourceSkills[0] -cne 'frontend-orchestrator') { throw 'Generated snapshots must not be persisted in plugin source.' }
+if ((@($sourceSkills | Sort-Object) -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') { throw 'Plugin source must contain exactly three FTK-owned Skills.' }
+if (Test-Path -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/third_party')) { throw 'Generated upstream snapshots must not be persisted in plugin source.' }
 & (Join-Path $repoRoot 'tests/test-release-safety.ps1')
 
 if (-not $Execute) {

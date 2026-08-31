@@ -1,5 +1,5 @@
 param(
-    [string]$Prompt = 'Use $impeccable:impeccable and $img2threejs. Read only their SKILL.md files. Run node --version and then run the executable in FTK_PYTHON_PATH with --version. Do not create or edit files, install anything, authenticate, use MCPs, or run hooks. Return exactly four lines: impeccable discovered, img2threejs discovered, Node version, Python version.',
+    [string]$Prompt = 'Use $impeccable and $img2threejs. Read only their SKILL.md files. Run node --version and then run the executable in FTK_PYTHON_PATH with --version. Do not create or edit files, install anything, authenticate, use MCPs, or run hooks. Return exactly four lines: impeccable discovered, img2threejs discovered, Node version, Python version.',
     [string]$WorkingDirectory = '',
     [string[]]$ConfigOverride = @(),
     [switch]$LoadUserConfig,

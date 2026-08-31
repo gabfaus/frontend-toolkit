@@ -70,7 +70,7 @@ $gitBefore = (& git -c "safe.directory=$repoSafe" status --porcelain=v1 --untrac
 $result = @(& $harnessPath)[-1]
 if ($result.Mode -ne 'executed' -or $result.CredentialGate -ne 'available') { throw 'Combined authenticated harness did not execute.' }
 if (@(Compare-Object @('21st','shadcn') @($result.EnabledServers)).Count) { throw 'Combined session did not isolate exactly Shadcn and 21st.' }
-if (@(Compare-Object @('impeccable:impeccable','img2threejs') @($result.Skills)).Count) { throw 'Combined session did not preserve both Skills.' }
+if (@(Compare-Object @('impeccable','img2threejs') @($result.Skills)).Count) { throw 'Combined session did not preserve both adapters.' }
 if ($result.ShadcnToolCount -ne 7) { throw 'Unexpected Shadcn inventory in coexistence test.' }
 if ($result.TwentyFirstSnapshotComparison -ne 'identical-to-ftk-03b') { throw '21st inventory drifted from FTK-03B.' }
 if ($result.ShadcnTest -ne 'passed' -or $result.TwentyFirstTest -ne 'passed-search-only' -or $result.SequentialTest -ne 'passed-shadcn-then-21st') { throw 'One or more combined functional tests failed.' }

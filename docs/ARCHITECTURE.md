@@ -73,7 +73,7 @@ plugin/frontend-toolkit/
 
 O formato oficial não documenta dependências entre plugins ou Skills. A FTK-05B provou que pré-requisitos separados não atendem à instalação única e que snapshots gerados dos SHAs bloqueados atendem. A FTK-05C adotou definitivamente essa arquitetura: checkouts como fonte de verdade, artefato fora da árvore versionada, hash agregado, LICENSE/NOTICE/proveniência e nenhuma edição manual. `AGENTS.md` contém a exceção estreita e o código próprio usa Apache-2.0.
 
-O artefato gerado acrescenta `LICENSE`, `SNAPSHOT_PROVENANCE.json`, `skills/impeccable`, `skills/img2threejs` e `third_party/impeccable/{LICENSE,NOTICE.md}`. O candidato `v1.0.0` tem árvore observada `1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924`.
+G7-SR1 substitui a descoberta direta por uma arquitetura mediada. `skills/impeccable` e `skills/img2threejs` agora são adapters próprios do FTK; os snapshots byte-equivalentes dos upstreams são materializados exclusivamente em `third_party/upstreams/impeccable` e `third_party/upstreams/img2threejs`. `SNAPSHOT_PROVENANCE.json` distingue os adapters dos payloads upstream e o launcher comum aceita somente operações registradas no manifest de efeitos. O hash observado da árvore G7-SR1 é `626c26e393af4612200b2e5b81f0c23f2cbd381792f6cb92860f299ceefe61ef`.
 
 O schema oficial permite política MCP plugin-scoped em config do consumidor, inclusive `enabled_tools`, mas não no manifesto distribuído. A fixture FTK-05C restringiu Shadcn à consulta de registry e 21st a `search`; o orchestrator continua sendo a barreira semântica obrigatória porque o pacote não pode impor preferências de usuário.
 
@@ -83,7 +83,7 @@ O repositório público permanece source-only. `scripts/build-release-candidate.
 
 SemVer governa a versão pública em `plugin.json`; metadata `+codex.<timestamp>` serve apenas ao cache local. O lock `integrations/release.lock.json` registra a versão candidata, o hash observado e os estados fail-closed de tag/publicação/release.
 
-Durante FTK-02A, as Skills externas permanecem em checkouts independentes ignorados e são expostas por `.agents/skills` somente para desenvolvimento. A documentação de plugins usa `skills/` na raiz do pacote, mas essa diferença não autoriza copiar os upstreams agora. A estratégia definitiva de distribuição pertence à FTK-05 e não deve presumir suporte nativo a dependências entre plugins.
+O mecanismo histórico de junctions de FTK-02A foi substituído por G7-SR1. Os checkouts externos continuam independentes e pinados, mas `.agents/skills` contém somente Skills próprias do FTK. Nenhum `SKILL.md` upstream fica sob uma raiz de discovery.
 
 ## Alternativas consideradas
 

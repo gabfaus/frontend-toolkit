@@ -1,11 +1,12 @@
 {
-  "schemaVersion": 1,
-  "validatedAt": "2026-08-29",
-  "strategy": "generated-distribution-snapshots",
+  "schemaVersion": 2,
+  "validatedAt": "2026-08-31",
+  "strategy": "mediated-adapter-generated-snapshots",
+  "architecture": "ftk-owned-mediated-adapter",
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "8e5a701467fe2c28ebfcb32eb8b101a34d58f51c06f06e88a97610f37f03f5d0",
+  "observedSnapshotTreeSha256": "626c26e393af4612200b2e5b81f0c23f2cbd381792f6cb92860f299ceefe61ef",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",
@@ -16,16 +17,26 @@
   "components": [
     {
       "id": "impeccable",
+      "adapterSourcePath": ".agents/skills/impeccable",
+      "sourcePluginAdapterPath": "plugin/frontend-toolkit/skills/impeccable",
+      "adapterEntrySha256": "085102834cdf3bfc972cafcf990691ae9c81199de812d0ab3e92f54bd7a096ef",
       "sourceSelection": ["LICENSE", "NOTICE.md", "plugin/skills/impeccable"],
-      "distributionSkillPath": "skills/impeccable",
-      "distributionLicensePath": "third_party/impeccable/LICENSE",
-      "distributionNoticePath": "third_party/impeccable/NOTICE.md"
+      "distributionAdapterPath": "skills/impeccable",
+      "upstreamSnapshotPath": "third_party/upstreams/impeccable",
+      "snapshotTreeSha256": "2acc28d100263c6b5d91f9b75f4bb80e88d33ac7ffdef9a1b3618eeb2d97f2cd",
+      "distributionLicensePath": "third_party/upstreams/impeccable/LICENSE",
+      "distributionNoticePath": "third_party/upstreams/impeccable/NOTICE.md"
     },
     {
       "id": "img2threejs",
+      "adapterSourcePath": ".agents/skills/img2threejs",
+      "sourcePluginAdapterPath": "plugin/frontend-toolkit/skills/img2threejs",
+      "adapterEntrySha256": "48a416f5bcb1ec124f2ab184519af96f36ad0c49ace1a83f82c8c59fb2bdd09c",
       "sourceSelection": ["repository-tree"],
-      "distributionSkillPath": "skills/img2threejs",
-      "distributionLicensePath": "skills/img2threejs/LICENSE"
+      "distributionAdapterPath": "skills/img2threejs",
+      "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
+      "snapshotTreeSha256": "127017dbe14b33448ba0ada19a1512116f8d7b385de48811a6a54779fc107e32",
+      "distributionLicensePath": "third_party/upstreams/img2threejs/LICENSE"
     }
   ],
   "hooksEnabled": false,
@@ -34,7 +45,7 @@
     "python": "CPython 3.14.7",
     "temporaryDependency": "PyYAML==6.0.3",
     "pluginCreator": "source-and-distribution-pass",
-    "skillCreator": "frontend-orchestrator-pass; external snapshots use canonical plugin validation because upstream frontmatter extensions are rejected by quick_validate.py"
+    "skillCreator": "all three discovered Skills are FTK-owned adapters; upstream snapshots are non-discoverable reference payloads"
   },
-  "notes": "Observed v1.0.0 tree hash covers the source plugin, the project Apache-2.0 LICENSE and generated external snapshots. Regenerate and update this observation whenever packaging content changes."
+  "notes": "Observed v1.0.0 tree hash covers the three FTK-owned Skills, the security boundary, the project Apache-2.0 LICENSE and non-discoverable byte-equivalent upstream snapshots. Regenerate and update this observation whenever packaging content changes."
 }

@@ -2,101 +2,52 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$lockPath = Join-Path $repoRoot 'integrations/external.lock.json'
-$lock = Get-Content -Raw -LiteralPath $lockPath | ConvertFrom-Json
-$observedNames = @()
+$discoveryRoot = Join-Path $repoRoot '.agents/skills'
+$pluginSkills = Join-Path $repoRoot 'plugin/frontend-toolkit/skills'
+$lock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
+
+$discovered = @(Get-ChildItem -LiteralPath $discoveryRoot -Directory -Force | Sort-Object Name)
+if (($discovered.Name -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') {
+    throw "Repo discovery inventory drifted: $($discovered.Name -join ',')"
+}
+if (@(Get-ChildItem -LiteralPath $discoveryRoot -Recurse -Filter SKILL.md -File).Count -ne 3) {
+    throw 'A nested or duplicate SKILL.md exists below the discovery root.'
+}
+
+foreach ($directory in $discovered) {
+    if ($directory.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Discovered Skill is a reparse point: $($directory.Name)" }
+    if (-not (Test-Path -LiteralPath (Join-Path $directory.FullName 'SKILL.md') -PathType Leaf)) { throw "Discovered Skill lacks SKILL.md: $($directory.Name)" }
+}
 
 foreach ($dependency in $lock.dependencies) {
-    $checkoutPath = Join-Path $repoRoot $dependency.checkoutPath
-    $discoveryPath = Join-Path $repoRoot $dependency.discoveryPath
-    $sourcePath = (Resolve-Path (Join-Path $repoRoot $dependency.skillSourcePath)).Path
-    $skillPath = Join-Path $discoveryPath 'SKILL.md'
-    $link = Get-Item -Force -LiteralPath $discoveryPath
+    $checkout = (Resolve-Path (Join-Path $repoRoot $dependency.checkoutPath)).Path
+    $safeCheckout = $checkout.Replace('\', '/')
+    $head = (& git -c "safe.directory=$safeCheckout" -C $checkout rev-parse HEAD).Trim()
+    if ($head -ne $dependency.commitSha) { throw "$($dependency.id) checkout SHA mismatch." }
+    if (& git -c "safe.directory=$safeCheckout" -C $checkout status --porcelain) { throw "$($dependency.id) checkout is dirty." }
 
-    if ($link.LinkType -ne 'Junction') {
-        throw "$($dependency.id) is not exposed through a junction."
-    }
-    $linkTarget = (Resolve-Path -LiteralPath $link.Target).Path
-    if ($linkTarget -ne $sourcePath) {
-        throw "$($dependency.id) junction target mismatch: $linkTarget"
-    }
-    if (-not (Test-Path -LiteralPath $skillPath -PathType Leaf)) {
-        throw "$($dependency.id) has no accessible SKILL.md."
-    }
+    $upstreamEntry = Join-Path (Join-Path $repoRoot $dependency.upstreamSkillSourcePath) 'SKILL.md'
+    $upstreamHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $upstreamEntry).Hash.ToLowerInvariant()
+    if ($upstreamHash -ne $dependency.upstreamSkillEntrySha256) { throw "$($dependency.id) upstream SKILL.md hash mismatch." }
 
-    $checkoutSha = (& git -C $checkoutPath rev-parse HEAD).Trim()
-    if ($checkoutSha -ne $dependency.commitSha) {
-        throw "$($dependency.id) checkout SHA mismatch: $checkoutSha"
-    }
-    if (& git -C $checkoutPath status --porcelain) {
-        throw "$($dependency.id) checkout is dirty."
-    }
-    $skillHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $skillPath).Hash.ToLowerInvariant()
-    if ($skillHash -ne $dependency.skillEntrySha256) {
-        throw "$($dependency.id) SKILL.md hash mismatch."
-    }
-    $licenseHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $dependency.licenseFile)).Hash.ToLowerInvariant()
-    if ($licenseHash -ne $dependency.licenseSha256) {
-        throw "$($dependency.id) license hash mismatch."
-    }
-
-    $content = Get-Content -Raw -LiteralPath $skillPath
-    foreach ($field in @('name', 'description', 'version', 'license')) {
-        if ($content -notmatch "(?m)^${field}:\s*.+$") {
-            throw "$($dependency.id) is missing required metadata: $field"
+    $adapter = Join-Path (Join-Path $repoRoot $dependency.adapterPath) 'SKILL.md'
+    $pluginAdapter = Join-Path (Join-Path $repoRoot ('plugin/frontend-toolkit/' + $dependency.distributionAdapterPath)) 'SKILL.md'
+    foreach ($path in @($adapter, $pluginAdapter)) {
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "$($dependency.id) adapter is missing: $path" }
+        if ((Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLowerInvariant() -ne $dependency.adapterEntrySha256) {
+            throw "$($dependency.id) adapter hash mismatch: $path"
+        }
+        if ((Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash -eq (Get-FileHash -Algorithm SHA256 -LiteralPath $upstreamEntry).Hash) {
+            throw "$($dependency.id) adapter is an upstream SKILL.md copy."
         }
     }
-
-    $name = [regex]::Match($content, '(?m)^name:\s*(.+)$').Groups[1].Value.Trim()
-    $version = [regex]::Match($content, '(?m)^version:\s*(.+)$').Groups[1].Value.Trim()
-    if ($name -ne $dependency.id) {
-        throw "Expected skill name $($dependency.id), found $name."
-    }
-    if ($version -ne $dependency.declaredVersion) {
-        throw "Expected version $($dependency.declaredVersion), found $version."
-    }
-    $observedNames += $name
-
-    if ($dependency.id -eq 'impeccable') {
-        if (-not (Test-Path -LiteralPath (Join-Path $discoveryPath 'reference') -PathType Container)) {
-            throw 'Impeccable references are not accessible.'
-        }
-        if (-not (Test-Path -LiteralPath (Join-Path $discoveryPath 'scripts') -PathType Container)) {
-            throw 'Impeccable scripts are not accessible.'
-        }
-    }
-
-    if ($dependency.id -eq 'img2threejs') {
-        foreach ($directory in @('docs', 'forge', 'grimoire')) {
-            if (-not (Test-Path -LiteralPath (Join-Path $discoveryPath $directory) -PathType Container)) {
-                throw "img2threejs resource directory is not accessible: $directory"
-            }
-        }
+    if ([IO.File]::ReadAllBytes($adapter).Length -ne [IO.File]::ReadAllBytes($pluginAdapter).Length -or
+        (Get-FileHash -Algorithm SHA256 -LiteralPath $adapter).Hash -ne (Get-FileHash -Algorithm SHA256 -LiteralPath $pluginAdapter).Hash) {
+        throw "$($dependency.id) source and plugin adapters diverged."
     }
 }
 
-if (($observedNames | Sort-Object -Unique).Count -ne $observedNames.Count) {
-    throw 'Skill names conflict.'
-}
-if (Test-Path -LiteralPath (Join-Path $repoRoot '.codex/hooks.json')) {
-    throw 'An active project hook was found, but hooks are outside FTK-02A scope.'
-}
-
-if (Get-Command codex -ErrorAction SilentlyContinue) {
-    $promptJson = & codex debug prompt-input 'Skill discovery contract check.' | Out-String
-    if ($LASTEXITCODE -ne 0) {
-        throw 'codex debug prompt-input failed.'
-    }
-    foreach ($dependency in $lock.dependencies) {
-        $expectedLine = "- $($dependency.discoveredName):"
-        if (-not $promptJson.Contains($expectedLine)) {
-            throw "Codex did not advertise the expected skill name: $($dependency.discoveredName)"
-        }
-    }
-    Write-Output "PASS: Codex advertises expected names: $(($lock.dependencies.discoveredName) -join ', ')"
-} else {
-    Write-Output 'SKIP: Codex CLI is not on PATH; host discovery contract was not tested.'
-}
-
-Write-Output "PASS: $($observedNames.Count) repo-local skills are distinct and structurally accessible: $($observedNames -join ', ')"
-Write-Output 'PASS: no .codex/hooks.json is active.'
+if (Test-Path -LiteralPath (Join-Path $repoRoot '.codex/hooks.json')) { throw 'Hooks remain outside the approved architecture.' }
+Write-Output 'PASS: exactly three physical FTK-owned Skills are discoverable.'
+Write-Output 'PASS: upstream SKILL.md files remain pinned, byte-verified and outside the discovery root.'
+Write-Output 'PASS: source and plugin adapters have separate, matching provenance.'

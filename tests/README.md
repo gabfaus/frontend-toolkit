@@ -34,4 +34,27 @@ Na FTK-06, `test-public-release.ps1` valida documentação pública, SemVer, met
 
 Na G7-A1R, `test-release-safety.ps1` valida a allowlist exata do source próprio, a denylist de defesa e ataques sintéticos contra `.env`, auth, credentials, arquivos untracked/ignored/hidden, metadata Git e nomes de chave privada. O teste público também compara duas builds, o inventário completo do manifesto e os paths reais do ZIP.
 
+Na G7-S, `test-archive-security.ps1` exerce checks adversariais sintéticos para traversal, caminhos absolutos, symlink, junction/reparse, submodule, nested `.git` e executável inesperado sem extrair o archive hostil. `test-plugin-security.ps1 -ExpectKnownBlockers` modela paths em memória, canonicaliza cada caso, classifica containment, revisa o data-flow upstream e caracteriza os bloqueadores sem executar os entrypoints. `test-shadcn-security.ps1` faz somente revisão estática: valida o pin, o helper `@shadcn` sem headers, parsing inerte da configuração não confiável e nomes de header, sem definir, ler ou encaminhar valor de ambiente.
+
+Na G7-SR1, `test-adapter-foundation.ps1` valida as oito classes de efeito, `UNKNOWN` fail-closed e a ausência de entrypoint arbitrário no launcher. `test-skill-integration.ps1` prova exatamente três Skills físicas próprias do FTK e hashes upstream fora de discovery. `test-plugin-distribution.ps1` faz duas builds determinísticas e um clean install em `CODEX_HOME` temporário, exigindo adapters em `skills/`, snapshots em `third_party/upstreams/`, provenance separada e exatamente dois MCPs.
+
+Tipos de evidência:
+
+- **static checks:** pins, locks, instruções, entrypoints, inventários e política machine-readable;
+- **synthetic adversarial checks:** archives hostis não extraídos, paths modelados em memória e configuração Shadcn inerte, sem credencial real;
+- **behavioral policy-contract checks:** decisões executadas pelo avaliador determinístico da política; não equivalem a uma sessão autenticada do modelo;
+- **live MCP checks:** `test-shadcn-mcp.ps1` usa apenas search/view read-only; `test-21st-mcp.ps1 -Mode WithCredential` faz handshake, `tools/list` e `search`, quando uma credencial externa estiver presente.
+
+Enquanto os bloqueadores forem esperados, execute:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-archive-security.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-plugin-security.ps1 -ExpectKnownBlockers
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-shadcn-security.ps1
+```
+
+Sem `-ExpectKnownBlockers`, o teste de segurança termina em erro enquanto path escape ou configuração executada como shell permanecerem no snapshot. Isso é intencional e impede que uma caracterização seja confundida com aprovação. O smoke comportamental de uma sessão Codex isolada ainda exige `CODEX_HOME` temporário autenticado pelo fluxo oficial; os checks locais não afirmam essa cobertura.
+
+Quando uma validação dinâmica é desnecessária ou não autorizada, a evidência registra: `DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED`.
+
 `scripts/invoke-installed-plugin-smoke.ps1` requer um `CODEX_HOME` autenticado oficialmente sob `%TEMP%`; nunca cria ou copia autenticação. Ele executa novas sessões para orchestrator, Shadcn read-only, 21st/search quando a variável externa está disponível, img2threejs confinado e cost gate sem MCP. Instalação, remoção, reinstalação e cachebuster continuam cobertos por `test-plugin-distribution.ps1`; o ensaio autenticado FTK-05C repetiu esse lifecycle na fixture completa.

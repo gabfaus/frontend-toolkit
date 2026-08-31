@@ -34,9 +34,8 @@ release-artifacts/
 vendor/
 external/
 
-# Repo-local discovery links materialized from integrations/external.lock.json
-.agents/skills/impeccable/
-.agents/skills/img2threejs/
+# Repo-local FTK-owned adapter Skills are versioned under .agents/skills.
+# External checkouts remain ignored under external/ and are never discovery roots.
 
 # Local integration state
 *.local.json

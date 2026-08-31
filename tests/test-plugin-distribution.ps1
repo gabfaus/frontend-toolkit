@@ -28,7 +28,7 @@ $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations
 $mcpLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/mcp.lock.json') | ConvertFrom-Json
 $builder = Join-Path $repoRoot $distributionLock.generator
 
-if ($distributionLock.strategy -ne 'generated-distribution-snapshots') { throw 'Distribution strategy drifted.' }
+if ($distributionLock.strategy -ne 'mediated-adapter-generated-snapshots' -or $distributionLock.architecture -ne 'ftk-owned-mediated-adapter') { throw 'Distribution strategy drifted.' }
 if ($distributionLock.snapshotPersistence -ne 'ephemeral-only') { throw 'Snapshots must remain ephemeral in FTK-05B.' }
 if ($distributionLock.sourceComposition.strategy -ne 'git-head-explicit-file-allowlist' -or
     $distributionLock.sourceComposition.unexpectedFilesystemEntries -ne 'fail' -or
@@ -63,18 +63,27 @@ $machinePathBefore = [Environment]::GetEnvironmentVariable('Path', 'Machine')
 $oldCodexHome = $env:CODEX_HOME
 
 try {
-    & $builder -Destination $snapshotOne | Out-Null
-    & $builder -Destination $snapshotTwo | Out-Null
+    & $builder -Destination $snapshotOne -DevelopmentWorkingTree | Out-Null
+    & $builder -Destination $snapshotTwo -DevelopmentWorkingTree | Out-Null
     $treeHashOne = Get-TreeHash $snapshotOne
     $treeHashTwo = Get-TreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }
     if ($treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) { throw "Snapshot observation drifted: $treeHashOne" }
-    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'third_party/impeccable/LICENSE', 'third_party/impeccable/NOTICE.md', 'skills/img2threejs/LICENSE')) {
+    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
         if (-not (Test-Path -LiteralPath (Join-Path $snapshotOne $required))) { throw "Distribution attribution missing: $required" }
     }
     $provenance = Get-Content -Raw -LiteralPath (Join-Path $snapshotOne 'SNAPSHOT_PROVENANCE.json') | ConvertFrom-Json
-    $impeccableProvenance = $provenance.dependencies | Where-Object id -eq 'impeccable'
+    if ($provenance.architecture -ne 'ftk-owned-mediated-adapter' -or @($provenance.adapters).Count -ne 2 -or @($provenance.upstreamSnapshots).Count -ne 2) { throw 'Adapter/upstream provenance is not separated.' }
+    $impeccableProvenance = $provenance.upstreamSnapshots | Where-Object id -eq 'impeccable'
     if ($impeccableProvenance.noticeSha256 -ne $impeccableLock.noticeSha256) { throw 'Impeccable NOTICE provenance drifted.' }
+    $skills = @(Get-ChildItem -LiteralPath (Join-Path $snapshotOne 'skills') -Directory | Sort-Object Name | Select-Object -ExpandProperty Name)
+    if (($skills -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') { throw "Snapshot Skills mismatch: $($skills -join ',')" }
+    foreach ($dependency in $externalLock.dependencies) {
+        $adapterHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $snapshotOne ($dependency.distributionAdapterPath + '/SKILL.md'))).Hash.ToLowerInvariant()
+        if ($adapterHash -ne $dependency.adapterEntrySha256) { throw "Snapshot adapter hash mismatch: $($dependency.id)" }
+        $snapshotHash = Get-TreeHash (Join-Path $snapshotOne $dependency.upstreamSnapshotPath)
+        if ($snapshotHash -ne $dependency.snapshotTreeSha256) { throw "Snapshot upstream tree hash mismatch: $($dependency.id)" }
+    }
 
     New-Item -ItemType Directory -Path $marketplaceDirectory, (Split-Path $marketplacePlugin) -Force | Out-Null
     Copy-Item -LiteralPath $snapshotOne -Destination $marketplacePlugin -Recurse
@@ -124,7 +133,7 @@ try {
     Invoke-Codex @('plugin', 'marketplace', 'remove', 'ftk05b_fixture')
 
     Write-Output "PASS: deterministic snapshot tree $treeHashOne."
-    Write-Output 'PASS: one-action install discovered frontend-orchestrator, Impeccable, img2threejs, Shadcn and 21st.'
+    Write-Output 'PASS: clean install discovered three FTK adapters and two MCPs; upstream snapshots remained non-discoverable.'
     Write-Output 'PASS: routing policy stayed 21st/search-only; no MCP tool was called.'
     Write-Output "PASS: cachebuster update installed $updatedVersion."
     Write-Output 'PASS: remove and reinstall completed without cache residue.'

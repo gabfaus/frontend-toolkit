@@ -1,5 +1,7 @@
 # FTK-06 — Public Release Readiness
 
+> **Historical gate:** FTK-06 was closed on 2026-08-29. The later G7-S defensive review supersedes its readiness conclusion and currently blocks publication and third-party installation; see [Security model](SECURITY-MODEL.md).
+
 Status: **CLOSED** após revisão humana em 2026-08-29. Nenhuma tag, release, publicação ou push foi realizado.
 
 ## Escopo

@@ -90,9 +90,9 @@ try {
     [void](New-Item -ItemType Directory -Path (Join-Path $fixture '.agents/skills') -Force)
     & git init --quiet $fixture
     if ($LASTEXITCODE -ne 0) { throw 'Could not initialize the synthetic routing fixture.' }
-    [void](New-Item -ItemType Junction -Path (Join-Path $fixture '.agents/skills/frontend-orchestrator') -Target (Join-Path $repoRoot '.agents/skills/frontend-orchestrator'))
-    [void](New-Item -ItemType Junction -Path (Join-Path $fixture '.agents/skills/impeccable') -Target (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable'))
-    [void](New-Item -ItemType Junction -Path (Join-Path $fixture '.agents/skills/img2threejs') -Target (Join-Path $repoRoot 'external/img2threejs'))
+Copy-Item -LiteralPath (Join-Path $repoRoot '.agents/skills/frontend-orchestrator') -Destination (Join-Path $fixture '.agents/skills/frontend-orchestrator') -Recurse
+Copy-Item -LiteralPath (Join-Path $repoRoot '.agents/skills/impeccable') -Destination (Join-Path $fixture '.agents/skills/impeccable') -Recurse
+Copy-Item -LiteralPath (Join-Path $repoRoot '.agents/skills/img2threejs') -Destination (Join-Path $fixture '.agents/skills/img2threejs') -Recurse
     [IO.File]::WriteAllText((Join-Path $fixture 'components.json'), '{"$schema":"https://ui.shadcn.com/schema.json","style":"new-york","rsc":false,"tsx":true,"tailwind":{"config":"","css":"src/index.css","baseColor":"neutral","cssVariables":true,"prefix":""},"aliases":{"components":"@/components","utils":"@/lib/utils","ui":"@/components/ui","lib":"@/lib","hooks":"@/hooks"},"iconLibrary":"lucide"}', [Text.UTF8Encoding]::new($false))
     [IO.File]::WriteAllText((Join-Path $fixture 'SCREEN.md'), "# Fixture sintética`n`nTela com cabeçalho, busca central e tabela de resultados.`n", [Text.UTF8Encoding]::new($false))
     $fixtureGitBefore = (& git -C $fixture status --porcelain=v1 --untracked-files=all | Out-String)

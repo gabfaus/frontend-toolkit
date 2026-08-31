@@ -56,8 +56,8 @@ try {
     [void](New-Item -ItemType Directory -Path (Join-Path $fixture '.agents/skills') -Force)
     & git init --quiet $fixture
     if ($LASTEXITCODE -ne 0) { throw 'Could not initialize the synthetic Git fixture.' }
-    [void](New-Item -ItemType Junction -Path (Join-Path $fixture '.agents/skills/impeccable') -Target (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable'))
-    [void](New-Item -ItemType Junction -Path (Join-Path $fixture '.agents/skills/img2threejs') -Target (Join-Path $repoRoot 'external/img2threejs'))
+Copy-Item -LiteralPath (Join-Path $repoRoot '.agents/skills/impeccable') -Destination (Join-Path $fixture '.agents/skills/impeccable') -Recurse
+Copy-Item -LiteralPath (Join-Path $repoRoot '.agents/skills/img2threejs') -Destination (Join-Path $fixture '.agents/skills/img2threejs') -Recurse
 
     $profile = @"
 [mcp_servers.node_repl]

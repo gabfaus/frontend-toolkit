@@ -22,11 +22,41 @@ O cachebuster serve apenas para invalidar o cache local. Não é uma release e n
 
 ## Atualizar dependências externas
 
-Atualizações são manuais e independentes:
+Uma atualização de versão ou capability é uma mudança de segurança, não uma troca mecânica de pin. Toda atualização exige, antes de entrar na allowlist:
 
-- **Impeccable/img2threejs:** revisar release/tag, commit, licença/NOTICE, hash do `SKILL.md`, comportamento e proveniência; atualizar locks; sincronizar em checkout limpo; gerar duas snapshots e comparar a árvore.
-- **Shadcn:** revisar pacote, integridade npm, licença, runtime mínimo, tools MCP e testes read-only.
-- **21st:** revalidar endpoint, autenticação, tool surface, custos/quota e classificação de cada operação. Tool nova ou incerta fica bloqueada.
-- **Codex CLI:** revisar schema de plugin, instalação/marketplace, autenticação, config MCP, validators e lifecycle.
+1. diff contra o conteúdo atualmente pinado;
+2. release notes upstream;
+3. revisão proporcional de segurança;
+4. nova classificação de capabilities, tools e efeitos;
+5. testes estáticos, comportamentais e adversariais aplicáveis;
+6. origem, tag/versão, commit, licença, hashes e provenance;
+7. duas builds limpas e determinísticas;
+8. regressão do cost gate e das fronteiras de autorização.
+
+### External Skills
+
+Para Impeccable e img2threejs, uma nova versão exige diff integral do escopo redistribuído, inventário de executáveis, revisão de filesystem, rede, subprocessos, shell, ambiente, credenciais e instruções que tentem ampliar autoridade. Revise também symlinks, submodules, nested repositories, bits executáveis, LICENSE/NOTICE e todos os entrypoints novos. Regenere a snapshot somente do SHA aprovado e compare duas árvores; um pin identifica conteúdo, mas não prova segurança.
+
+Não aplique patch silencioso ao checkout ou snapshot. Se a segurança exigir derivação de upstream, pare para decisão arquitetural humana e registre provenance e estratégia de manutenção próprias.
+
+### Shadcn
+
+Revise pacote exato, integridade npm, licença, runtime mínimo, registry/origem, tools MCP, schemas, headers configuráveis e comandos retornados. Tool que apenas produz instrução de instalação não autoriza a execução dessa instrução. Teste somente consultas read-only em fixture até haver intenção explícita de modificar um projeto.
+
+### 21st
+
+Revalide endpoint, autenticação, inventário e semântica de cada tool, custos, quota e efeitos externos. A regra de nascimento é:
+
+```text
+NEW TOOL
+UNKNOWN
+AUTHORIZATION REQUIRED
+```
+
+Somente revisão humana explícita pode reclassificar uma tool. Divergência de schema, descrição ou efeito é `DRIFT - HUMAN REVIEW`. Uma tool nova nunca entra automaticamente na allowlist; `search` permanece a única operação automaticamente autorizada enquanto sua semântica atual continuar confirmada.
+
+### Codex CLI e orchestrator
+
+Para Codex CLI, revise schema de plugin, lifecycle de instalação, autenticação, config MCP, validators, sandbox e permissões. Para o orchestrator, revise ordem de autoridade, prompt injection, exfiltração, cost gate, fallbacks e equivalência entre a fonte em `.agents/skills` e a cópia distribuída.
 
 Nenhuma dessas mudanças é automática. Consulte `docs/VERSIONING.md` para decidir o impacto SemVer.

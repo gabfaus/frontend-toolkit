@@ -31,7 +31,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Temporary PyYAML installation failed.' }
     if ((& $venvPython -c 'import yaml; print(yaml.__version__)').Trim() -ne '6.0.3') { throw 'Temporary PyYAML version mismatch.' }
 
-    & (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot | Out-Null
+    & (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot -DevelopmentWorkingTree | Out-Null
     & $venvPython $pluginValidator (Join-Path $repoRoot 'plugin/frontend-toolkit')
     if ($LASTEXITCODE -ne 0) { throw 'Official source plugin validation failed.' }
     & $venvPython $pluginValidator $snapshot
@@ -39,14 +39,12 @@ try {
     & $venvPython $skillValidator (Join-Path $snapshot 'skills/frontend-orchestrator')
     if ($LASTEXITCODE -ne 0) { throw 'Official frontend-orchestrator validation failed.' }
 
-    foreach ($externalSkill in @('impeccable', 'img2threejs')) {
-        $output = (& $venvPython $skillValidator (Join-Path $snapshot "skills/$externalSkill") 2>&1 | Out-String)
-        if ($LASTEXITCODE -eq 0 -or $output -notmatch 'Unexpected key\(s\).*version') {
-            throw "Unexpected standalone validator behavior for $externalSkill."
-        }
+    foreach ($adapterSkill in @('impeccable', 'img2threejs')) {
+        & $venvPython $skillValidator (Join-Path $snapshot "skills/$adapterSkill")
+        if ($LASTEXITCODE -ne 0) { throw "Official adapter validation failed for $adapterSkill." }
     }
     Write-Output 'PASS: canonical plugin validator accepted source and complete distribution.'
-    Write-Output 'PASS: skill-creator accepted frontend-orchestrator; known upstream frontmatter extensions remain plugin-validator-scoped.'
+    Write-Output 'PASS: skill-creator accepted all three FTK-owned discovered Skills.'
 } finally {
     $env:PYTHONUTF8 = $oldPythonUtf8
     if (Test-Path -LiteralPath $fixture) { [IO.Directory]::Delete('\\?\' + [IO.Path]::GetFullPath($fixture), $true) }

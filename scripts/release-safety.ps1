@@ -21,6 +21,72 @@ function Assert-ExactStringSet {
     }
 }
 
+function Assert-SafeArchiveEntry {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][ValidateSet('file', 'directory', 'symlink', 'gitlink', 'reparse', 'other')][string]$EntryType,
+        [Parameter(Mandatory)][string]$Mode,
+        [Parameter(Mandatory)][string]$Context,
+        [string[]]$AllowedExecutablePaths = @()
+    )
+
+    $normalized = $Path.Replace([char]92, [char]47)
+    if ([string]::IsNullOrWhiteSpace($normalized) -or
+        [IO.Path]::IsPathRooted($Path) -or
+        $normalized.StartsWith('/') -or
+        $normalized -match '^[A-Za-z]:') {
+        throw "$Context contains an absolute or empty archive path: $Path"
+    }
+    $segments = @($normalized.Split('/') | Where-Object { $_ -ne '' })
+    if ($segments.Count -eq 0 -or $segments -contains '..' -or $segments -contains '.') {
+        throw "$Context contains archive traversal or an ambiguous path: $Path"
+    }
+    if (@($segments | Where-Object { $_.Equals('.git', [StringComparison]::OrdinalIgnoreCase) }).Count) {
+        throw "$Context contains nested Git metadata: $Path"
+    }
+    if ($EntryType -in @('symlink', 'gitlink', 'reparse', 'other')) {
+        throw "$Context contains an unsupported archive entry type $EntryType at $Path"
+    }
+    if ($Mode -eq '100755' -and $normalized -cnotin $AllowedExecutablePaths) {
+        throw "$Context contains an unexpected executable: $Path"
+    }
+}
+
+function Assert-SafeGitArchiveTree {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string]$Commit,
+        [Parameter(Mandatory)][string]$Context,
+        [string[]]$Paths = @(),
+        [string[]]$AllowedExecutablePaths = @()
+    )
+
+    $safeRepository = [IO.Path]::GetFullPath($Repository).Replace([char]92, [char]47)
+    $arguments = @('-c', "safe.directory=$safeRepository", '-C', $Repository, '-c', 'core.quotepath=true', 'ls-tree', '-r', '--full-tree', $Commit)
+    if ($Paths.Count) { $arguments += @('--') + $Paths }
+    $lines = @(& git @arguments)
+    Assert-ReleaseNativeSuccess "$Context tree inventory"
+    if (-not $lines.Count) { throw "$Context archive selection is empty." }
+
+    foreach ($line in $lines) {
+        if ($line -notmatch '^(?<mode>[0-9]{6}) (?<type>[a-z]+) [0-9a-f]+\t(?<path>.+)$') {
+            throw "$Context contains an unparseable Git tree entry."
+        }
+        $path = $Matches.path
+        if ($path.StartsWith('"')) { throw "$Context contains a quoted or control-character path: $path" }
+        $entryType = if ($Matches.mode -eq '120000') {
+            'symlink'
+        } elseif ($Matches.mode -eq '160000' -or $Matches.type -eq 'commit') {
+            'gitlink'
+        } elseif ($Matches.type -eq 'blob') {
+            'file'
+        } else {
+            'other'
+        }
+        Assert-SafeArchiveEntry -Path $path -EntryType $entryType -Mode $Matches.mode -Context $Context -AllowedExecutablePaths $AllowedExecutablePaths
+    }
+}
+
 function Get-GitPathState {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,
@@ -46,6 +112,10 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'skills/frontend-orchestrator/references/routing-policy.json'
         'skills/frontend-orchestrator/references/routing.md'
         'skills/frontend-orchestrator/references/scenarios.json'
+        'skills/impeccable/SKILL.md'
+        'skills/img2threejs/SKILL.md'
+        'security/effect-policy.json'
+        'security/invoke-capability.ps1'
     )
 }
 
@@ -55,6 +125,9 @@ function Get-FrontendToolkitSourceDirectoryAllowlist {
         'skills'
         'skills/frontend-orchestrator'
         'skills/frontend-orchestrator/references'
+        'skills/impeccable'
+        'skills/img2threejs'
+        'security'
     )
 }
 
@@ -63,7 +136,8 @@ function Assert-ApprovedSourceComposition {
         [Parameter(Mandatory)][string]$RepoRoot,
         [Parameter(Mandatory)][string]$PluginSource,
         [Parameter(Mandatory)][string[]]$FileAllowlist,
-        [Parameter(Mandatory)][string[]]$DirectoryAllowlist
+        [Parameter(Mandatory)][string[]]$DirectoryAllowlist,
+        [switch]$AllowWorkingTree
     )
 
     Assert-NoSensitiveArtifactPaths -Root $PluginSource -Context 'plugin source'
@@ -82,16 +156,18 @@ function Assert-ApprovedSourceComposition {
     Assert-ExactStringSet -Name 'plugin source files' -Actual $actualFiles -Expected $FileAllowlist
     Assert-ExactStringSet -Name 'plugin source directories' -Actual $actualDirectories -Expected $DirectoryAllowlist
 
-    $safeRepo = $RepoRoot.Replace('\', '/')
-    $expectedTracked = @($FileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
-    $tracked = @(& git -c "safe.directory=$safeRepo" -C $RepoRoot -c core.quotepath=false ls-files --cached -- 'plugin/frontend-toolkit')
-    Assert-ReleaseNativeSuccess 'Plugin source tracked inventory'
-    Assert-ExactStringSet -Name 'tracked plugin source' -Actual $tracked -Expected $expectedTracked
+    if (-not $AllowWorkingTree) {
+        $safeRepo = $RepoRoot.Replace('\', '/')
+        $expectedTracked = @($FileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
+        $tracked = @(& git -c "safe.directory=$safeRepo" -C $RepoRoot -c core.quotepath=false ls-files --cached -- 'plugin/frontend-toolkit')
+        Assert-ReleaseNativeSuccess 'Plugin source tracked inventory'
+        Assert-ExactStringSet -Name 'tracked plugin source' -Actual $tracked -Expected $expectedTracked
 
-    $approvedInputs = @('LICENSE') + $expectedTracked
-    & git -c "safe.directory=$safeRepo" -C $RepoRoot diff --quiet HEAD -- @approvedInputs
-    if ($LASTEXITCODE -eq 1) { throw 'Approved source inputs differ from HEAD.' }
-    Assert-ReleaseNativeSuccess 'Approved source input comparison'
+        $approvedInputs = @('LICENSE') + $expectedTracked
+        & git -c "safe.directory=$safeRepo" -C $RepoRoot diff --quiet HEAD -- @approvedInputs
+        if ($LASTEXITCODE -eq 1) { throw 'Approved source inputs differ from HEAD.' }
+        Assert-ReleaseNativeSuccess 'Approved source input comparison'
+    }
 }
 
 function ConvertTo-ArtifactRelativePath {

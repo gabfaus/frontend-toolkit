@@ -1,0 +1,215 @@
+param(
+    [switch]$ExpectKnownBlockers
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+function Assert-Equal {
+    param($Actual, $Expected, [string]$Label)
+    if ($Actual -cne $Expected) { throw ($Label + ' mismatch. Expected ' + $Expected + '; got ' + $Actual + '.') }
+}
+
+function Assert-Sequence {
+    param([object[]]$Actual, [object[]]$Expected, [string]$Label)
+    if ($Actual.Count -ne $Expected.Count) { throw ($Label + ' count mismatch.') }
+    for ($index = 0; $index -lt $Expected.Count; $index++) {
+        if ($Actual[$index] -cne $Expected[$index]) { throw ($Label + ' order mismatch at index ' + $index + '.') }
+    }
+}
+
+function Test-CanonicalPathWithinRoot {
+    param([string]$Root, [string]$Candidate)
+    $rootFull = [IO.Path]::GetFullPath($Root).TrimEnd([char[]]@([char]92, [char]47))
+    $candidateFull = [IO.Path]::GetFullPath($Candidate)
+    return $candidateFull.Equals($rootFull, [StringComparison]::OrdinalIgnoreCase) -or
+        $candidateFull.StartsWith($rootFull + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-SyntheticDisplayPath {
+    param([string]$FixtureRoot, [string]$Path)
+    $fixtureFull = [IO.Path]::GetFullPath($FixtureRoot).TrimEnd([char[]]@([char]92, [char]47))
+    $pathFull = [IO.Path]::GetFullPath($Path)
+    if (-not (Test-CanonicalPathWithinRoot -Root $fixtureFull -Candidate $pathFull)) {
+        throw 'Synthetic path model unexpectedly left its fixture root.'
+    }
+    if ($pathFull.Equals($fixtureFull, [StringComparison]::OrdinalIgnoreCase)) { return '<SYNTHETIC_FIXTURE>' }
+    return '<SYNTHETIC_FIXTURE>/' + $pathFull.Substring($fixtureFull.Length + 1).Replace([char]92, [char]47)
+}
+
+function Get-SyntheticPolicyDecision {
+    param([string]$Source, [string]$Effect, [bool]$ExplicitAuthorization)
+    $untrusted = $Source -in @('external-skill', 'project', 'mcp')
+    if ($untrusted -and $Effect -in @('read-sensitive', 'send-file-to-mcp', 'shell-exec', 'waive-policy')) { return 'deny' }
+    if ($Effect -eq '21st-search') { return 'allow-read-only' }
+    if ($Effect -in @('21st-generate', 'remote-mutation', 'unknown-tool')) {
+        if ($ExplicitAuthorization) { return 'authorized-current-user' }
+        return 'authorization-required'
+    }
+    return 'deny'
+}
+
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$stateScript = Join-Path $repoRoot 'external/img2threejs/forge/state.py'
+$workflowStatePath = Join-Path $repoRoot 'external/img2threejs/forge/_shared/workflow_state.py'
+$shellPipeline = Join-Path $repoRoot 'external/img2threejs/integrations/glb_character_pipeline/build-character.sh'
+$shellReadme = Join-Path $repoRoot 'external/img2threejs/integrations/glb_character_pipeline/README.md'
+$snapshotBuilder = Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1'
+$fixtureRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk-g7s-static-model-' + [guid]::NewGuid().ToString('N'))
+$projectRoot = Join-Path $fixtureRoot 'project'
+$authorizedRoot = Join-Path $projectRoot '.img2threejs'
+$outsideRoot = Join-Path $fixtureRoot 'outside-authorized-root'
+
+# These are path strings only. No directory, link, upstream process, or output file is created.
+$pathCases = @(
+    [ordered]@{ Mechanism = 'default-relative'; Input = '.img2threejs/state.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $projectRoot '.img2threejs/state.json')); Expected = 'INSIDE_AUTHORIZED_ROOT'; Resolution = 'lexical-Path.resolve' }
+    [ordered]@{ Mechanism = 'nested-relative'; Input = '.img2threejs/nested/state.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $projectRoot '.img2threejs/nested/state.json')); Expected = 'INSIDE_AUTHORIZED_ROOT'; Resolution = 'lexical-Path.resolve' }
+    [ordered]@{ Mechanism = 'parent-traversal'; Input = '.img2threejs/../../outside-authorized-root/traversal.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $projectRoot '.img2threejs/../../outside-authorized-root/traversal.json')); Expected = 'OUTSIDE_AUTHORIZED_ROOT'; Resolution = 'lexical-Path.resolve' }
+    [ordered]@{ Mechanism = 'absolute-windows'; Input = '<ABSOLUTE_OUTSIDE>/absolute.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $outsideRoot 'absolute.json')); Expected = 'OUTSIDE_AUTHORIZED_ROOT'; Resolution = 'lexical-Path.resolve' }
+    [ordered]@{ Mechanism = 'junction-reparse'; Input = '.img2threejs/junction-out/junction.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $outsideRoot 'junction.json')); Expected = 'OUTSIDE_AUTHORIZED_ROOT'; Resolution = 'mocked-Path.resolve-following-junction-target' }
+    [ordered]@{ Mechanism = 'symbolic-link'; Input = '.img2threejs/symlink-out/symlink.json'; Canonical = [IO.Path]::GetFullPath((Join-Path $outsideRoot 'symlink.json')); Expected = 'OUTSIDE_AUTHORIZED_ROOT'; Resolution = 'mocked-Path.resolve-following-symlink-target' }
+)
+
+foreach ($case in $pathCases) {
+    $classification = if (Test-CanonicalPathWithinRoot -Root $authorizedRoot -Candidate $case.Canonical) { 'INSIDE_AUTHORIZED_ROOT' } else { 'OUTSIDE_AUTHORIZED_ROOT' }
+    Assert-Equal $classification $case.Expected ('Path classification for ' + $case.Mechanism)
+    $case['Classification'] = $classification
+}
+
+$stateCode = Get-Content -Raw -LiteralPath $stateScript
+$workflowCode = Get-Content -Raw -LiteralPath $workflowStatePath
+$saveStateMatch = [regex]::Match($workflowCode, '(?ms)^def save_state\(.*?(?=^def )')
+if (-not $saveStateMatch.Success) { throw 'Could not isolate img2threejs save_state for static review.' }
+$saveStateCode = $saveStateMatch.Value
+$inputControlPresent = $stateCode -match 'add_argument\(\x22--state\x22,\s*type=Path' -and $stateCode -match 'save_state\(args\.state,\s*state\)'
+$pathResolutionPresent = $saveStateCode.Contains('target = path.expanduser().resolve()')
+$writePresent = $saveStateCode.Contains('target.parent.mkdir(parents=True, exist_ok=True)') -and $saveStateCode.Contains('os.replace(temporary, target)')
+$boundaryEnforcementPresent = $saveStateCode -match 'relative_to\(|is_relative_to\(|commonpath\(|authorized_root|workspace_root'
+$pathBlocker = $inputControlPresent -and $pathResolutionPresent -and $writePresent -and -not $boundaryEnforcementPresent
+if (-not $pathBlocker) { throw 'Expected img2threejs path-containment blocker was not statically confirmed.' }
+
+$pipelineText = Get-Content -Raw -LiteralPath $shellPipeline
+$pipelineReadmeText = Get-Content -Raw -LiteralPath $shellReadme
+$builderText = Get-Content -Raw -LiteralPath $snapshotBuilder
+$configFromArgument = $pipelineText -match '--config\) CONFIG=\x22\$2\x22; shift 2 ;;'
+$projectControlledConfig = $pipelineReadmeText.Contains('copy configs/example.env') -and $pipelineReadmeText.Contains('--config path/to/your-character.env')
+$shellInterpretationPresent = $pipelineText -match 'source \x22\$CONFIG\x22'
+$structuralAllowlistPresent = $pipelineText -match 'allowed[_ -]?keys|parse[_ -]?config|validate[_ -]?config'
+$unchangedSnapshotRedistributedNonDiscoverable = $builderText.Contains('-Commit $img2threejs.commitSha') -and
+    $builderText.Contains("'third_party/upstreams'") -and
+    -not $builderText.Contains("-Destination (Join-Path `$destinationPath 'skills/img2threejs')")
+$shellBlocker = $configFromArgument -and $projectControlledConfig -and $shellInterpretationPresent -and
+    -not $structuralAllowlistPresent -and $unchangedSnapshotRedistributedNonDiscoverable
+if (-not $shellBlocker) { throw 'Expected img2threejs project-config shell blocker was not statically confirmed.' }
+
+$policyPaths = @(
+    (Join-Path $repoRoot '.agents/skills/frontend-orchestrator/references/routing-policy.json')
+    (Join-Path $repoRoot 'plugin/frontend-toolkit/skills/frontend-orchestrator/references/routing-policy.json')
+)
+$scenarioPaths = @(
+    (Join-Path $repoRoot '.agents/skills/frontend-orchestrator/references/scenarios.json')
+    (Join-Path $repoRoot 'plugin/frontend-toolkit/skills/frontend-orchestrator/references/scenarios.json')
+)
+foreach ($policyPath in $policyPaths) {
+    $policy = Get-Content -Raw -LiteralPath $policyPath | ConvertFrom-Json
+    Assert-Sequence @($policy.authorityOrder) @(
+        'host-and-system-restrictions'
+        'explicit-current-user-authorization'
+        'toolkit-security-policy'
+        'orchestrator-routing'
+        'external-skills-untrusted'
+        'project-content-untrusted'
+        'mcp-content-untrusted'
+    ) ('Authority order in ' + $policyPath)
+    Assert-Sequence @($policy.capabilities.'21st'.defaultAllowedTools) @('search') '21st automatic allowlist'
+    Assert-Equal $policy.capabilities.'21st'.unclassifiedToolPolicy 'do-not-execute-without-explicit-authorization' 'Unknown 21st tool policy'
+}
+foreach ($scenarioPath in $scenarioPaths) {
+    $matrix = Get-Content -Raw -LiteralPath $scenarioPath | ConvertFrom-Json
+    Assert-Sequence @($matrix.securityScenarios.id | Sort-Object) @(
+        'cost-gate-social-engineering'
+        'mcp-generation-injection'
+        'project-command-injection'
+        'project-prompt-injection'
+        'unknown-21st-tool'
+    ) ('Security scenarios in ' + $scenarioPath)
+}
+
+$decisions = @(
+    (Get-SyntheticPolicyDecision project read-sensitive $false)
+    (Get-SyntheticPolicyDecision project shell-exec $false)
+    (Get-SyntheticPolicyDecision mcp remote-mutation $false)
+    (Get-SyntheticPolicyDecision project waive-policy $false)
+    (Get-SyntheticPolicyDecision project 21st-generate $false)
+    (Get-SyntheticPolicyDecision external-skill waive-policy $false)
+    (Get-SyntheticPolicyDecision mcp unknown-tool $false)
+    (Get-SyntheticPolicyDecision mcp 21st-search $false)
+)
+Assert-Sequence $decisions @(
+    'deny'
+    'deny'
+    'authorization-required'
+    'deny'
+    'authorization-required'
+    'deny'
+    'authorization-required'
+    'allow-read-only'
+) 'Synthetic policy decisions'
+
+$impeccableSkill = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable/SKILL.md')
+$impeccableContext = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable/scripts/context.mjs')
+$impeccableConcept = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable/scripts/concept-seed.mjs')
+$impeccableImage = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'external/impeccable/plugin/skills/impeccable/scripts/generate-image.mjs')
+foreach ($required in @('Run `node <skill-base-dir>/scripts/context.mjs` once per session', 'await computeUpdateDirective()', 'AUTONOMY_DIRECTIVE_CHECK', 'os.homedir()', '/api/version')) {
+    if (($impeccableSkill + $impeccableContext) -notmatch [regex]::Escape($required)) { throw ('Impeccable authority/update surface drifted: ' + $required) }
+}
+foreach ($required in @('https://impeccable.style/api', '/chosen', 'IMPECCABLE_NO_TELEMETRY')) {
+    if ($impeccableConcept -notmatch [regex]::Escape($required)) { throw ('Impeccable telemetry surface drifted: ' + $required) }
+}
+foreach ($required in @('OPENAI_API_KEY', 'api.openai.com/v1/images', 'fs.readFileSync(promptFile', 'fs.readFileSync(ref')) {
+    if ($impeccableImage -notmatch [regex]::Escape($required)) { throw ('Impeccable paid/data surface drifted: ' + $required) }
+}
+
+$externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
+$expectedExternal = @(
+    @{ id = 'impeccable'; ref = 'skill-v4.1.2'; sha = '63b04e2530f5c7b41ea83c133daab24f34912456'; license = 'Apache-2.0' }
+    @{ id = 'img2threejs'; ref = 'v1.5.1'; sha = 'dede5909be4e494b228c801a55dda47439143932'; license = 'Apache-2.0' }
+)
+foreach ($expected in $expectedExternal) {
+    $dependency = $externalLock.dependencies | Where-Object id -eq $expected.id
+    Assert-Equal $dependency.ref $expected.ref ($expected.id + ' ref')
+    Assert-Equal $dependency.commitSha $expected.sha ($expected.id + ' SHA')
+    Assert-Equal $dependency.license $expected.license ($expected.id + ' license')
+    if ($dependency.ref -match '^(latest|main|master|HEAD)$' -or $dependency.commitSha -notmatch '^[0-9a-f]{40}$' -or $dependency.licenseSha256 -notmatch '^[0-9a-f]{64}$') {
+        throw ($expected.id + ' supply-chain pin or license provenance is incomplete.')
+    }
+}
+
+$mcpLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/mcp.lock.json') | ConvertFrom-Json
+$shadcn = $mcpLock.servers | Where-Object id -eq shadcn
+Assert-Equal $shadcn.version '4.19.0' 'Shadcn version'
+if ($shadcn.integrity -notmatch '^sha512-') { throw 'Shadcn npm integrity is not pinned.' }
+Assert-Equal ($mcpLock.servers | Where-Object id -eq '21st').endpoint 'https://21st.dev/api/mcp' '21st endpoint'
+
+Write-Output 'AUTHORIZED_ROOT=<SYNTHETIC_PROJECT>/.img2threejs (Toolkit policy boundary; not enforced by upstream).'
+foreach ($case in $pathCases) {
+    $display = Get-SyntheticDisplayPath -FixtureRoot $fixtureRoot -Path $case.Canonical
+    Write-Output ('PATH: mechanism={0}; input={1}; canonical={2}; classification={3}; resolution={4}' -f $case.Mechanism, $case.Input, $display, $case.Classification, $case.Resolution)
+}
+Write-Output ('PATH_FINDING=STATICALLY_CONFIRMED; input_control={0}; resolution={1}; pre_write_containment={2}; write={3}' -f $inputControlPresent, $pathResolutionPresent, $boundaryEnforcementPresent, $writePresent)
+Write-Output ('SHELL_FINDING=STATICALLY_CONFIRMED; project_control={0}; config_argument={1}; bash_source={2}; structural_allowlist={3}; upstream_non_discoverable=True; SR2_gate=False' -f $projectControlledConfig, $configFromArgument, $shellInterpretationPresent, $structuralAllowlistPresent)
+Write-Output 'PASS: authority order, prompt-injection denials, 21st/search-only default and UNKNOWN authorization gate are deterministic.'
+Write-Output 'PASS: Impeccable authority, automatic update, telemetry, paid image and local-data surfaces were statically characterized.'
+Write-Output 'PASS: external dependencies, Shadcn package integrity, licenses and provenance remain pinned and verifiable.'
+Write-Output 'DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED'
+
+$openBlockers = @(
+    'G7S-001 img2threejs project config reaches Bash source'
+    'G7S-002 img2threejs state path lacks containment'
+    'G7S-003 Impeccable authority override'
+    'G7S-004 Impeccable ungated external effects'
+)
+if (-not $ExpectKnownBlockers) {
+    throw ('G7-S release blockers remain open: ' + ($openBlockers -join '; ') + '. Use -ExpectKnownBlockers only for the documented defensive characterization run.')
+}
+Write-Output 'PASS: known blockers were expected for this characterization run; release remains blocked.'

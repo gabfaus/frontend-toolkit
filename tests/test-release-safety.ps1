@@ -12,7 +12,7 @@ $releaseBuilder = Join-Path $repoRoot 'scripts/build-release-candidate.ps1'
 
 $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $directoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
-Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $pluginSource -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist
+Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $pluginSource -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist -AllowWorkingTree
 
 $snapshotText = Get-Content -Raw -LiteralPath $snapshotBuilder
 $releaseText = Get-Content -Raw -LiteralPath $releaseBuilder
@@ -75,7 +75,7 @@ try {
 
         $rejected = $false
         try {
-            Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $fixturePlugin -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist
+            Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $fixturePlugin -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist -AllowWorkingTree
         } catch {
             $rejected = $true
         }
@@ -88,7 +88,7 @@ try {
             (Get-Item -Force -LiteralPath $attackRoot).Attributes = [IO.FileAttributes]::Normal
             Remove-Item -Force -LiteralPath $attackRoot
         }
-        Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $fixturePlugin -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist
+        Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $fixturePlugin -FileAllowlist $fileAllowlist -DirectoryAllowlist $directoryAllowlist -AllowWorkingTree
     }
     Write-Output 'PASS: synthetic .env, auth, credentials, untracked, ignored, hidden, nested Git and private-key paths fail closed.'
 } finally {

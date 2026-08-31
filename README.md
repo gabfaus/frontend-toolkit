@@ -2,7 +2,7 @@
 
 Frontend Toolkit é um plugin open source para Codex que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A V1 técnica está concluída; a primeira publicação pública pretendida é `v1.0.0`, ainda sem tag ou release.
+O projeto está licenciado sob Apache-2.0. A V1 técnica foi concluída historicamente, mas a revisão defensiva G7-S bloqueou o candidato `v1.0.0` antes da primeira publicação. Não há tag ou release.
 
 ## O que o plugin oferece
 
@@ -17,17 +17,17 @@ Frontend Toolkit
 
 - **frontend-orchestrator:** escolhe a menor combinação de capacidades necessária e preserva a intenção explícita do usuário.
 - **Impeccable:** cobre composição, hierarquia, acessibilidade, responsividade e qualidade de interface.
-- **img2threejs:** transforma referências visuais em modelos Three.js construídos em código, com estado confinado ao projeto autorizado.
+- **img2threejs:** transforma referências visuais em modelos Three.js construídos em código. A revisão G7-S encontrou escape de paths e execução insegura em um pipeline opcional do snapshot v1.5.1; a publicação está bloqueada até mitigação.
 - **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
 - **21st MCP:** serviço remoto em `https://21st.dev/api/mcp`, autenticado somente pela variável `API_KEY_21ST`.
 
-Impeccable e img2threejs permanecem projetos upstream independentes. O repositório-fonte não contém suas cópias: o artefato de release gera snapshots imutáveis dos SHAs pinados, preserva licenças/proveniência e pode ser reproduzido deterministicamente. O código próprio é extraído de `HEAD` por uma allowlist exata; qualquer entrada inesperada no diretório local do plugin, inclusive untracked, ignored ou hidden, faz o build falhar.
+Impeccable e img2threejs permanecem projetos upstream independentes. A descoberta usa adapters próprios do FTK; nenhum `SKILL.md` upstream fica em `.agents/skills` ou em `skills/` do artefato. O build gera snapshots imutáveis e byte-verificados dos SHAs pinados somente sob `third_party/upstreams/`, com provenance separada. O build de release continua extraindo o código próprio de `HEAD` por allowlist exata; o modo `-DevelopmentWorkingTree` existe apenas para validar gates ainda não commitados e mantém as mesmas verificações de composição, reparse points e paths sensíveis.
 
 ## Política de custo e mutação do 21st
 
 Somente `21st/search` é autorizado automaticamente. Geração, iteração, consumo de créditos ou quota, recuperação/cópia/instalação de código, publicação, edição, exclusão, bookmarks, listas, conta/perfil, qualquer mutation e qualquer tool nova ou de efeito incerto exigem autorização explícita.
 
-O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiais do 21st ou hooks. Quando suportado pelo ambiente, recomenda-se também limitar tecnicamente o MCP 21st a `search`; essa configuração do consumidor complementa, mas não substitui, a política semântica do orchestrator.
+O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiais do 21st ou hooks. Quando suportado pelo ambiente, recomenda-se também limitar tecnicamente o MCP 21st a `search`; essa configuração do consumidor complementa, mas não substitui, a política semântica do orchestrator. O 21st é opcional para todas as demais capacidades.
 
 ## Requisitos
 
@@ -42,6 +42,8 @@ O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiai
 As versões e hashes validados estão em `integrations/toolchain.lock.json`, `integrations/external.lock.json` e `integrations/mcp.lock.json`.
 
 ## Instalação a partir do source
+
+> **Bloqueado pelo G7-S:** não instale nem recomende o candidato atual. Os comandos abaixo permanecem documentados para reprodução controlada por mantenedores após a mitigação dos findings abertos.
 
 Depois de clonar este repositório:
 
@@ -58,7 +60,7 @@ Veja [Instalação](docs/INSTALLATION.md) para validação, configuração de me
 
 ## Configuração do 21st
 
-Forneça `API_KEY_21ST` externamente pelo ambiente ou por um gerenciador de secrets. Nunca grave o valor em `.mcp.json`, `config.toml`, scripts, logs ou no repositório. A ausência da variável não impede discovery das três Skills nem uso do Shadcn; apenas deixa o smoke autenticado do 21st indisponível.
+Cada usuário autentica sua própria conta Codex e fornece sua própria `API_KEY_21ST`, externamente pelo ambiente ou por um gerenciador de secrets. Nenhuma chave do mantenedor acompanha o plugin. Nunca grave o valor em `.mcp.json`, `config.toml`, scripts, logs ou no repositório. A ausência da variável não impede discovery das três Skills nem uso do Shadcn; apenas deixa o smoke autenticado do 21st indisponível.
 
 Para conferir somente a presença da variável, sem revelar seu conteúdo:
 
@@ -75,7 +77,7 @@ Descreva a tarefa normalmente; não é necessário nomear uma ferramenta. Exempl
 - `Quero transformar esta imagem em um asset para usar com Three.js.`
 - `Procure inspiração para componentes de dashboard moderno.`
 
-Se uma ação do 21st puder consumir créditos, quota ou modificar estado, o plugin deve parar e pedir autorização antes da chamada.
+Se uma ação do 21st puder consumir créditos, quota ou modificar estado, o plugin deve parar e pedir autorização antes da chamada. Skills distribuídas contêm código local executável; consulte [Security model](docs/SECURITY-MODEL.md) antes de instalar ou executar.
 
 ## Atualização e remoção
 
@@ -110,4 +112,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 está **CLOSED** após revisão humana em 2026-08-29. Frontend Toolkit V1 está **PUBLIC RELEASE READY** para `v1.0.0`; o projeto ainda não foi publicado, tagueado nem lançado.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. A revisão posterior G7-S está **BLOCKED** por findings Critical/High nos snapshots upstream; portanto, o Frontend Toolkit V1 não está atualmente pronto para publicação, instalação por terceiros ou recomendação. O projeto continua sem publicação, tag ou release.

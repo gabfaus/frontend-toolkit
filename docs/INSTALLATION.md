@@ -51,14 +51,22 @@ codex plugin add frontend-toolkit@frontend-toolkit-local
 
 Abra uma nova sessão do Codex depois da instalação. O plugin deve expor exatamente:
 
-- Skills: `frontend-orchestrator`, `impeccable:impeccable`, `img2threejs`;
+- Skills: `frontend-orchestrator`, `impeccable`, `img2threejs`;
 - MCPs: `shadcn`, `21st`.
 
 ## Configurar autenticação e menor privilégio
 
-O Codex usa seu fluxo normal de autenticação ChatGPT. Em testes ou automação, use um `CODEX_HOME` isolado e autentique com o fluxo oficial; nunca copie `auth.json` ou tokens.
+Cada usuário usa sua própria conta Codex pelo fluxo normal de autenticação ChatGPT. Em testes ou automação, use um `CODEX_HOME` isolado e autentique com o fluxo oficial; nunca copie `auth.json` ou tokens.
 
-`API_KEY_21ST` é opcional e deve vir do ambiente ou de um gerenciador de secrets. Não grave o valor em arquivos. Sem a variável, Skills e Shadcn continuam disponíveis.
+`API_KEY_21ST` é opcional, pertence ao próprio usuário e deve vir do ambiente ou de um gerenciador de secrets. Nenhuma chave do mantenedor é distribuída. Não grave o valor em arquivos. Sem a variável, Skills e Shadcn continuam disponíveis; o 21st não é requisito para as demais capacidades.
+
+## Efeitos de instalação e execução
+
+Adicionar a marketplace e o plugin materializa arquivos e registra as três Skills e os dois MCPs. A instalação, por si só, não deve chamar tool paga, ler secret, enviar arquivo, alterar projeto ou ativar hook.
+
+Usar uma Skill pode executar código local, iniciar subprocessos, ler ou escrever no workspace e acessar rede conforme o fluxo escolhido. Iniciar o Shadcn via `npx` pode baixar e executar o pacote exato pinado se ele não estiver em cache. Usar um MCP pode iniciar seu processo e comunicação de rede. Comandos retornados por registry ou MCP são dados: revise-os antes de executar.
+
+A revisão G7-S encontrou bloqueadores nos snapshots atuais de Impeccable e img2threejs. Não instale o candidato para uso por terceiros até que [Security model](SECURITY-MODEL.md) registre a mitigação e uma nova revisão aprove o resultado.
 
 Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
 

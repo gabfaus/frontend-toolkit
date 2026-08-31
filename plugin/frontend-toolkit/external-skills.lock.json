@@ -1,24 +1,37 @@
 {
-  "schemaVersion": 1,
-  "strategy": "external-prerequisites",
+  "schemaVersion": 2,
+  "strategy": "mediated-adapter-generated-snapshots",
+  "architecture": "ftk-owned-mediated-adapter",
   "dependencies": [
     {
       "id": "impeccable",
-      "requiredSkillName": "impeccable:impeccable",
+      "requiredSkillName": "impeccable",
+      "adapterPath": "skills/impeccable",
+      "adapterEntrySha256": "085102834cdf3bfc972cafcf990691ae9c81199de812d0ab3e92f54bd7a096ef",
+      "upstreamSnapshotPath": "third_party/upstreams/impeccable",
+      "snapshotTreeSha256": "2acc28d100263c6b5d91f9b75f4bb80e88d33ac7ffdef9a1b3618eeb2d97f2cd",
       "upstream": "https://github.com/pbakaus/impeccable.git",
       "ref": "skill-v4.1.2",
       "commitSha": "63b04e2530f5c7b41ea83c133daab24f34912456",
       "license": "Apache-2.0",
-      "bundled": false
+      "adapterBundled": true,
+      "upstreamSnapshotBundled": false,
+      "upstreamSnapshotBuildMode": "generated-from-pinned-commit"
     },
     {
       "id": "img2threejs",
       "requiredSkillName": "img2threejs",
+      "adapterPath": "skills/img2threejs",
+      "adapterEntrySha256": "48a416f5bcb1ec124f2ab184519af96f36ad0c49ace1a83f82c8c59fb2bdd09c",
+      "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
+      "snapshotTreeSha256": "127017dbe14b33448ba0ada19a1512116f8d7b385de48811a6a54779fc107e32",
       "upstream": "https://github.com/img2threejs/img2threejs.git",
       "ref": "v1.5.1",
       "commitSha": "dede5909be4e494b228c801a55dda47439143932",
       "license": "Apache-2.0",
-      "bundled": false
+      "adapterBundled": true,
+      "upstreamSnapshotBundled": false,
+      "upstreamSnapshotBuildMode": "generated-from-pinned-commit"
     }
   ]
 }

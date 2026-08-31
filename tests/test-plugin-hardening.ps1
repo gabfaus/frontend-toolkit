@@ -10,7 +10,7 @@ $notices = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'THIRD_PARTY_NOTIC
 if ($manifest.license -ne 'Apache-2.0') { throw 'Plugin license metadata drifted.' }
 if ((Get-Content -LiteralPath (Join-Path $repoRoot 'LICENSE') -TotalCount 3 | Out-String) -notmatch 'Apache License') { throw 'Apache-2.0 license text is missing.' }
 foreach ($term in @('Impeccable', 'img2threejs', 'Shadcn', '21st', 'Platform Design Skills')) { if ($notices -notmatch [regex]::Escape($term)) { throw "Third-party notice is missing $term." } }
-if ($distribution.strategy -ne 'generated-distribution-snapshots' -or $distribution.observedSnapshotTreeSha256 -notmatch '^[0-9a-f]{64}$') { throw 'Distribution lock drifted.' }
+if ($distribution.strategy -ne 'mediated-adapter-generated-snapshots' -or $distribution.architecture -ne 'ftk-owned-mediated-adapter' -or $distribution.observedSnapshotTreeSha256 -notmatch '^[0-9a-f]{64}$') { throw 'Distribution lock drifted.' }
 $impeccable = $external.dependencies | Where-Object id -eq 'impeccable'
 if ($impeccable.noticeSha256 -notmatch '^[0-9a-f]{64}$') { throw 'Impeccable NOTICE is not locked.' }
 if ((Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $impeccable.noticeFile)).Hash.ToLowerInvariant() -ne $impeccable.noticeSha256) { throw 'Impeccable NOTICE hash drifted.' }

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "architecture": "mediated-adapter",
+  "effectClasses": [
+    "LOCAL_READ_ONLY",
+    "LOCAL_PROJECT_WRITE",
+    "LOOPBACK_EPHEMERAL",
+    "NETWORK_PASSIVE",
+    "TELEMETRY",
+    "PAID_GENERATION",
+    "EXTERNAL_MUTATION",
+    "UNKNOWN"
+  ],
+  "unknownEffectPolicy": "deny",
+  "skills": {
+    "impeccable": {
+      "adapterPath": "skills/impeccable",
+      "upstreamSnapshotPath": "third_party/upstreams/impeccable",
+      "capabilities": [
+        "critique",
+        "audit",
+        "polish",
+        "layout",
+        "typography",
+        "hierarchy",
+        "ux",
+        "accessibility",
+        "responsive",
+        "motion",
+        "design-systems",
+        "live-workflows",
+        "authorized-generation"
+      ]
+    },
+    "img2threejs": {
+      "adapterPath": "skills/img2threejs",
+      "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
+      "capabilities": [
+        "3d-reasoning",
+        "reconstruction",
+        "state",
+        "nested-state",
+        "configurable-glb-pipeline",
+        "validation-build-workflows",
+        "authorized-network-helpers"
+      ]
+    }
+  },
+  "operations": [
+    {
+      "id": "impeccable.capability-summary",
+      "skill": "impeccable",
+      "effect": "LOCAL_READ_ONLY",
+      "status": "enabled",
+      "handler": "builtin.capability-summary"
+    },
+    {
+      "id": "img2threejs.capability-summary",
+      "skill": "img2threejs",
+      "effect": "LOCAL_READ_ONLY",
+      "status": "enabled",
+      "handler": "builtin.capability-summary"
+    },
+    {
+      "id": "impeccable.context",
+      "skill": "impeccable",
+      "effect": "UNKNOWN",
+      "status": "blocked-g7-sr3"
+    },
+    {
+      "id": "impeccable.live",
+      "skill": "impeccable",
+      "effect": "UNKNOWN",
+      "status": "blocked-g7-sr3"
+    },
+    {
+      "id": "impeccable.paid-generation",
+      "skill": "impeccable",
+      "effect": "PAID_GENERATION",
+      "status": "blocked-g7-sr3"
+    },
+    {
+      "id": "img2threejs.state",
+      "skill": "img2threejs",
+      "effect": "LOCAL_PROJECT_WRITE",
+      "status": "blocked-g7-sr2"
+    },
+    {
+      "id": "img2threejs.glb-pipeline",
+      "skill": "img2threejs",
+      "effect": "LOCAL_PROJECT_WRITE",
+      "status": "blocked-g7-sr2"
+    },
+    {
+      "id": "img2threejs.network-helper",
+      "skill": "img2threejs",
+      "effect": "UNKNOWN",
+      "status": "blocked-g7-sr2"
+    }
+  ]
+}
