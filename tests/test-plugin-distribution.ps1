@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 function Get-TreeHash {
     param([Parameter(Mandatory)][string]$Root)
     $rootPath = (Resolve-Path $Root).Path
-    $entries = Get-ChildItem -LiteralPath $rootPath -Recurse -File | ForEach-Object {
+    $entries = Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
         $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
         "$relative|$((Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant())"
     } | Sort-Object
@@ -30,6 +30,12 @@ $builder = Join-Path $repoRoot $distributionLock.generator
 
 if ($distributionLock.strategy -ne 'generated-distribution-snapshots') { throw 'Distribution strategy drifted.' }
 if ($distributionLock.snapshotPersistence -ne 'ephemeral-only') { throw 'Snapshots must remain ephemeral in FTK-05B.' }
+if ($distributionLock.sourceComposition.strategy -ne 'git-head-explicit-file-allowlist' -or
+    $distributionLock.sourceComposition.unexpectedFilesystemEntries -ne 'fail' -or
+    $distributionLock.sourceComposition.sensitivePathDefense -ne 'fail' -or
+    $distributionLock.sourceComposition.enumeration -ne 'all-files-force') {
+    throw 'Distribution source-composition safety contract drifted.'
+}
 if (@($distributionLock.twentyFirstAutomaticTools) -ne 'search') { throw '21st automatic policy drifted.' }
 if (-not (Test-Path -LiteralPath $builder)) { throw 'Snapshot builder is missing.' }
 foreach ($dependency in $externalLock.dependencies) {

@@ -4,6 +4,15 @@
 !.env.example
 *.pem
 *.key
+*.pfx
+*.p12
+credentials.json
+cookies.json
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+.ssh/
 auth.json
 config.toml
 profiles/

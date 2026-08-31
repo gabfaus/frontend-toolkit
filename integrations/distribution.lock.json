@@ -5,8 +5,14 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924",
+  "observedSnapshotTreeSha256": "8e5a701467fe2c28ebfcb32eb8b101a34d58f51c06f06e88a97610f37f03f5d0",
   "snapshotPersistence": "ephemeral-only",
+  "sourceComposition": {
+    "strategy": "git-head-explicit-file-allowlist",
+    "unexpectedFilesystemEntries": "fail",
+    "sensitivePathDefense": "fail",
+    "enumeration": "all-files-force"
+  },
   "components": [
     {
       "id": "impeccable",

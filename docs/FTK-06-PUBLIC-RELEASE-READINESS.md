@@ -27,6 +27,10 @@ O source continua sem snapshots. Builds e releases materializam Impeccable e img
 
 O candidato inclui uma marketplace `frontend-toolkit-local`, o plugin completo e `RELEASE_MANIFEST.json`. O manifesto lista cada arquivo do plugin e seu SHA-256; o hash agregado é calculado sobre pares ordenados `path|sha256`, sem timestamp.
 
+### Correção posterior G7-A1R
+
+A auditoria pré-publicação identificou que o builder original copiava recursivamente o diretório local do plugin. A remediação substituiu essa fronteira por uma allowlist exata extraída de `HEAD`, falha explícita para entradas locais inesperadas (tracked, untracked, ignored ou hidden), denylist adicional de classes sensíveis e inventário integral do artifact com enumeração `Force`. Testes sintéticos cobrem `.env`, auth, credentials, arquivo arbitrário, ignored, hidden, metadata Git e nome de chave privada. O manifesto lista todo o payload e se autoenumera sem tentar produzir um hash autorreferente.
+
 ## Auditoria pública inicial
 
 - paths absolutos de perfis Windows e referências ao nome de usuário: zero;
@@ -41,10 +45,13 @@ Referências a `auth.json` em documentação/testes são proibições e verifica
 ## Candidato local
 
 - versão: `1.0.0`;
-- hash esperado da árvore do plugin: `1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924`;
+- hash esperado da árvore do plugin após G7-A1R: `8e5a701467fe2c28ebfcb32eb8b101a34d58f51c06f06e88a97610f37f03f5d0`;
+- hash esperado do payload do artifact, antes do manifesto autorreferente: `d39df7bfe21e957855783338ca28f4b043f85fec6a383c7885a7e6f2ca0386ea`;
 - arquivos na árvore: 494;
 - snapshots: somente no artefato;
 - publicação/tag/release: não criadas.
+
+O hash anterior `1cdfb162b5b0924092613b5ccf9f484ae56b46ca8e2a9d13a1d33579b23f4924` permanece como evidência histórica da FTK-06. A mudança é esperada: os arquivos próprios agora usam os bytes canônicos LF do objeto Git em `HEAD`, em vez da representação CRLF do worktree Windows.
 
 ## Clean-copy e candidato
 

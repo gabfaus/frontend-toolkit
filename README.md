@@ -21,7 +21,7 @@ Frontend Toolkit
 - **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
 - **21st MCP:** serviço remoto em `https://21st.dev/api/mcp`, autenticado somente pela variável `API_KEY_21ST`.
 
-Impeccable e img2threejs permanecem projetos upstream independentes. O repositório-fonte não contém suas cópias: o artefato de release gera snapshots imutáveis dos SHAs pinados, preserva licenças/proveniência e pode ser reproduzido deterministicamente.
+Impeccable e img2threejs permanecem projetos upstream independentes. O repositório-fonte não contém suas cópias: o artefato de release gera snapshots imutáveis dos SHAs pinados, preserva licenças/proveniência e pode ser reproduzido deterministicamente. O código próprio é extraído de `HEAD` por uma allowlist exata; qualquer entrada inesperada no diretório local do plugin, inclusive untracked, ignored ou hidden, faz o build falhar.
 
 ## Política de custo e mutação do 21st
 

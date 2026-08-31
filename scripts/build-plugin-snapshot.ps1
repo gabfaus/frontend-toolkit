@@ -4,6 +4,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'release-safety.ps1')
 
 function Assert-NativeSuccess {
     param([Parameter(Mandatory)][string]$Operation)
@@ -14,6 +15,10 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $pluginSource = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
 $destinationPath = [IO.Path]::GetFullPath($Destination)
+$sourceFileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
+$sourceDirectoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
+
+Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $pluginSource -FileAllowlist $sourceFileAllowlist -DirectoryAllowlist $sourceDirectoryAllowlist
 
 if (Test-Path -LiteralPath $destinationPath) { throw "Destination already exists: $destinationPath" }
 if ($destinationPath.Equals($repoRoot, [StringComparison]::OrdinalIgnoreCase) -or
@@ -32,8 +37,27 @@ foreach ($protected in @($pluginSource) + @($externalLock.dependencies | ForEach
 $stageRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk05b-stage-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 try {
     New-Item -ItemType Directory -Path (Split-Path $destinationPath), $stageRoot -Force | Out-Null
-    Copy-Item -LiteralPath $pluginSource -Destination $destinationPath -Recurse
-    Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $destinationPath 'LICENSE')
+    $approvedSourceRoot = Join-Path $stageRoot 'approved-source'
+    $approvedSourceTar = Join-Path $stageRoot 'approved-source.tar'
+    New-Item -ItemType Directory -Path $approvedSourceRoot, $destinationPath -Force | Out-Null
+    $safeRepo = $repoRoot.Replace('\', '/')
+    $approvedRepoPaths = @('LICENSE') + @($sourceFileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
+    $archiveArguments = @(
+        '-c', "safe.directory=$safeRepo", '-C', $repoRoot,
+        'archive', '--format=tar', "--output=$approvedSourceTar", 'HEAD', '--'
+    ) + $approvedRepoPaths
+    & git @archiveArguments
+    Assert-NativeSuccess 'Approved source archive'
+    & tar -xf $approvedSourceTar -C $approvedSourceRoot
+    Assert-NativeSuccess 'Approved source extraction'
+
+    foreach ($relativePath in $sourceFileAllowlist) {
+        $sourcePath = Join-Path $approvedSourceRoot ('plugin/frontend-toolkit/' + $relativePath)
+        $targetPath = Join-Path $destinationPath $relativePath
+        New-Item -ItemType Directory -Path (Split-Path $targetPath) -Force | Out-Null
+        Copy-Item -LiteralPath $sourcePath -Destination $targetPath
+    }
+    Copy-Item -LiteralPath (Join-Path $approvedSourceRoot 'LICENSE') -Destination (Join-Path $destinationPath 'LICENSE')
 
     $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'
     $img2threejs = $externalLock.dependencies | Where-Object id -eq 'img2threejs'
@@ -93,6 +117,7 @@ try {
         )
     }
     [IO.File]::WriteAllText((Join-Path $destinationPath 'SNAPSHOT_PROVENANCE.json'), (($provenance | ConvertTo-Json -Depth 10) + "`n"), (New-Object Text.UTF8Encoding($false)))
+    Assert-NoSensitiveArtifactPaths -Root $destinationPath -Context 'plugin distribution'
     Write-Output ([pscustomobject]@{
         Destination = $destinationPath
         Skills = 'frontend-orchestrator,impeccable,img2threejs'

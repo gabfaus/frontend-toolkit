@@ -16,6 +16,8 @@ Use esta checklist para toda release. Registre evidências e pare em qualquer di
 - [ ] secret scan passa sem credenciais, auth, profiles ou config local;
 - [ ] auditoria de paths absolutos/nomes de usuário passa;
 - [ ] `.gitignore` e inventário Git excluem caches, runtimes, fixtures, `external/`, junctions e snapshots temporários;
+- [ ] o builder extrai código próprio somente de `HEAD` por allowlist exata e falha diante de entrada tracked, untracked, ignored ou hidden inesperada;
+- [ ] ataques sintéticos com `.env`, auth/credentials, metadata Git e nomes de chave privada são rejeitados antes do stage;
 - [ ] `LICENSE`, `THIRD_PARTY_NOTICES.md`, licenças e NOTICE upstream estão corretos;
 - [ ] Magic MCP ausente, Jpisnice inativo, hooks ausentes e nenhum código oficial 21st incorporado;
 - [ ] somente `21st/search` está automaticamente autorizado;
@@ -26,6 +28,7 @@ Use esta checklist para toda release. Registre evidências e pare em qualquer di
 - [ ] upstreams reconstruídos exclusivamente dos refs/SHAs pinados;
 - [ ] checkouts upstream limpos;
 - [ ] duas gerações independentes produzem mesma árvore e mesmo hash agregado;
+- [ ] inventário completo com enumeração `Force` corresponde exatamente ao conteúdo do ZIP, incluindo arquivos hidden e a autoentrada controlada do manifesto;
 - [ ] `external-skills.lock.json`, `SNAPSHOT_PROVENANCE.json` e distribution/release locks conferem;
 - [ ] artifact SHA-256 registrado e comparado;
 - [ ] snapshots existem somente no artefato, não no source.

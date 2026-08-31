@@ -4,29 +4,39 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'release-safety.ps1')
 
 function Get-TreeEntries {
     param([Parameter(Mandatory)][string]$Root)
-
-    $rootPath = (Resolve-Path -LiteralPath $Root).Path
-    return @(Get-ChildItem -LiteralPath $rootPath -Recurse -File | ForEach-Object {
-        $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
-        [pscustomobject][ordered]@{
-            path = $relative
-            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
-        }
-    } | Sort-Object path)
+    return @(Get-ArtifactFileEntries -Root $Root)
 }
 
 function Get-EntriesHash {
     param([Parameter(Mandatory)][object[]]$Entries)
+    return Get-ArtifactEntriesHash -Entries $Entries
+}
 
-    $canonical = @($Entries | ForEach-Object { "$($_.path)|$($_.sha256)" }) -join "`n"
-    $sha = [Security.Cryptography.SHA256]::Create()
-    try {
-        return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($canonical)))).Replace('-', '').ToLowerInvariant()
-    } finally {
-        $sha.Dispose()
+function Assert-ReleaseManifestCoverage {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][object]$Manifest
+    )
+
+    $actualEntries = @(Get-ArtifactFileEntries -Root $Root)
+    $actualPaths = @($actualEntries.path | Sort-Object)
+    $manifestPaths = @($Manifest.artifactFiles.path | Sort-Object)
+    if (($actualPaths -join "`n") -cne ($manifestPaths -join "`n")) {
+        throw 'Release manifest does not inventory every artifact file.'
+    }
+    foreach ($entry in @($Manifest.artifactFiles | Where-Object { -not $_.selfManifest })) {
+        $actual = $actualEntries | Where-Object path -CEQ $entry.path
+        if ($null -eq $actual -or $actual.sha256 -cne $entry.sha256) {
+            throw "Release manifest hash mismatch: $($entry.path)"
+        }
+    }
+    $self = @($Manifest.artifactFiles | Where-Object selfManifest)
+    if ($self.Count -ne 1 -or $self[0].path -cne 'RELEASE_MANIFEST.json' -or $null -ne $self[0].sha256) {
+        throw 'Release manifest self-entry is invalid.'
     }
 }
 
@@ -67,8 +77,24 @@ try {
         (New-Object Text.UTF8Encoding($false))
     )
 
+    Assert-NoSensitiveArtifactPaths -Root $destinationPath -Context 'release candidate payload'
     $entries = Get-TreeEntries -Root $pluginDestination
     $treeHash = Get-EntriesHash -Entries $entries
+    $payloadEntries = Get-TreeEntries -Root $destinationPath
+    $artifactTreeHash = Get-EntriesHash -Entries $payloadEntries
+    $artifactFiles = @($payloadEntries | ForEach-Object {
+        [pscustomobject][ordered]@{
+            path = $_.path
+            sha256 = $_.sha256
+            selfManifest = $false
+        }
+    })
+    $artifactFiles += [pscustomobject][ordered]@{
+        path = 'RELEASE_MANIFEST.json'
+        sha256 = $null
+        selfManifest = $true
+    }
+    $artifactFiles = @($artifactFiles | Sort-Object path)
     $releaseManifest = [ordered]@{
         schemaVersion = 1
         version = $manifest.version
@@ -77,6 +103,10 @@ try {
         pluginTreeSha256 = $treeHash
         pluginFileCount = $entries.Count
         pluginFiles = $entries
+        artifactTreeSha256 = $artifactTreeHash
+        artifactFileCount = $artifactFiles.Count
+        artifactFiles = $artifactFiles
+        artifactInventoryPolicy = 'all files enumerated with Force; manifest self-listed without self-hash'
         provenance = @($externalLock.dependencies | ForEach-Object {
             [ordered]@{ id = $_.id; ref = $_.ref; commitSha = $_.commitSha; license = $_.license }
         })
@@ -88,12 +118,17 @@ try {
         (($releaseManifest | ConvertTo-Json -Depth 10) + "`n"),
         (New-Object Text.UTF8Encoding($false))
     )
+    Assert-NoSensitiveArtifactPaths -Root $destinationPath -Context 'release candidate'
+    $writtenManifest = Get-Content -Raw -LiteralPath (Join-Path $destinationPath 'RELEASE_MANIFEST.json') | ConvertFrom-Json
+    Assert-ReleaseManifestCoverage -Root $destinationPath -Manifest $writtenManifest
 
     [pscustomobject]@{
         Destination = $destinationPath
         Version = $manifest.version
         PluginTreeSha256 = $treeHash
         PluginFileCount = $entries.Count
+        ArtifactTreeSha256 = $artifactTreeHash
+        ArtifactFileCount = $artifactFiles.Count
     }
 } catch {
     if (Test-Path -LiteralPath $destinationPath) {

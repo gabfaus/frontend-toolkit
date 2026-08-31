@@ -8,8 +8,8 @@ O arquivo `external.lock.json` fixa origem, ref, objeto da ref, commit resolvido
 
 Os checkouts ficam em `external/` e são ignorados. Nenhuma configuração MCP persistente está ativa; testes usam somente overrides process-locais.
 
-`distribution.lock.json` registra a arquitetura definitiva de snapshots gerados, o SHA-256 agregado da árvore, o gerador, o runtime temporário dos validators e a allowlist automática 21st/search. `scripts/build-plugin-snapshot.ps1` materializa somente os SHAs registrados, copia a Apache-2.0 própria para o artefato e preserva LICENSE/NOTICE/proveniência upstream. Snapshots permanecem efêmeros e não são fonte de verdade.
+`distribution.lock.json` registra a arquitetura definitiva de snapshots gerados, o SHA-256 agregado da árvore, o gerador, o runtime temporário dos validators e a allowlist automática 21st/search. `scripts/build-plugin-snapshot.ps1` extrai os arquivos próprios de `HEAD` por allowlist exata, rejeita entradas locais inesperadas, materializa somente os SHAs registrados e preserva LICENSE/NOTICE/proveniência upstream. Snapshots permanecem efêmeros e não são fonte de verdade.
 
-`release.lock.json` registra o candidato público `1.0.0`, o hash da árvore instalável, o builder de marketplace e os estados explícitos `not-published`, `not-created` para tag e release. O hash deve mudar sempre que qualquer byte do plugin distribuído mudar.
+`release.lock.json` registra o candidato público `1.0.0`, os hashes da árvore instalável e do payload completo, o builder de marketplace e os estados explícitos `not-published`, `not-created` para tag e release. Os hashes devem mudar sempre que qualquer byte coberto do artifact mudar.
 
 O Impeccable possui `NOTICE.md`, agora pinado por hash em `external.lock.json` e redistribuído. O SHA pinado do img2threejs não possui NOTICE separado. Shadcn é runtime MIT referenciado; 21st é serviço remoto sem código incorporado.

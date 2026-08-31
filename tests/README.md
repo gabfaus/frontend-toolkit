@@ -32,4 +32,6 @@ Na FTK-05C, `test-plugin-official-validation.ps1` cria uma venv descartável com
 
 Na FTK-06, `test-public-release.ps1` valida documentação pública, SemVer, metadata, privacidade, secrets, ausência de snapshots no source e, com `-Execute`, gera dois candidatos independentes, compara árvore/hash e remove integralmente a fixture.
 
+Na G7-A1R, `test-release-safety.ps1` valida a allowlist exata do source próprio, a denylist de defesa e ataques sintéticos contra `.env`, auth, credentials, arquivos untracked/ignored/hidden, metadata Git e nomes de chave privada. O teste público também compara duas builds, o inventário completo do manifesto e os paths reais do ZIP.
+
 `scripts/invoke-installed-plugin-smoke.ps1` requer um `CODEX_HOME` autenticado oficialmente sob `%TEMP%`; nunca cria ou copia autenticação. Ele executa novas sessões para orchestrator, Shadcn read-only, 21st/search quando a variável externa está disponível, img2threejs confinado e cost gate sem MCP. Instalação, remoção, reinstalação e cachebuster continuam cobertos por `test-plugin-distribution.ps1`; o ensaio autenticado FTK-05C repetiu esse lifecycle na fixture completa.

@@ -23,6 +23,7 @@ Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Force | Where-Object { $_.F
 }
 if ($secretHits.Count) { throw "Potential secret material found: $($secretHits -join ', ')" }
 
+& (Join-Path $repoRoot 'tests/test-release-safety.ps1')
 & (Join-Path $repoRoot 'tests/test-plugin-packaging.ps1')
 & (Join-Path $repoRoot 'tests/test-plugin-distribution.ps1') -ValidateOnly
 & (Join-Path $repoRoot 'tests/test-plugin-official-validation.ps1')
