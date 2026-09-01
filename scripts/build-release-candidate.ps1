@@ -1,5 +1,6 @@
 param(
-    [Parameter(Mandatory)][string]$Destination
+    [Parameter(Mandatory)][string]$Destination,
+    [switch]$DevelopmentWorkingTree
 )
 
 Set-StrictMode -Version Latest
@@ -58,7 +59,9 @@ $pluginDestination = Join-Path $destinationPath 'plugins/frontend-toolkit'
 $marketplaceDirectory = Join-Path $destinationPath '.agents/plugins'
 try {
     New-Item -ItemType Directory -Path $marketplaceDirectory, (Split-Path $pluginDestination) -Force | Out-Null
-    & $builder -Destination $pluginDestination | Out-Null
+    $snapshotArguments = @{ Destination = $pluginDestination }
+    if ($DevelopmentWorkingTree) { $snapshotArguments.DevelopmentWorkingTree = $true }
+    & $builder @snapshotArguments | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Plugin snapshot build failed.' }
 
     $marketplace = [ordered]@{

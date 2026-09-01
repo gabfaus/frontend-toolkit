@@ -38,6 +38,13 @@ Na G7-S, `test-archive-security.ps1` exerce checks adversariais sintéticos para
 
 Na G7-SR1, `test-adapter-foundation.ps1` valida as oito classes de efeito, `UNKNOWN` fail-closed e a ausência de entrypoint arbitrário no launcher. `test-skill-integration.ps1` prova exatamente três Skills físicas próprias do FTK e hashes upstream fora de discovery. `test-plugin-distribution.ps1` faz duas builds determinísticas e um clean install em `CODEX_HOME` temporário, exigindo adapters em `skills/`, snapshots em `third_party/upstreams/`, provenance separada e exatamente dois MCPs.
 
+Na G7-SR2D, `test-img2threejs-safe-runner.ps1` cobre config JSON e `.env` estrutural, inventário
+real de nodes GLB, os quatro mapas SR2B, plano `executable + argv`, allowlist exata child-only via
+`ProcessStartInfo`, preservação do environment pai e isolamento entre invocações,
+classificação `PROJECT_CODE_EXECUTION`, separação de rede e `init/status/mark/next` reais com fixtures
+temporárias. Código de projeto não é executado nesse teste; codec/TypeScript/Vite são validados como
+rotas funcionais defensivas sob o boundary do host.
+
 Tipos de evidência:
 
 - **static checks:** pins, locks, instruções, entrypoints, inventários e política machine-readable;
@@ -53,7 +60,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-plugin-secu
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-shadcn-security.ps1
 ```
 
-Sem `-ExpectKnownBlockers`, o teste de segurança termina em erro enquanto path escape ou configuração executada como shell permanecerem no snapshot. Isso é intencional e impede que uma caracterização seja confundida com aprovação. O smoke comportamental de uma sessão Codex isolada ainda exige `CODEX_HOME` temporário autenticado pelo fluxo oficial; os checks locais não afirmam essa cobertura.
+Sem `-ExpectKnownBlockers`, o teste de segurança ainda termina em erro pelos findings Impeccable
+G7S-003/G7S-004. Os defects upstream de path/config continuam byte-preservados no snapshot, mas
+G7S-001/G7S-002 são reportados como implementation-complete, pendentes da revalidação do committed
+HEAD. Isso impede que caracterização
+upstream seja confundida com execução direta ou fechamento humano. O smoke comportamental de uma
+sessão Codex isolada ainda exige `CODEX_HOME` temporário autenticado pelo fluxo oficial; os checks
+locais não afirmam essa cobertura.
 
 Quando uma validação dinâmica é desnecessária ou não autorizada, a evidência registra: `DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED`.
 

@@ -154,3 +154,14 @@ G7-SR1 implementa somente a fundação da arquitetura `frontend-orchestrator -> 
 G7S-001, G7S-002, G7S-003 e G7S-004 permanecem **OPEN**. G7-SR2 deve implementar parser estrutural, auditoria completa dos sinks `CHARACTER_*` e containment canônico de state. G7-SR3 deve implementar parser de contexto estrutural/versionado, isolamento de environment por allowlist, prova ou substituição externa dos controles de update/telemetria e autorização paga realmente mediada pelo host. Nenhuma flag declarativa isolada constitui autorização.
 
 Este gate não autoriza G7-SR2, G7-SR3, G7-A2, instalação real, staging, commit, push, tag, release ou publicação.
+
+### G7-SR2D — img2threejs Safe Execution & Final Integration
+
+Status: **IMPLEMENTED; AWAITING HUMAN REVIEW** em 2026-09-01.
+
+O runner FTK-owned substitui a execução direta do shell upstream por operações registradas com
+runtimes pinados, argv estrutural, ambiente allowlisted e `PROJECT_CODE_EXECUTION` explícito. SR2B é
+executado antes dos quatro consumidores JSON e confere nodes contra o GLB real; SR2C protege todas as
+oito operações de state no boundary. G7S-001 e G7S-002 ficam **IMPLEMENTATION COMPLETE, PENDING
+COMMITTED-HEAD REVALIDATION**. G7-SR3,
+G7-A2, instalação, staging, commit, push, tag, release e publicação continuam fora deste gate.

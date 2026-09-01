@@ -180,8 +180,11 @@ try {
     } -Pattern 'valid JSON' -Label 'invalid JSON'
 
     $policy = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/security/effect-policy.json') | ConvertFrom-Json
-    if (($policy.operations | Where-Object id -ceq 'img2threejs.state').status -ne 'blocked-g7-sr2') {
-        throw 'img2threejs.state must remain blocked pending SR2D integration and revalidation.'
+    foreach ($operation in @('img2threejs.state.init','img2threejs.state.status','img2threejs.state.mark','img2threejs.state.next','img2threejs.state.create','img2threejs.state.read','img2threejs.state.write','img2threejs.state.update')) {
+        $definition = $policy.operations | Where-Object id -ceq $operation
+        if ($definition.status -ne 'enabled' -or -not $definition.stateGuardRequired) {
+            throw "$operation must be enabled only through the SR2D state guard."
+        }
     }
 } finally {
     foreach ($reparsePath in $reparsePaths) {
@@ -194,4 +197,4 @@ Write-Output 'PASS: default, nested, deep, read, create, write, and update state
 Write-Output 'PASS: traversal, absolute/foreign paths, prefix confusion, Windows path forms, and non-JSON targets fail closed before state writes.'
 Write-Output 'PASS: authorized-root and descendant junction/symlink/reparse boundaries are rejected, including nonexistent targets.'
 Write-Output 'PASS: mutating handlers recheck immediately before atomic commit and verify the canonical target after writing.'
-Write-Output 'PASS: init/status/mark/next remain represented by the SR2D guarded-operation contract; img2threejs.state remains blocked.'
+Write-Output 'PASS: init/status/mark/next/create/read/write/update are enabled only through the SR2D guarded-operation contract.'

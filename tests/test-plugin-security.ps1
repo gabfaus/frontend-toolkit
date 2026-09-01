@@ -55,6 +55,9 @@ $workflowStatePath = Join-Path $repoRoot 'external/img2threejs/forge/_shared/wor
 $shellPipeline = Join-Path $repoRoot 'external/img2threejs/integrations/glb_character_pipeline/build-character.sh'
 $shellReadme = Join-Path $repoRoot 'external/img2threejs/integrations/glb_character_pipeline/README.md'
 $snapshotBuilder = Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1'
+$runnerPath = Join-Path $repoRoot 'plugin/frontend-toolkit/security/img2threejs-runner.ps1'
+$stateGuardPath = Join-Path $repoRoot 'plugin/frontend-toolkit/security/img2threejs-state-guard.ps1'
+$effectPolicyPath = Join-Path $repoRoot 'plugin/frontend-toolkit/security/effect-policy.json'
 $fixtureRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk-g7s-static-model-' + [guid]::NewGuid().ToString('N'))
 $projectRoot = Join-Path $fixtureRoot 'project'
 $authorizedRoot = Join-Path $projectRoot '.img2threejs'
@@ -101,6 +104,22 @@ $unchangedSnapshotRedistributedNonDiscoverable = $builderText.Contains('-Commit 
 $shellBlocker = $configFromArgument -and $projectControlledConfig -and $shellInterpretationPresent -and
     -not $structuralAllowlistPresent -and $unchangedSnapshotRedistributedNonDiscoverable
 if (-not $shellBlocker) { throw 'Expected img2threejs project-config shell blocker was not statically confirmed.' }
+$runnerText = Get-Content -Raw -LiteralPath $runnerPath
+$stateGuardText = Get-Content -Raw -LiteralPath $stateGuardPath
+$effectPolicy = Get-Content -Raw -LiteralPath $effectPolicyPath | ConvertFrom-Json
+$pipelineDefinition = $effectPolicy.operations | Where-Object id -CEQ 'img2threejs.glb-pipeline'
+$configMediated = $runnerText.Contains('ConvertFrom-Img2ThreejsGlbConfig') -and
+    $runnerText.Contains('ConvertFrom-Img2ThreejsStructuralData') -and
+    -not $runnerText.Contains('build-character.sh') -and
+    -not $runnerText.Contains('source "$CONFIG"')
+$projectCodeSeparated = $pipelineDefinition.effect -ceq 'PROJECT_CODE_EXECUTION' -and
+    @($pipelineDefinition.effects) -contains 'LOCAL_PROJECT_WRITE'
+$stateOperations = @($effectPolicy.operations | Where-Object { $_.id -like 'img2threejs.state.*' -and $_.status -eq 'enabled' })
+$stateMediated = $stateOperations.Count -eq 8 -and @($stateOperations | Where-Object { -not $_.stateGuardRequired }).Count -eq 0 -and
+    $runnerText.Contains('Resolve-Img2ThreejsStateTarget') -and $runnerText.Contains('post-mutation verification') -and
+    $stateGuardText.Contains('pre-atomic-commit-recheck') -and $stateGuardText.Contains('post-write-verified')
+if (-not $configMediated -or -not $projectCodeSeparated) { throw 'G7S-001 SR2D mediation was not proven.' }
+if (-not $stateMediated) { throw 'G7S-002 SR2D state integration was not proven.' }
 
 $policyPaths = @(
     (Join-Path $repoRoot '.agents/skills/frontend-orchestrator/references/routing-policy.json')
@@ -196,16 +215,14 @@ foreach ($case in $pathCases) {
     $display = Get-SyntheticDisplayPath -FixtureRoot $fixtureRoot -Path $case.Canonical
     Write-Output ('PATH: mechanism={0}; input={1}; canonical={2}; classification={3}; resolution={4}' -f $case.Mechanism, $case.Input, $display, $case.Classification, $case.Resolution)
 }
-Write-Output ('PATH_FINDING=STATICALLY_CONFIRMED; input_control={0}; resolution={1}; pre_write_containment={2}; write={3}' -f $inputControlPresent, $pathResolutionPresent, $boundaryEnforcementPresent, $writePresent)
-Write-Output ('SHELL_FINDING=STATICALLY_CONFIRMED; project_control={0}; config_argument={1}; bash_source={2}; structural_allowlist={3}; upstream_non_discoverable=True; SR2_gate=False' -f $projectControlledConfig, $configFromArgument, $shellInterpretationPresent, $structuralAllowlistPresent)
+Write-Output ('PATH_FINDING=IMPLEMENTATION_COMPLETE_PENDING_COMMITTED_HEAD_REVALIDATION; upstream_input_control={0}; upstream_pre_write_containment={1}; guarded_operations={2}' -f $inputControlPresent, $boundaryEnforcementPresent, $stateOperations.Count)
+Write-Output ('SHELL_FINDING=IMPLEMENTATION_COMPLETE_PENDING_COMMITTED_HEAD_REVALIDATION; upstream_bash_source={0}; runner_sources_project_config=False; project_code_effect={1}; upstream_non_discoverable=True' -f $shellInterpretationPresent, $pipelineDefinition.effect)
 Write-Output 'PASS: authority order, prompt-injection denials, 21st/search-only default and UNKNOWN authorization gate are deterministic.'
 Write-Output 'PASS: Impeccable authority, automatic update, telemetry, paid image and local-data surfaces were statically characterized.'
 Write-Output 'PASS: external dependencies, Shadcn package integrity, licenses and provenance remain pinned and verifiable.'
 Write-Output 'DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED'
 
 $openBlockers = @(
-    'G7S-001 img2threejs project config reaches Bash source'
-    'G7S-002 img2threejs state path lacks containment'
     'G7S-003 Impeccable authority override'
     'G7S-004 Impeccable ungated external effects'
 )

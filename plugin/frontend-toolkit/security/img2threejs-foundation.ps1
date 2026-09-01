@@ -165,7 +165,49 @@ function ConvertFrom-Img2ThreejsConfigScalar {
     if ($value.Contains('`') -or $value.Contains('$(') -or $value.Contains("`n") -or $value.Contains("`r")) {
         throw "Config line $LineNumber contains shell syntax or a multiline value."
     }
+    if ($value -match '[\x00-\x1f\x7f]') { throw "Config line $LineNumber contains a control character." }
     return $value
+}
+
+function ConvertFrom-Img2ThreejsJsonGlbConfig {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$LiteralPath)
+
+    if (-not (Get-Command ConvertFrom-Img2ThreejsStrictJsonObject -ErrorAction SilentlyContinue)) {
+        . (Join-Path $PSScriptRoot 'img2threejs-structural-validation.ps1')
+    }
+    $rawValues = [ordered]@{}
+    foreach ($entry in @(ConvertFrom-Img2ThreejsStrictJsonObject -LiteralPath $LiteralPath)) {
+        if ($entry.Scalar.Kind -cne 'String') {
+            throw "JSON config key $($entry.Key) must have a string value."
+        }
+        $value = [string]$entry.Scalar.Value
+        if ($value -match '[\x00-\x1f\x7f]') { throw "JSON config key $($entry.Key) contains a control character." }
+        $rawValues[$entry.Key] = $value
+    }
+    return $rawValues
+}
+
+function Get-Img2ThreejsRawGlbConfig {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$LiteralPath)
+
+    if ([IO.Path]::GetExtension($LiteralPath) -ceq '.json') {
+        return ConvertFrom-Img2ThreejsJsonGlbConfig -LiteralPath $LiteralPath
+    }
+    $rawValues = [ordered]@{}
+    $lines = @(Get-Content -LiteralPath $LiteralPath)
+    for ($index = 0; $index -lt $lines.Count; $index++) {
+        $lineNumber = $index + 1
+        $line = [string]$lines[$index]
+        if ([string]::IsNullOrWhiteSpace($line) -or $line.TrimStart().StartsWith('#')) { continue }
+        $match = [regex]::Match($line, '^([A-Z][A-Z0-9_]*)=(.*)$')
+        if (-not $match.Success) { throw "Config line $lineNumber is not a structural KEY=VALUE assignment." }
+        $key = $match.Groups[1].Value
+        if ($rawValues.Contains($key)) { throw "Config line $lineNumber duplicates key $key." }
+        $rawValues[$key] = ConvertFrom-Img2ThreejsConfigScalar -RawValue $match.Groups[2].Value -LineNumber $lineNumber
+    }
+    return $rawValues
 }
 
 function ConvertFrom-Img2ThreejsGlbConfig {
@@ -181,18 +223,9 @@ function ConvertFrom-Img2ThreejsGlbConfig {
         throw ('img2threejs config does not exist: ' + $LiteralPath)
     }
     $schema = Get-Img2ThreejsGlbConfigSchema
-    $rawValues = [ordered]@{}
-    $lines = @(Get-Content -LiteralPath $configFull)
-    for ($index = 0; $index -lt $lines.Count; $index++) {
-        $lineNumber = $index + 1
-        $line = [string]$lines[$index]
-        if ([string]::IsNullOrWhiteSpace($line) -or $line.TrimStart().StartsWith('#')) { continue }
-        $match = [regex]::Match($line, '^([A-Z][A-Z0-9_]*)=(.*)$')
-        if (-not $match.Success) { throw "Config line $lineNumber is not a structural KEY=VALUE assignment." }
-        $key = $match.Groups[1].Value
-        if (-not $schema.Contains($key)) { throw "Config line $lineNumber uses unknown key $key." }
-        if ($rawValues.Contains($key)) { throw "Config line $lineNumber duplicates key $key." }
-        $rawValues[$key] = ConvertFrom-Img2ThreejsConfigScalar -RawValue $match.Groups[2].Value -LineNumber $lineNumber
+    $rawValues = Get-Img2ThreejsRawGlbConfig -LiteralPath $configFull
+    foreach ($key in @($rawValues.Keys)) {
+        if (-not $schema.Contains($key)) { throw "Config uses unknown key $key." }
     }
 
     foreach ($key in $schema.Keys) {
@@ -293,5 +326,58 @@ function ConvertFrom-Img2ThreejsGlbConfig {
         projectRoot = $projectFull
         values = [pscustomobject]$typed
         environment = [pscustomobject]$environment
+    }
+}
+
+function Get-Img2ThreejsGlbNodeInventory {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$LiteralPath)
+
+    $item = Get-Item -Force -LiteralPath $LiteralPath -ErrorAction Stop
+    if ($item.PSIsContainer) { throw 'CHARACTER_GLB must be a file.' }
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw 'CHARACTER_GLB cannot be a reparse point.'
+    }
+    $stream = New-Object IO.FileStream($item.FullName, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    try {
+        $header = New-Object byte[] 20
+        if ($stream.Read($header, 0, $header.Length) -ne $header.Length) { throw 'CHARACTER_GLB has a truncated header.' }
+        if ([Text.Encoding]::ASCII.GetString($header, 0, 4) -cne 'glTF') { throw 'CHARACTER_GLB does not have glTF magic.' }
+        if ([BitConverter]::ToUInt32($header, 4) -ne 2) { throw 'Only binary glTF version 2 is supported.' }
+        $declaredLength = [BitConverter]::ToUInt32($header, 8)
+        if ($declaredLength -ne $item.Length) { throw 'CHARACTER_GLB declared length does not match the file length.' }
+        $jsonLength = [BitConverter]::ToUInt32($header, 12)
+        $jsonType = [BitConverter]::ToUInt32($header, 16)
+        if ($jsonType -ne 0x4E4F534A) { throw 'CHARACTER_GLB first chunk is not JSON.' }
+        if ($jsonLength -lt 2 -or $jsonLength -gt 16MB -or (20L + $jsonLength) -gt $item.Length) {
+            throw 'CHARACTER_GLB JSON chunk is outside the FTK resource boundary.'
+        }
+        $bytes = New-Object byte[] $jsonLength
+        if ($stream.Read($bytes, 0, $bytes.Length) -ne $bytes.Length) { throw 'CHARACTER_GLB JSON chunk is truncated.' }
+        $utf8 = New-Object Text.UTF8Encoding($false, $true)
+        $jsonText = $utf8.GetString($bytes).TrimEnd([char[]]@(0x20,0x00,0x09,0x0A,0x0D))
+        try { $document = ConvertFrom-Json -InputObject $jsonText -ErrorAction Stop }
+        catch { throw ('CHARACTER_GLB JSON chunk is invalid: ' + $_.Exception.Message) }
+        $nodeCount = @($document.nodes).Count
+        if ($nodeCount -eq 0) { return @() }
+        return @(0..($nodeCount - 1))
+    } finally {
+        $stream.Dispose()
+    }
+}
+
+function Assert-Img2ThreejsConfiguredNodesExist {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][int[]]$CharacterNodes,
+        [Parameter(Mandatory)][AllowEmptyCollection()][int[]]$GlbNodes
+    )
+
+    $inventory = New-Object 'System.Collections.Generic.HashSet[int]'
+    foreach ($node in $GlbNodes) { [void]$inventory.Add($node) }
+    foreach ($node in $CharacterNodes) {
+        if (-not $inventory.Contains($node)) {
+            throw "CHARACTER_NODES references node $node, which is absent from the GLB node inventory."
+        }
     }
 }

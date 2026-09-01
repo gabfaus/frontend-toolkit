@@ -1,4 +1,7 @@
-param([switch]$ValidateOnly)
+param(
+    [switch]$ValidateOnly,
+    [switch]$DevelopmentWorkingTree
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -63,13 +66,19 @@ $machinePathBefore = [Environment]::GetEnvironmentVariable('Path', 'Machine')
 $oldCodexHome = $env:CODEX_HOME
 
 try {
-    & $builder -Destination $snapshotOne | Out-Null
-    & $builder -Destination $snapshotTwo | Out-Null
+    $snapshotOneArguments = @{ Destination = $snapshotOne }
+    $snapshotTwoArguments = @{ Destination = $snapshotTwo }
+    if ($DevelopmentWorkingTree) {
+        $snapshotOneArguments.DevelopmentWorkingTree = $true
+        $snapshotTwoArguments.DevelopmentWorkingTree = $true
+    }
+    & $builder @snapshotOneArguments | Out-Null
+    & $builder @snapshotTwoArguments | Out-Null
     $treeHashOne = Get-TreeHash $snapshotOne
     $treeHashTwo = Get-TreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }
     if ($treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) { throw "Snapshot observation drifted: $treeHashOne" }
-    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/img2threejs-foundation.ps1', 'security/img2threejs-state-guard.ps1', 'security/img2threejs-structural-validation.ps1', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
+foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/img2threejs-codec-mediator.mjs', 'security/img2threejs-foundation.ps1', 'security/img2threejs-runner.ps1', 'security/img2threejs-runtime-policy.json', 'security/img2threejs-state-guard.ps1', 'security/img2threejs-structural-validation.ps1', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
         if (-not (Test-Path -LiteralPath (Join-Path $snapshotOne $required))) { throw "Distribution attribution missing: $required" }
     }
     $provenance = Get-Content -Raw -LiteralPath (Join-Path $snapshotOne 'SNAPSHOT_PROVENANCE.json') | ConvertFrom-Json

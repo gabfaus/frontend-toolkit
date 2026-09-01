@@ -43,7 +43,7 @@
       "upstreamSkillEntrySha256": "6a2c8c1a027dd193f54a7ae9c97fb1c1913fd956086e122ff9c3df1dddfd13bb",
       "adapterPath": ".agents/skills/img2threejs",
       "distributionAdapterPath": "skills/img2threejs",
-      "adapterEntrySha256": "48a416f5bcb1ec124f2ab184519af96f36ad0c49ace1a83f82c8c59fb2bdd09c",
+      "adapterEntrySha256": "8aab855d0e2b39ea00b9d8cff473ebfae4ee9df799826c0071f8f4a1140bd6a7",
       "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
       "snapshotTreeSha256": "127017dbe14b33448ba0ada19a1512116f8d7b385de48811a6a54779fc107e32",
       "discoveredName": "img2threejs",

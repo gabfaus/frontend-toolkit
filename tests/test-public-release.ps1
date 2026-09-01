@@ -1,4 +1,7 @@
-param([switch]$Execute)
+param(
+    [switch]$Execute,
+    [switch]$DevelopmentWorkingTree
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -60,8 +63,14 @@ $fixture = Join-Path ([IO.Path]::GetTempPath()) ('ftk06-release-' + [guid]::NewG
 $one = Join-Path $fixture 'one'
 $two = Join-Path $fixture 'two'
 try {
-    & (Join-Path $repoRoot $releaseLock.builder) -Destination $one | Out-Null
-    & (Join-Path $repoRoot $releaseLock.builder) -Destination $two | Out-Null
+    $candidateOneArguments = @{ Destination = $one }
+    $candidateTwoArguments = @{ Destination = $two }
+    if ($DevelopmentWorkingTree) {
+        $candidateOneArguments.DevelopmentWorkingTree = $true
+        $candidateTwoArguments.DevelopmentWorkingTree = $true
+    }
+    & (Join-Path $repoRoot $releaseLock.builder) @candidateOneArguments | Out-Null
+    & (Join-Path $repoRoot $releaseLock.builder) @candidateTwoArguments | Out-Null
     $manifestOne = Get-Content -Raw -LiteralPath (Join-Path $one 'RELEASE_MANIFEST.json') | ConvertFrom-Json
     $manifestTwo = Get-Content -Raw -LiteralPath (Join-Path $two 'RELEASE_MANIFEST.json') | ConvertFrom-Json
     if ($manifestOne.pluginTreeSha256 -ne $manifestTwo.pluginTreeSha256) { throw 'Independent candidate builds differ.' }

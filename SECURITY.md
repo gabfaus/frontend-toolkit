@@ -16,7 +16,7 @@ O plugin não distribui credenciais do mantenedor. Cada usuário fornece sua pr�
 
 Skills podem conter e executar código local. Pins, hashes e proveniência identificam o conteúdo, mas não garantem que ele seja seguro. A revisão atual encontrou bloqueadores nos snapshots upstream; consulte [Security model](docs/SECURITY-MODEL.md) antes de instalar.
 
-G7-SR1 coloca adapters próprios do FTK na raiz de discovery e mantém snapshots upstream somente em `third_party/upstreams/`. O manifest comum nasce com `UNKNOWN` fail-closed e o launcher não aceita scripts arbitrários. G7S-001 a G7S-004 continuam abertos até os gates executáveis específicos de G7-SR2/G7-SR3 e nova validação.
+G7-SR1 coloca adapters próprios do FTK na raiz de discovery e mantém snapshots upstream somente em `third_party/upstreams/`. Em G7-SR2D, o runner FTK adiciona `PROJECT_CODE_EXECUTION`, config estrutural, ambiente child-only allowlisted, validação JSON/GLB e state guard no boundary real. G7S-001 e G7S-002 estão implementation-complete, pendentes da revalidação do committed HEAD após revisão e commit humanos; G7S-003 e G7S-004 continuam abertos para G7-SR3.
 
 Hooks, Magic MCP, Jpisnice e código oficial do 21st não fazem parte da V1. Fixtures, perfis Codex e autenticação de teste devem ser isolados e descartáveis.
 

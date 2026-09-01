@@ -31,7 +31,7 @@ foreach ($dependency in $external.dependencies) {
 }
 if (Test-Path -LiteralPath (Join-Path $pluginRoot 'third_party')) { throw 'Upstream snapshots must not exist in plugin source.' }
 $effectPolicy = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'security/effect-policy.json') | ConvertFrom-Json
-if ($effectPolicy.unknownEffectPolicy -ne 'deny' -or @($effectPolicy.effectClasses) -notcontains 'UNKNOWN') { throw 'Capability boundary is not fail-closed.' }
+if ($effectPolicy.unknownEffectPolicy -ne 'deny' -or @($effectPolicy.effectClasses) -notcontains 'UNKNOWN' -or @($effectPolicy.effectClasses) -notcontains 'PROJECT_CODE_EXECUTION') { throw 'Capability boundary is not fail-closed or lacks project-code mediation.' }
 
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
 $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'

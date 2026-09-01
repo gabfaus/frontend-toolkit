@@ -14,7 +14,10 @@ $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $directoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
 $requiredSecurityFiles = @(
     'security/effect-policy.json'
+    'security/img2threejs-codec-mediator.mjs'
     'security/img2threejs-foundation.ps1'
+    'security/img2threejs-runner.ps1'
+    'security/img2threejs-runtime-policy.json'
     'security/img2threejs-state-guard.ps1'
     'security/img2threejs-structural-validation.ps1'
     'security/invoke-capability.ps1'
@@ -37,7 +40,7 @@ foreach ($required in @('Export-CanonicalGitFiles', 'HEAD', 'Assert-ApprovedSour
 if ((Get-Command Export-CanonicalGitFiles).Definition -notmatch [regex]::Escape('core.autocrlf=false')) {
     throw 'Canonical Git export does not disable checkout line-ending conversion.'
 }
-foreach ($required in @('Get-ArtifactFileEntries', 'Assert-NoSensitiveArtifactPaths', 'Assert-ReleaseManifestCoverage', 'artifactFiles')) {
+foreach ($required in @('Get-ArtifactFileEntries', 'Assert-NoSensitiveArtifactPaths', 'Assert-ReleaseManifestCoverage', 'artifactFiles', 'DevelopmentWorkingTree')) {
     if ($releaseText -notmatch [regex]::Escape($required)) { throw "Release builder is missing safety contract: $required" }
 }
 

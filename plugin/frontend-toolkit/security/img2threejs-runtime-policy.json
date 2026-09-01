@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "runtimes": {
+    "windows-x64": {
+      "node": {
+        "version": "24.20.0",
+        "source": "integrations/toolchain.lock.json",
+        "relativeToLocalAppData": "Programs/FrontendToolkit/node-v24.20.0-win-x64/node.exe"
+      },
+      "python": {
+        "version": "3.14.7",
+        "source": "integrations/toolchain.lock.json",
+        "relativeToLocalAppData": "Programs/Python/Python314/python.exe"
+      }
+    }
+  },
+  "baseEnvironment": [
+    "SystemRoot",
+    "TEMP",
+    "TMP"
+  ],
+  "pythonEnvironment": {
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "forbiddenInheritedEnvironment": [
+    "OPENAI_API_KEY",
+    "API_KEY_21ST",
+    "PATH",
+    "USERPROFILE",
+    "HOME",
+    "GIT_ASKPASS",
+    "SSH_AUTH_SOCK",
+    "AWS_ACCESS_KEY_ID",
+    "AZURE_CLIENT_SECRET",
+    "GOOGLE_APPLICATION_CREDENTIALS"
+  ]
+}

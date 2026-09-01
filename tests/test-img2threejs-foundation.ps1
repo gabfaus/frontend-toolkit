@@ -80,10 +80,11 @@ CHARACTER_ALLOW_BASELINE_UV="1"
     Assert-Throws { Resolve-Img2ThreejsStatePath -ProjectRoot $project -StatePath '.img2threejs/junction-out/state.json' | Out-Null } 'Reparse points' 'junction state escape'
 
     $policy = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/security/effect-policy.json') | ConvertFrom-Json
-    foreach ($operation in @('img2threejs.state','img2threejs.glb-pipeline')) {
-        if (($policy.operations | Where-Object id -ceq $operation).status -ne 'blocked-g7-sr2') {
-            throw "$operation must remain blocked during the G7-SR2A foundation phase."
-        }
+    if (($policy.operations | Where-Object id -ceq 'img2threejs.glb-pipeline').effect -cne 'PROJECT_CODE_EXECUTION') {
+        throw 'The integrated GLB pipeline must be PROJECT_CODE_EXECUTION.'
+    }
+    foreach ($operation in @('img2threejs.state.init','img2threejs.state.status','img2threejs.state.mark','img2threejs.state.next')) {
+        if (($policy.operations | Where-Object id -ceq $operation).status -ne 'enabled') { throw "$operation was not integrated." }
     }
 } finally {
     if (Test-Path -LiteralPath $fixture) { Remove-Item -Recurse -Force -LiteralPath $fixture }
@@ -91,4 +92,4 @@ CHARACTER_ALLOW_BASELINE_UV="1"
 
 Write-Output 'PASS: structural schema exactly covers all 22 pinned CHARACTER_* fields and rejects reparsing inputs.'
 Write-Output 'PASS: canonical state resolution preserves default/nested state and rejects absolute, traversal, and foreign-root targets.'
-Write-Output 'PASS: G7S-001 and G7S-002 operations remain blocked after foundation-only implementation.'
+Write-Output 'PASS: SR2D operation manifest integrates guarded state and classifies the GLB pipeline as PROJECT_CODE_EXECUTION.'

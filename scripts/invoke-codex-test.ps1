@@ -62,7 +62,6 @@ if ($toolchain.NodeVersion -ne '24.20.0' -or $toolchain.PythonVersion -ne '3.14.
     throw 'Resolved toolchain does not match the FTK-02 pin.'
 }
 
-$codexCommand = Get-Command codex -ErrorAction Stop
 $configPath = Join-Path $env:USERPROFILE '.codex\config.toml'
 $before = Get-FileState $configPath
 $userPathBefore = [Environment]::GetEnvironmentVariable('Path', 'User')
@@ -80,6 +79,7 @@ if ($ValidateOnly) {
     exit 0
 }
 
+$codexCommand = Get-Command codex -ErrorAction Stop
 $processPathBefore = $env:PATH
 $pythonPathBefore = $env:FTK_PYTHON_PATH
 $codexOutput = ''

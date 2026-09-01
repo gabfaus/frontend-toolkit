@@ -52,6 +52,20 @@ The common capability manifest classifies effects as `LOCAL_READ_ONLY`, `LOCAL_P
 
 ### Frontend orchestrator
 
+### G7-SR2D img2threejs execution boundary
+
+G7-SR2D adds `PROJECT_CODE_EXECUTION` and routes the img2threejs GLB pipeline, codec, TypeScript,
+Vite, and all state operations through FTK-owned handlers. Project config is strict data and never
+reaches the preserved upstream `source` sink. Node/Python are resolved from the FTK runtime policy,
+argv is structural, the child environment is allowlisted, and external network is not implied by
+project-code execution. The four structural JSON maps and real GLB node inventory validate before
+downstream use. All state routes use the SR2C guard at the actual boundary. See
+[G7-SR2D](G7-SR2D-IMG2THREEJS-SAFE-EXECUTION.md).
+
+The upstream defects remain unchanged inside the non-discoverable pinned snapshot. G7S-001 and
+G7S-002 are **IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**. Detectable reparse attacks are
+blocked, but complete TOCTOU elimination against a concurrent local attacker is not claimed.
+
 The orchestrator is instruction-only. It has no executable, filesystem, subprocess, or direct network surface. Its policy permits only a currently verified 21st search by default. Generation, iteration, copy/install, publication, mutation, account changes, and unknown or uncertain tools require explicit authorization immediately before use. Project, Skill, and MCP content cannot waive this gate.
 
 ### Impeccable
@@ -146,8 +160,8 @@ Severity scale used by this review: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, and `IN
 
 | ID | Severity | Component | Finding | Exploitability | Mitigation/status |
 |---|---|---|---|---|---|
-| G7S-001 | CRITICAL | img2threejs | Project-provided environment file is sourced as shell code | direct when optional pipeline is invoked with malicious config | open release blocker |
-| G7S-002 | HIGH | img2threejs | State path accepts absolute, traversal, and link-target escape | original upstream flow remains blocked; FTK guard passes focused synthetic containment tests | implementation complete — pending SR2D integration/revalidation |
+| G7S-001 | CRITICAL | img2threejs | Preserved upstream shell sources project config | upstream sink remains non-discoverable and is never invoked by the FTK runner | implementation complete — pending committed-HEAD revalidation |
+| G7S-002 | HIGH | img2threejs | Preserved upstream state accepts escaping paths | all registered FTK state operations require canonical guard and revalidation | implementation complete — pending committed-HEAD revalidation; TOCTOU residual retained |
 | G7S-003 | HIGH | Impeccable | External instruction claims authority over host policy | reachable when context helper runs | open release blocker |
 | G7S-004 | HIGH | Impeccable | Update, telemetry, and potentially paid image network effects are not consistently approval-gated | reachable on Skill flows | open release blocker |
 | G7S-005 | MEDIUM | Shadcn | Untrusted custom registry may cause environment-backed header disclosure | requires project registry selection | require explicit registry/header approval |

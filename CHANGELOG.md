@@ -16,6 +16,7 @@ Primeira release pública planejada. Ainda não foi publicada nem tagueada.
 - Snapshots determinísticos de Impeccable 4.1.2 e img2threejs 1.5.1.
 - Shadcn MCP 4.19.0 e 21st MCP remoto.
 - Instalação local em uma unidade, validators oficiais e lifecycle de remoção/reinstalação.
+- Runner img2threejs SR2D com `PROJECT_CODE_EXECUTION`, config/JSON/GLB estrutural, ambiente mínimo e state containment integrado.
 
 ### Security
 

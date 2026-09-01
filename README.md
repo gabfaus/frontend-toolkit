@@ -17,7 +17,7 @@ Frontend Toolkit
 
 - **frontend-orchestrator:** escolhe a menor combinação de capacidades necessária e preserva a intenção explícita do usuário.
 - **Impeccable:** cobre composição, hierarquia, acessibilidade, responsividade e qualidade de interface.
-- **img2threejs:** transforma referências visuais em modelos Three.js construídos em código. A revisão G7-S encontrou escape de paths e execução insegura em um pipeline opcional do snapshot v1.5.1; a publicação está bloqueada até mitigação.
+- **img2threejs:** transforma referências visuais em modelos Three.js construídos em código. G7-SR2D medeia state, GLB, codec, TypeScript e Vite com runtimes/argv/ambiente controlados pelo FTK; os defects preservados no snapshot v1.5.1 não são executados diretamente.
 - **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
 - **21st MCP:** serviço remoto em `https://21st.dev/api/mcp`, autenticado somente pela variável `API_KEY_21ST`.
 

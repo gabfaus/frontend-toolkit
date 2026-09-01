@@ -6,7 +6,7 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "54a3692134366d1cb914f0dcb2d5365951a6d3a9f591aba9bcec06f0ddd219ad",
+  "observedSnapshotTreeSha256": "aa79cbb1119db6f9c9e87557f03c98a2bb7ef4cc58eacb6538d224d768d7136f",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",
@@ -31,7 +31,7 @@
       "id": "img2threejs",
       "adapterSourcePath": ".agents/skills/img2threejs",
       "sourcePluginAdapterPath": "plugin/frontend-toolkit/skills/img2threejs",
-      "adapterEntrySha256": "48a416f5bcb1ec124f2ab184519af96f36ad0c49ace1a83f82c8c59fb2bdd09c",
+      "adapterEntrySha256": "8aab855d0e2b39ea00b9d8cff473ebfae4ee9df799826c0071f8f4a1140bd6a7",
       "sourceSelection": ["repository-tree"],
       "distributionAdapterPath": "skills/img2threejs",
       "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
