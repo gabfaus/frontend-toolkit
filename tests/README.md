@@ -68,12 +68,14 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-shadcn-secu
 ```
 
 Sem `-ExpectKnownBlockers`, o teste de segurança ainda termina em erro pelos findings Impeccable
-G7S-003/G7S-004. Os defects upstream de path/config continuam byte-preservados no snapshot, mas
-G7S-001/G7S-002 são reportados como implementation-complete, pendentes da revalidação do committed
-HEAD. Isso impede que caracterização
-upstream seja confundida com execução direta ou fechamento humano. O smoke comportamental de uma
+G7S-003/G7S-004. Os defects upstream de path/config continuam byte-preservados no snapshot, mas,
+após revalidação do committed HEAD e revisão humana, G7S-001/G7S-002 são reportados como `CLOSED`.
+O teste preserva separadamente a caracterização do upstream e o status corrente do finding. O smoke comportamental de uma
 sessão Codex isolada ainda exige `CODEX_HOME` temporário autenticado pelo fluxo oficial; os checks
 locais não afirmam essa cobertura.
+
+`test-security-finding-status.ps1` confere as referências correntes de status sem reescrever os
+checkpoints históricos de G7-SR1 e G7-SR2A/B/C/D.
 
 Quando uma validação dinâmica é desnecessária ou não autorizada, a evidência registra: `DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED`.
 

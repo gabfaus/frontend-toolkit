@@ -165,3 +165,16 @@ executado antes dos quatro consumidores JSON e confere nodes contra o GLB real; 
 oito operações de state no boundary. G7S-001 e G7S-002 ficam **IMPLEMENTATION COMPLETE, PENDING
 COMMITTED-HEAD REVALIDATION**. G7-SR3,
 G7-A2, instalação, staging, commit, push, tag, release e publicação continuam fora deste gate.
+
+### G7-SR2F — img2threejs Security Closeout & Lessons Learned
+
+Status: **READY FOR HUMAN REVIEW** em 2026-09-01.
+
+Após duas builds idênticas do committed HEAD em G7-SR2E e revisão humana aprovada, G7S-001 e
+G7S-002 estão **CLOSED**. O ciclo preservado é `OPEN -> IMPLEMENTATION COMPLETE, PENDING
+COMMITTED-HEAD REVALIDATION -> MITIGATED -> HUMAN REVIEW -> CLOSED`. As constraints arquiteturais
+reutilizáveis estão em [Security Remediation Lessons](SECURITY-REMEDIATION-LESSONS.md).
+
+G7S-003 e G7S-004 continuam **OPEN**. G7-SR3 deve reutilizar a arquitetura mediated-adapter, sem
+inferir autorização deste closeout. G7-A2, instalação, staging, commit, push, tag, release e
+publicação continuam fora deste gate.

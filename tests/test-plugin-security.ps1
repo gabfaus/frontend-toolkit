@@ -215,8 +215,8 @@ foreach ($case in $pathCases) {
     $display = Get-SyntheticDisplayPath -FixtureRoot $fixtureRoot -Path $case.Canonical
     Write-Output ('PATH: mechanism={0}; input={1}; canonical={2}; classification={3}; resolution={4}' -f $case.Mechanism, $case.Input, $display, $case.Classification, $case.Resolution)
 }
-Write-Output ('PATH_FINDING=IMPLEMENTATION_COMPLETE_PENDING_COMMITTED_HEAD_REVALIDATION; upstream_input_control={0}; upstream_pre_write_containment={1}; guarded_operations={2}' -f $inputControlPresent, $boundaryEnforcementPresent, $stateOperations.Count)
-Write-Output ('SHELL_FINDING=IMPLEMENTATION_COMPLETE_PENDING_COMMITTED_HEAD_REVALIDATION; upstream_bash_source={0}; runner_sources_project_config=False; project_code_effect={1}; upstream_non_discoverable=True' -f $shellInterpretationPresent, $pipelineDefinition.effect)
+Write-Output ('PATH_FINDING=CLOSED; upstream_input_control={0}; upstream_pre_write_containment={1}; guarded_operations={2}; residual_risk=LOCAL_CONCURRENT_ATTACKER_TOCTOU' -f $inputControlPresent, $boundaryEnforcementPresent, $stateOperations.Count)
+Write-Output ('SHELL_FINDING=CLOSED; upstream_bash_source={0}; runner_sources_project_config=False; project_code_effect={1}; upstream_non_discoverable=True' -f $shellInterpretationPresent, $pipelineDefinition.effect)
 Write-Output 'PASS: authority order, prompt-injection denials, 21st/search-only default and UNKNOWN authorization gate are deterministic.'
 Write-Output 'PASS: Impeccable authority, automatic update, telemetry, paid image and local-data surfaces were statically characterized.'
 Write-Output 'PASS: external dependencies, Shadcn package integrity, licenses and provenance remain pinned and verifiable.'

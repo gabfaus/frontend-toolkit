@@ -48,7 +48,7 @@ Threat classes considered are confidentiality, integrity, availability, unauthor
 
 The discovery root contains exactly three FTK-owned Skills: `frontend-orchestrator`, `impeccable`, and `img2threejs`. Impeccable and img2threejs upstream `SKILL.md` files are no longer discovered directly. The release builder materializes their byte-verified pinned payloads only under `third_party/upstreams/<id>` and records adapters and upstream snapshots as separate provenance classes.
 
-The common capability manifest classifies effects as `LOCAL_READ_ONLY`, `LOCAL_PROJECT_WRITE`, `LOOPBACK_EPHEMERAL`, `NETWORK_PASSIVE`, `TELEMETRY`, `PAID_GENERATION`, `EXTERNAL_MUTATION`, or `UNKNOWN`. `UNKNOWN` is denied. The launcher accepts only a registered operation identifier and has no arbitrary script entrypoint. In G7-SR1 only local capability summaries are enabled; upstream execution paths needing G7-SR2 or G7-SR3 remain represented but fail closed. Capability routing is preserved without claiming that the four findings are remediated.
+The common capability manifest classifies effects as `LOCAL_READ_ONLY`, `LOCAL_PROJECT_WRITE`, `LOOPBACK_EPHEMERAL`, `NETWORK_PASSIVE`, `TELEMETRY`, `PAID_GENERATION`, `EXTERNAL_MUTATION`, or `UNKNOWN`. `UNKNOWN` is denied. The launcher accepts only a registered operation identifier and has no arbitrary script entrypoint. At the G7-SR1 checkpoint only local capability summaries were enabled and none of the four findings was yet remediated; later gates retain that boundary while recording each finding's current lifecycle state.
 
 ### Frontend orchestrator
 
@@ -62,9 +62,11 @@ project-code execution. The four structural JSON maps and real GLB node inventor
 downstream use. All state routes use the SR2C guard at the actual boundary. See
 [G7-SR2D](G7-SR2D-IMG2THREEJS-SAFE-EXECUTION.md).
 
-The upstream defects remain unchanged inside the non-discoverable pinned snapshot. G7S-001 and
-G7S-002 are **IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**. Detectable reparse attacks are
-blocked, but complete TOCTOU elimination against a concurrent local attacker is not claimed.
+The upstream defects remain unchanged inside the non-discoverable pinned snapshot. G7-SR2E
+revalidated two identical committed-HEAD builds, after which human review approved closure. G7S-001
+and G7S-002 are **CLOSED**. Detectable reparse attacks are blocked, but complete TOCTOU elimination
+against a concurrent local attacker is not claimed. See [G7-SR2F](G7-SR2F-IMG2THREEJS-SECURITY-CLOSEOUT.md)
+and the durable [remediation lessons](SECURITY-REMEDIATION-LESSONS.md).
 
 The orchestrator is instruction-only. It has no executable, filesystem, subprocess, or direct network surface. Its policy permits only a currently verified 21st search by default. Generation, iteration, copy/install, publication, mutation, account changes, and unknown or uncertain tools require explicit authorization immediately before use. Project, Skill, and MCP content cannot waive this gate.
 
@@ -98,7 +100,7 @@ The data-flow is caller-controlled `--state` → `Path` → `expanduser().resolv
 
 G7-SR1 removes the direct-discovery bypass by placing an FTK-owned adapter at the Skill boundary. It does not yet make the upstream state or shell pipeline safe to execute. Shell escaping is not a valid remediation for an arbitrary sourced file. No upstream checkout or generated snapshot was patched.
 
-G7-SR2 must add executable containment and structural configuration mediation before these entrypoints can be enabled. Its sink audit must trace every sanitized `CHARACTER_*` value through `build-character.sh`, commands and called scripts, argv, and interpolation. Any `eval`, constructed command, unsafe unquoted expansion, or equivalent reparsing remains blocked. Canonical state enforcement must resolve the authorized root and target before every operation and reject traversal, absolute escape, and detectable symlink/junction/reparse escape.
+At G7-SR1, G7-SR2 was required to add executable containment and structural configuration mediation before these entrypoints could be enabled. Its completed sink audit traced every sanitized `CHARACTER_*` value without routing project configuration through `build-character.sh`. Any `eval`, constructed command, unsafe unquoted expansion, or equivalent reparsing remains blocked. Canonical state enforcement resolves the authorized root and target before every operation and rejects traversal, absolute escape, and detectable symlink/junction/reparse escape.
 
 ## MCP and network model
 
@@ -160,14 +162,14 @@ Severity scale used by this review: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, and `IN
 
 | ID | Severity | Component | Finding | Exploitability | Mitigation/status |
 |---|---|---|---|---|---|
-| G7S-001 | CRITICAL | img2threejs | Preserved upstream shell sources project config | upstream sink remains non-discoverable and is never invoked by the FTK runner | implementation complete — pending committed-HEAD revalidation |
-| G7S-002 | HIGH | img2threejs | Preserved upstream state accepts escaping paths | all registered FTK state operations require canonical guard and revalidation | implementation complete — pending committed-HEAD revalidation; TOCTOU residual retained |
+| G7S-001 | CRITICAL | img2threejs | Preserved upstream shell sources project config | upstream sink remains non-discoverable and is never invoked by the FTK runner | **closed** after committed-HEAD revalidation and human review |
+| G7S-002 | HIGH | img2threejs | Preserved upstream state accepts escaping paths | all registered FTK state operations require canonical guard and revalidation | **closed** after committed-HEAD revalidation and human review; TOCTOU residual retained |
 | G7S-003 | HIGH | Impeccable | External instruction claims authority over host policy | reachable when context helper runs | open release blocker |
 | G7S-004 | HIGH | Impeccable | Update, telemetry, and potentially paid image network effects are not consistently approval-gated | reachable on Skill flows | open release blocker |
 | G7S-005 | MEDIUM | Shadcn | Untrusted custom registry may cause environment-backed header disclosure | requires project registry selection | require explicit registry/header approval |
 | G7S-006 | MEDIUM | Release builder | Archive entry mode/path checks were stronger after materialization than before extraction | required malicious pinned upstream update | mitigated by pre-extraction Git-tree validator and synthetic archive regression |
 | G7S-007 | INFORMATIONAL | 21st | Live surface could not be re-enumerated without invoking the credentialed remote | no call made; drift remains unknown | all unknown tools fail closed |
 
-Because Critical and unmitigated High findings remain in redistributed code, this candidate is not safe to publish or recommend for third-party installation. The review is blocked; documentation and orchestrator policy do not neutralize executable upstream behavior.
+G7S-001 and G7S-002 are closed, but the unmitigated High findings G7S-003 and G7S-004 remain open release blockers. This candidate is therefore still not safe to publish or recommend for third-party installation. Documentation and orchestrator policy do not neutralize executable upstream behavior.
 
 DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED
