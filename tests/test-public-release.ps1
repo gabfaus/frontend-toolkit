@@ -74,10 +74,14 @@ try {
     $manifestOne = Get-Content -Raw -LiteralPath (Join-Path $one 'RELEASE_MANIFEST.json') | ConvertFrom-Json
     $manifestTwo = Get-Content -Raw -LiteralPath (Join-Path $two 'RELEASE_MANIFEST.json') | ConvertFrom-Json
     if ($manifestOne.pluginTreeSha256 -ne $manifestTwo.pluginTreeSha256) { throw 'Independent candidate builds differ.' }
-    if ($manifestOne.pluginTreeSha256 -ne $releaseLock.observedPluginTreeSha256) { throw "Release artifact hash drifted: $($manifestOne.pluginTreeSha256)" }
+    if (-not $DevelopmentWorkingTree -and $manifestOne.pluginTreeSha256 -ne $releaseLock.observedPluginTreeSha256) {
+        throw "Release artifact hash drifted: $($manifestOne.pluginTreeSha256)"
+    }
     if (($manifestOne.pluginFiles.path -join "`n") -ne ($manifestTwo.pluginFiles.path -join "`n")) { throw 'Release artifact trees differ.' }
     if ($manifestOne.artifactTreeSha256 -ne $manifestTwo.artifactTreeSha256) { throw 'Independent artifact payloads differ.' }
-    if ($manifestOne.artifactTreeSha256 -ne $releaseLock.observedArtifactTreeSha256) { throw "Release payload hash drifted: $($manifestOne.artifactTreeSha256)" }
+    if (-not $DevelopmentWorkingTree -and $manifestOne.artifactTreeSha256 -ne $releaseLock.observedArtifactTreeSha256) {
+        throw "Release payload hash drifted: $($manifestOne.artifactTreeSha256)"
+    }
     if (($manifestOne.artifactFiles | ConvertTo-Json -Depth 5) -cne ($manifestTwo.artifactFiles | ConvertTo-Json -Depth 5)) { throw 'Independent artifact manifests differ.' }
     if ($manifestOne.artifactFileCount -ne @($manifestOne.artifactFiles).Count) { throw 'Artifact file count is inconsistent.' }
     if ($manifestOne.secretsIncluded -ne $false) { throw 'Release manifest did not prove secrets exclusion.' }
@@ -130,8 +134,12 @@ try {
     } finally {
         $zip.Dispose()
     }
-    Write-Output "PASS: v$($manifestOne.version) candidate is deterministic at $($manifestOne.pluginTreeSha256)."
-    Write-Output "PASS: artifact payload is deterministic at $($manifestOne.artifactTreeSha256) and ZIP matches its complete manifest."
+    if ($DevelopmentWorkingTree) {
+        Write-Output "DIAGNOSTIC: DevelopmentWorkingTree plugin $($manifestOne.pluginTreeSha256) and artifact $($manifestOne.artifactTreeSha256) are not persistent release evidence."
+    } else {
+        Write-Output "PASS: v$($manifestOne.version) committed-HEAD candidate is deterministic at $($manifestOne.pluginTreeSha256)."
+        Write-Output "PASS: committed-HEAD artifact payload is deterministic at $($manifestOne.artifactTreeSha256) and ZIP matches its complete manifest."
+    }
 } finally {
     if (Test-Path -LiteralPath $fixture) { [IO.Directory]::Delete('\\?\' + [IO.Path]::GetFullPath($fixture), $true) }
 }

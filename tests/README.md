@@ -1,5 +1,12 @@
 # Testes
 
+## Committed-HEAD lock governance
+
+**test-committed-head-lock-governance.ps1** proves that **DevelopmentWorkingTree** can build an
+ephemeral diagnostic candidate but cannot persist distribution or release hashes. It also runs the
+committed-HEAD reconciler without Apply, requiring two matching builds, manifests, ZIP inventories,
+security inventory, adapters, and upstream snapshots before the current locks are accepted.
+
 Estratégia futura:
 
 - validação estática de manifestos e referências;

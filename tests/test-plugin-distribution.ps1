@@ -77,7 +77,9 @@ try {
     $treeHashOne = Get-TreeHash $snapshotOne
     $treeHashTwo = Get-TreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }
-    if ($treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) { throw "Snapshot observation drifted: $treeHashOne" }
+    if (-not $DevelopmentWorkingTree -and $treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) {
+        throw "Snapshot observation drifted: $treeHashOne"
+    }
 foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/img2threejs-codec-mediator.mjs', 'security/img2threejs-foundation.ps1', 'security/img2threejs-runner.ps1', 'security/img2threejs-runtime-policy.json', 'security/img2threejs-state-guard.ps1', 'security/img2threejs-structural-validation.ps1', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
         if (-not (Test-Path -LiteralPath (Join-Path $snapshotOne $required))) { throw "Distribution attribution missing: $required" }
     }
@@ -141,7 +143,11 @@ foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANC
     Invoke-Codex @('plugin', 'remove', 'frontend-toolkit@ftk05b_fixture', '--json')
     Invoke-Codex @('plugin', 'marketplace', 'remove', 'ftk05b_fixture')
 
-    Write-Output "PASS: deterministic snapshot tree $treeHashOne."
+    if ($DevelopmentWorkingTree) {
+        Write-Output "DIAGNOSTIC: DevelopmentWorkingTree snapshot tree $treeHashOne is not persistent release evidence."
+    } else {
+        Write-Output "PASS: deterministic committed-HEAD snapshot tree $treeHashOne."
+    }
     Write-Output 'PASS: clean install discovered three FTK adapters and two MCPs; upstream snapshots remained non-discoverable.'
     Write-Output 'PASS: routing policy stayed 21st/search-only; no MCP tool was called.'
     Write-Output "PASS: cachebuster update installed $updatedVersion."

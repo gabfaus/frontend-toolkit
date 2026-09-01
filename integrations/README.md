@@ -1,5 +1,22 @@
 # Integrações
 
+## Persistent release hash evidence
+
+Persistent distribution and release hashes are reconciled only by
+**scripts/reconcile-committed-head-locks.ps1**. The reconciler requires a specific
+**CommittedHead**, verifies evidence-critical paths against that commit, reproduces two independent
+candidates, and compares manifests, ZIP inventories, security inventory, adapters, and upstream
+snapshots before writing exactly the observed lock properties.
+
+**DevelopmentWorkingTree** remains a pre-commit diagnostic source and fails closed for persistent
+hash writes. Its hashes must never replace committed-HEAD evidence or act as an automatic fallback.
+
+G7-SR2E-R replaced the diagnostic worktree observations
+aa79cbb1119db6f9c9e87557f03c98a2bb7ef4cc58eacb6538d224d768d7136f and
+81268cf8824297d54113c463e927ac517137eadc296456ad144b8d8c5b82b677 with the twice-reproduced
+committed-HEAD observations 669d11cfd754cc0656c810669ec2a662e253898debe2eab63981e19b2b75c3a4
+and efcf45ca29616d311a44499c21f65812c0ae60d07e074a7ecf873477dc97df01.
+
 O arquivo `external.lock.json` fixa origem, ref, objeto da ref, commit resolvido, versão, licença, hashes e caminhos de descoberta das Skills externas.
 
 `mcp.lock.json` fixa o provedor oficial Shadcn, pacote, versão e integridade. Para o 21st remoto, fixa endpoint/configuração e registra o snapshot datado de 35 tools, sua classificação, custos evitados e política de revalidação. Jpisnice permanece candidato inativo e `magic-mcp` permanece proibido.

@@ -42,6 +42,11 @@ $adapterPaths = @(
     'plugin/frontend-toolkit/skills/impeccable/SKILL.md'
     'plugin/frontend-toolkit/skills/img2threejs/SKILL.md'
 )
+$securityPaths = @(
+    'plugin/frontend-toolkit/security/img2threejs-state-guard.ps1'
+    'plugin/frontend-toolkit/security/img2threejs-structural-validation.ps1'
+)
+$fixturePaths = @($adapterPaths + $securityPaths)
 
 try {
     New-Item -ItemType Directory -Path $source | Out-Null
@@ -49,7 +54,10 @@ try {
     Assert-NativeSuccess 'Fixture repository initialization'
     Write-Utf8Lf -Path (Join-Path $source $adapterPaths[0]) -Value "# Impeccable fixture`n`nCommitted LF bytes.`n"
     Write-Utf8Lf -Path (Join-Path $source $adapterPaths[1]) -Value "# img2threejs fixture`n`nCommitted LF bytes.`n"
-    git -C $source add -- $adapterPaths
+    $lf = [string][char]10
+    Write-Utf8Lf -Path (Join-Path $source $securityPaths[0]) -Value ("function Test-StateGuardFixture {" + $lf + "    return 'committed LF'" + $lf + "}" + $lf)
+    Write-Utf8Lf -Path (Join-Path $source $securityPaths[1]) -Value ("function Test-StructuralFixture {" + $lf + "    return 'committed LF'" + $lf + "}" + $lf)
+    git -C $source add -- $fixturePaths
     Assert-NativeSuccess 'Fixture staging'
     git -C $source -c user.name='Frontend Toolkit Test' -c user.email='fixture@example.invalid' commit --quiet -m 'fixture: committed adapters'
     Assert-NativeSuccess 'Fixture commit'
@@ -74,21 +82,26 @@ try {
         }
     )
 
-    Expand-CanonicalSource -Repository $clone -Destination $first -Paths $adapterPaths
+    Expand-CanonicalSource -Repository $clone -Destination $first -Paths $fixturePaths
     Assert-AdapterEntryIntegrity -Root (Join-Path $first 'plugin/frontend-toolkit') -Dependencies $dependencies
 
-    foreach ($path in $adapterPaths) {
+    foreach ($path in $fixturePaths) {
         $bytes = [IO.File]::ReadAllBytes((Join-Path $clone $path))
         if (-not (([Text.Encoding]::UTF8.GetString($bytes)).Contains("`r`n"))) {
             throw "Fixture did not exercise a CRLF worktree: $path"
         }
     }
-    Expand-CanonicalSource -Repository $clone -Destination $second -Paths $adapterPaths
+    Expand-CanonicalSource -Repository $clone -Destination $second -Paths $fixturePaths
     Assert-AdapterEntryIntegrity -Root (Join-Path $second 'plugin/frontend-toolkit') -Dependencies $dependencies
     foreach ($dependency in $dependencies) {
         $firstHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $first ('plugin/frontend-toolkit/' + $dependency.distributionAdapterPath + '/SKILL.md'))).Hash
         $secondHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $second ('plugin/frontend-toolkit/' + $dependency.distributionAdapterPath + '/SKILL.md'))).Hash
         if ($firstHash -cne $secondHash) { throw "$($dependency.id) canonical export depends on worktree line endings." }
+    }
+    $firstTreeHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root (Join-Path $first 'plugin/frontend-toolkit'))
+    $secondTreeHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root (Join-Path $second 'plugin/frontend-toolkit'))
+    if ($firstTreeHash -cne $secondTreeHash) {
+        throw 'Canonical plugin evidence depends on adapter or security-module worktree line endings.'
     }
 
     $staleDependencies = @($dependencies | ForEach-Object {
@@ -104,7 +117,7 @@ try {
     Assert-NativeSuccess 'Changed adapter staging'
     git -C $clone -c user.name='Frontend Toolkit Test' -c user.email='fixture@example.invalid' commit --quiet -m 'fixture: change adapter bytes'
     Assert-NativeSuccess 'Changed adapter commit'
-    Expand-CanonicalSource -Repository $clone -Destination $changed -Paths $adapterPaths
+    Expand-CanonicalSource -Repository $clone -Destination $changed -Paths $fixturePaths
     $changeRejected = $false
     try { Assert-AdapterEntryIntegrity -Root (Join-Path $changed 'plugin/frontend-toolkit') -Dependencies $dependencies } catch { $changeRejected = $true }
     if (-not $changeRejected) { throw 'A real committed adapter byte change was accepted.' }
@@ -119,7 +132,7 @@ try {
         throw "Committed-HEAD snapshot tree mismatch. Expected: $($distributionLock.observedSnapshotTreeSha256); observed: $snapshotTreeHash"
     }
 
-    Write-Output 'PASS: clean CRLF clone exports canonical committed LF bytes for both adapters.'
+    Write-Output 'PASS: clean CRLF clone exports canonical committed LF bytes for adapters, state guard and structural validator.'
     Write-Output 'PASS: committed adapter changes and stale expected hashes fail closed.'
     Write-Output "PASS: committed-HEAD snapshot verifies both real adapters and locked tree $snapshotTreeHash."
 } finally {

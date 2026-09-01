@@ -6,7 +6,7 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "aa79cbb1119db6f9c9e87557f03c98a2bb7ef4cc58eacb6538d224d768d7136f",
+  "observedSnapshotTreeSha256": "669d11cfd754cc0656c810669ec2a662e253898debe2eab63981e19b2b75c3a4",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",

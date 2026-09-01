@@ -8,6 +8,7 @@ $pluginSource = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $safetyModule = Join-Path $repoRoot 'scripts/release-safety.ps1'
 $snapshotBuilder = Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1'
 $releaseBuilder = Join-Path $repoRoot 'scripts/build-release-candidate.ps1'
+$lockReconciler = Join-Path $repoRoot 'scripts/reconcile-committed-head-locks.ps1'
 . $safetyModule
 
 $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
@@ -31,6 +32,7 @@ Assert-ApprovedSourceComposition -RepoRoot $repoRoot -PluginSource $pluginSource
 
 $snapshotText = Get-Content -Raw -LiteralPath $snapshotBuilder
 $releaseText = Get-Content -Raw -LiteralPath $releaseBuilder
+$reconcilerText = Get-Content -Raw -LiteralPath $lockReconciler
 if ($snapshotText -match 'Copy-Item\s+-LiteralPath\s+\$pluginSource\s+-Destination\s+\$destinationPath\s+-Recurse') {
     throw 'Snapshot builder still recursively copies the local plugin source.'
 }
@@ -42,6 +44,19 @@ if ((Get-Command Export-CanonicalGitFiles).Definition -notmatch [regex]::Escape(
 }
 foreach ($required in @('Get-ArtifactFileEntries', 'Assert-NoSensitiveArtifactPaths', 'Assert-ReleaseManifestCoverage', 'artifactFiles', 'DevelopmentWorkingTree')) {
     if ($releaseText -notmatch [regex]::Escape($required)) { throw "Release builder is missing safety contract: $required" }
+}
+foreach ($required in @('SourceMode', 'CommittedHead', 'DevelopmentWorkingTree is diagnostic-only', 'ExpectedCommit', 'independentBuildCount', 'Set-JsonHashProperty')) {
+    if ($reconcilerText -notmatch [regex]::Escape($required)) { throw "Lock reconciler is missing safety contract: $required" }
+}
+if ($reconcilerText -match '&\s+\$builder[^\r\n]*DevelopmentWorkingTree') {
+    throw 'Lock reconciler can pass DevelopmentWorkingTree to the release builder.'
+}
+$persistentHashWriters = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'scripts') -File -Filter '*.ps1' | Where-Object {
+    $text = Get-Content -Raw -LiteralPath $_.FullName
+    $text -match 'observed(Snapshot|Plugin|Artifact)TreeSha256' -and $text -match 'WriteAllText'
+})
+if ($persistentHashWriters.Count -ne 1 -or $persistentHashWriters[0].FullName -cne $lockReconciler) {
+    throw "Persistent hash writers are not confined to the committed-HEAD reconciler: $($persistentHashWriters.Name -join ', ')"
 }
 
 foreach ($sensitive in @(
