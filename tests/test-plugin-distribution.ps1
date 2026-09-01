@@ -63,8 +63,8 @@ $machinePathBefore = [Environment]::GetEnvironmentVariable('Path', 'Machine')
 $oldCodexHome = $env:CODEX_HOME
 
 try {
-    & $builder -Destination $snapshotOne -DevelopmentWorkingTree | Out-Null
-    & $builder -Destination $snapshotTwo -DevelopmentWorkingTree | Out-Null
+    & $builder -Destination $snapshotOne | Out-Null
+    & $builder -Destination $snapshotTwo | Out-Null
     $treeHashOne = Get-TreeHash $snapshotOne
     $treeHashTwo = Get-TreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }

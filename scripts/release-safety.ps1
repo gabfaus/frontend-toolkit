@@ -87,6 +87,43 @@ function Assert-SafeGitArchiveTree {
     }
 }
 
+function Export-CanonicalGitFiles {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string]$Commit,
+        [Parameter(Mandatory)][string]$DestinationArchive,
+        [Parameter(Mandatory)][string[]]$Paths
+    )
+
+    $safeRepository = [IO.Path]::GetFullPath($Repository).Replace([char]92, [char]47)
+    $arguments = @(
+        '-c', "safe.directory=$safeRepository",
+        '-C', $Repository,
+        '-c', 'core.autocrlf=false',
+        'archive', '--format=tar', "--output=$DestinationArchive", $Commit, '--'
+    ) + $Paths
+    & git @arguments
+    Assert-ReleaseNativeSuccess 'Canonical Git archive'
+}
+
+function Assert-AdapterEntryIntegrity {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][object[]]$Dependencies
+    )
+
+    foreach ($dependency in $Dependencies) {
+        $adapterEntry = Join-Path $Root ($dependency.distributionAdapterPath + '/SKILL.md')
+        if (-not (Test-Path -LiteralPath $adapterEntry -PathType Leaf)) {
+            throw "$($dependency.id) adapter entry is missing: $adapterEntry"
+        }
+        $observed = (Get-FileHash -Algorithm SHA256 -LiteralPath $adapterEntry).Hash.ToLowerInvariant()
+        if ($observed -cne $dependency.adapterEntrySha256) {
+            throw "$($dependency.id) adapter hash mismatch. Expected: $($dependency.adapterEntrySha256); observed: $observed"
+        }
+    }
+}
+
 function Get-GitPathState {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,

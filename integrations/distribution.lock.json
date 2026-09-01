@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "validatedAt": "2026-08-31",
+  "validatedAt": "2026-09-01",
   "strategy": "mediated-adapter-generated-snapshots",
   "architecture": "ftk-owned-mediated-adapter",
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "54fea6ebad8e0f4953a584c49cf52174f08e0dd592cd7e5d5867055536eda77f",
+  "observedSnapshotTreeSha256": "54a3692134366d1cb914f0dcb2d5365951a6d3a9f591aba9bcec06f0ddd219ad",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",

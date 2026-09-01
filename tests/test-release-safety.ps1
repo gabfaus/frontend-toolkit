@@ -31,8 +31,11 @@ $releaseText = Get-Content -Raw -LiteralPath $releaseBuilder
 if ($snapshotText -match 'Copy-Item\s+-LiteralPath\s+\$pluginSource\s+-Destination\s+\$destinationPath\s+-Recurse') {
     throw 'Snapshot builder still recursively copies the local plugin source.'
 }
-foreach ($required in @('git', 'archive', 'HEAD', 'Assert-ApprovedSourceComposition', 'Assert-NoSensitiveArtifactPaths')) {
+foreach ($required in @('Export-CanonicalGitFiles', 'HEAD', 'Assert-ApprovedSourceComposition', 'Assert-AdapterEntryIntegrity', 'Assert-NoSensitiveArtifactPaths')) {
     if ($snapshotText -notmatch [regex]::Escape($required)) { throw "Snapshot builder is missing safety contract: $required" }
+}
+if ((Get-Command Export-CanonicalGitFiles).Definition -notmatch [regex]::Escape('core.autocrlf=false')) {
+    throw 'Canonical Git export does not disable checkout line-ending conversion.'
 }
 foreach ($required in @('Get-ArtifactFileEntries', 'Assert-NoSensitiveArtifactPaths', 'Assert-ReleaseManifestCoverage', 'artifactFiles')) {
     if ($releaseText -notmatch [regex]::Escape($required)) { throw "Release builder is missing safety contract: $required" }

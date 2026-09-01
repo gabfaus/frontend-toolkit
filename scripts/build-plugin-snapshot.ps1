@@ -51,15 +51,9 @@ try {
         Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $approvedSourceRoot 'LICENSE')
     } else {
         $approvedSourceTar = Join-Path $stageRoot 'approved-source.tar'
-        $safeRepo = $repoRoot.Replace('\', '/')
         $approvedRepoPaths = @('LICENSE') + @($sourceFileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
         Assert-SafeGitArchiveTree -Repository $repoRoot -Commit 'HEAD' -Context 'approved source' -Paths $approvedRepoPaths
-        $archiveArguments = @(
-            '-c', "safe.directory=$safeRepo", '-C', $repoRoot,
-            'archive', '--format=tar', "--output=$approvedSourceTar", 'HEAD', '--'
-        ) + $approvedRepoPaths
-        & git @archiveArguments
-        Assert-NativeSuccess 'Approved source archive'
+        Export-CanonicalGitFiles -Repository $repoRoot -Commit 'HEAD' -DestinationArchive $approvedSourceTar -Paths $approvedRepoPaths
         & tar -xf $approvedSourceTar -C $approvedSourceRoot
         Assert-NativeSuccess 'Approved source extraction'
     }
@@ -136,10 +130,8 @@ try {
     if ($impeccableNoticeHash -ne $impeccable.noticeSha256) { throw 'Impeccable NOTICE hash mismatch.' }
     if ($img2threejsLicenseHash -ne $img2threejs.licenseSha256) { throw 'img2threejs license hash mismatch.' }
 
+    Assert-AdapterEntryIntegrity -Root $destinationPath -Dependencies @($impeccable, $img2threejs)
     foreach ($dependency in @($impeccable, $img2threejs)) {
-        $adapterEntry = Join-Path $destinationPath ($dependency.distributionAdapterPath + '/SKILL.md')
-        $adapterHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $adapterEntry).Hash.ToLowerInvariant()
-        if ($adapterHash -ne $dependency.adapterEntrySha256) { throw "$($dependency.id) adapter hash mismatch." }
         $snapshot = Join-Path $destinationPath $dependency.upstreamSnapshotPath
         $snapshotHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root $snapshot)
         if ($snapshotHash -ne $dependency.snapshotTreeSha256) { throw "$($dependency.id) snapshot tree hash mismatch." }
