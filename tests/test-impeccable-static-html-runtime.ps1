@@ -13,7 +13,7 @@ $sourceLauncher = Join-Path $securityRoot 'invoke-capability.ps1'
 $runtimeModule = Join-Path $securityRoot 'impeccable-static-runtime.mjs'
 $lock = Get-Content -Raw (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
 $expectedPackages = @($lock.packages | ForEach-Object { "$($_.name)@$($_.version)" } | Sort-Object)
-$golden = Get-Content -Raw (Join-Path $PSScriptRoot 'fixtures/impeccable-static-html-golden.json') | ConvertFrom-Json
+
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'test-impeccable-static-html-golden.ps1') | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Executable golden differential test failed.' }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'test-impeccable-static-html-dependencies.ps1') | Out-Null

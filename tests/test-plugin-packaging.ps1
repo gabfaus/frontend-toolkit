@@ -1,5 +1,6 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot '..\scripts\release-safety.ps1')
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $pluginRoot = Join-Path $repoRoot 'plugin/frontend-toolkit'
@@ -32,8 +33,10 @@ foreach ($dependency in $external.dependencies) {
 if (Test-Path -LiteralPath (Join-Path $pluginRoot 'third_party')) { throw 'Upstream snapshots must not exist in plugin source.' }
 $effectPolicy = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'security/effect-policy.json') | ConvertFrom-Json
 if ($effectPolicy.unknownEffectPolicy -ne 'deny' -or @($effectPolicy.effectClasses) -notcontains 'UNKNOWN' -or @($effectPolicy.effectClasses) -notcontains 'PROJECT_CODE_EXECUTION') { throw 'Capability boundary is not fail-closed or lacks project-code mediation.' }
-$expectedImpeccableGuards = @('impeccable-authority-policy.json','impeccable-context-extractor.mjs','impeccable-context-mediator.mjs','impeccable-detector.mjs','impeccable-static-runtime.mjs','impeccable-network-client.mjs','impeccable-operation-policy.json','impeccable-runner.ps1')
-foreach ($guard in $expectedImpeccableGuards) {
+$expectedSecurityModules = @(Get-FrontendToolkitSecurityModuleAllowlist)
+$actualSecurityModules = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'security') -File -Force | ForEach-Object Name | Sort-Object)
+Assert-ExactStringSet -Name 'plugin source security inventory' -Actual $actualSecurityModules -Expected $expectedSecurityModules
+foreach ($guard in $expectedSecurityModules) {
     if (-not (Test-Path -LiteralPath (Join-Path $pluginRoot ('security/' + $guard)) -PathType Leaf)) { throw "Impeccable guard is missing: $guard" }
 }
 

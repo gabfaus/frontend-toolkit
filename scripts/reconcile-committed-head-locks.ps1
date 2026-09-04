@@ -7,6 +7,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'release-safety.ps1')
 
 function Assert-NativeSuccess {
     param([Parameter(Mandatory)][string]$Operation)
@@ -35,7 +36,7 @@ function Get-ZipInventory {
         [Parameter(Mandatory)][string]$ZipPath
     )
     Add-Type -AssemblyName System.IO.Compression.FileSystem
-    [IO.Compression.ZipFile]::CreateFromDirectory($Root, $ZipPath)
+    New-DeterministicZip -Root $Root -ZipPath $ZipPath
     $zip = [IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
         return @($zip.Entries | Where-Object Name | ForEach-Object {
@@ -75,16 +76,7 @@ function Assert-ReleaseInventory {
         throw "Committed-HEAD MCP inventory drifted: $($mcpNames -join ',')"
     }
 
-    $requiredSecurity = @(
-        'effect-policy.json',
-        'img2threejs-codec-mediator.mjs',
-        'img2threejs-foundation.ps1',
-        'img2threejs-runner.ps1',
-        'img2threejs-runtime-policy.json',
-        'img2threejs-state-guard.ps1',
-        'img2threejs-structural-validation.ps1',
-        'invoke-capability.ps1'
-    )
+    $requiredSecurity = @(Get-FrontendToolkitSecurityModuleAllowlist)
     $security = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'security') -File -Force | ForEach-Object Name | Sort-Object)
     $newline = [string][char]10
     if (($security -join $newline) -cne (($requiredSecurity | Sort-Object) -join $newline)) {
@@ -182,6 +174,18 @@ try {
     $zipInventoryOne = @(Get-ZipInventory -Root $candidateOne -ZipPath $zipOne)
     $zipInventoryTwo = @(Get-ZipInventory -Root $candidateTwo -ZipPath $zipTwo)
     Assert-EqualEvidence -Name 'ZIP inventory' -First $zipInventoryOne -Second $zipInventoryTwo
+    $zipShaOne = (Get-FileHash -Algorithm SHA256 -LiteralPath $zipOne).Hash.ToLowerInvariant()
+    $zipShaTwo = (Get-FileHash -Algorithm SHA256 -LiteralPath $zipTwo).Hash.ToLowerInvariant()
+    if ($zipShaOne -cne $zipShaTwo) { throw 'Committed-HEAD raw ZIP bytes differ.' }
+
+    $extractOne = Join-Path $fixture 'candidate-one-extracted'
+    $extractTwo = Join-Path $fixture 'candidate-two-extracted'
+    New-Item -ItemType Directory -Path $extractOne, $extractTwo | Out-Null
+    [IO.Compression.ZipFile]::ExtractToDirectory($zipOne, $extractOne)
+    [IO.Compression.ZipFile]::ExtractToDirectory($zipTwo, $extractTwo)
+    $extractedInventoryOne = @(Get-ArtifactFileEntries -Root $extractOne)
+    $extractedInventoryTwo = @(Get-ArtifactFileEntries -Root $extractTwo)
+    Assert-EqualEvidence -Name 'extracted ZIP inventory' -First $extractedInventoryOne -Second $extractedInventoryTwo
     $newline = [string][char]10
     $manifestPaths = @($manifestOne.artifactFiles.path | Sort-Object)
     if (($zipInventoryOne.path -join $newline) -cne ($manifestPaths -join $newline)) {
@@ -213,6 +217,10 @@ try {
         buildTwoArtifactTreeSha256 = $buildTwo.ArtifactTreeSha256
         manifestsEqual = $true
         zipInventoriesEqual = $true
+        rawZipSha256One = $zipShaOne
+        rawZipSha256Two = $zipShaTwo
+        rawZipBytesEqual = $true
+        extractedInventoriesEqual = $true
         inventoryValidated = $true
         applied = [bool]$Apply
     }

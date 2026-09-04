@@ -43,8 +43,21 @@ function Normalize-Finding($Finding, [string]$Root, [string]$Source) {
 }
 
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
-$goldenPath = Join-Path $PSScriptRoot "fixtures/impeccable-static-html-golden.json"
-$golden = [IO.File]::ReadAllText($goldenPath, [Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+$sourceRoot = Join-Path ([IO.Path]::GetTempPath()) ("ftk-golden-committed-source-" + [guid]::NewGuid().ToString("N"))
+$sourceTar = Join-Path ([IO.Path]::GetTempPath()) ("ftk-golden-committed-source-" + [guid]::NewGuid().ToString("N") + ".tar")
+try {
+    New-Item -ItemType Directory -Path $sourceRoot -Force | Out-Null
+    $safeRepo = $repoRoot.Replace("\", "/")
+    $fixtureSpec = "HEAD:tests/fixtures/impeccable-static-html-golden.json"
+    & git -c "safe.directory=$safeRepo" -C $repoRoot cat-file -e $fixtureSpec
+    if ($LASTEXITCODE -ne 0) { throw "Golden fixture is not committed in HEAD; scope/commit defect." }
+    & git -c "safe.directory=$safeRepo" -C $repoRoot archive --format=tar --output=$sourceTar HEAD -- tests/fixtures/impeccable-static-html-golden.json
+    if ($LASTEXITCODE -ne 0) { throw "Committed source archive could not be created." }
+    & tar -xf $sourceTar -C $sourceRoot
+    if ($LASTEXITCODE -ne 0) { throw "Committed source archive could not be extracted." }
+    $goldenPath = Join-Path $sourceRoot "tests/fixtures/impeccable-static-html-golden.json"
+    Assert-True (Test-Path -LiteralPath $goldenPath -PathType Leaf) "Committed source archive omitted the golden fixture."
+    $golden = [IO.File]::ReadAllText($goldenPath, [Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
 Assert-True ($golden.schemaVersion -eq 2) "Golden schema is invalid."
 Assert-True ($golden.oracle.upstreamCommit -ceq "63b04e2530f5c7b41ea83c133daab24f34912456") "Golden oracle pin is invalid."
 $ignoredFields = @("finding.engine","finding.scopes","profile.*.target","profile.*.ms","runtime.moduleRoot","runtime.resolvedSpecifiers","process-specific diagnostics")
@@ -52,12 +65,8 @@ $preservedFields = @("ruleId","finding type/classification","severity","message"
 Assert-True ((@($golden.normalizationContract.ignoredFields) -join "|") -ceq ($ignoredFields -join "|")) "Normalization ignored-field contract drifted."
 Assert-True ((@($golden.normalizationContract.preservedFields) -join "|") -ceq ($preservedFields -join "|")) "Normalization preserved-field contract drifted."
 
-& git -C $repoRoot diff --cached --quiet
+& git -c "safe.directory=$safeRepo" -C $repoRoot diff --cached --quiet
 Assert-True ($LASTEXITCODE -eq 0) "Golden test requires an empty Git index."
-& git -C $repoRoot check-ignore -q -- "tests/fixtures/impeccable-static-html-golden.json"
-Assert-True ($LASTEXITCODE -eq 1) "Golden fixture is still ignored or check-ignore failed."
-$statusLine = @(& git -C $repoRoot status --porcelain=v1 --untracked-files=all -- "tests/fixtures/impeccable-static-html-golden.json")
-Assert-True ($statusLine.Count -eq 1 -and $statusLine[0] -ceq "?? tests/fixtures/impeccable-static-html-golden.json") "Golden fixture is not naturally versionable."
 
 $lock = [IO.File]::ReadAllText((Join-Path $repoRoot "integrations/impeccable-static-html-dependencies.lock.json"), [Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
 $expectedPackages = @($lock.packages | ForEach-Object { [string]$_.name } | Sort-Object)
@@ -175,4 +184,8 @@ foreach ($requiredMiss in @($golden.legacyShimContract.requiredMisses)) { Assert
 Write-Output ("OLD SHIM REGRESSION DETECTION PASS cases=" + $caseResults.Count)
 & git -C $repoRoot diff --cached --quiet
 Assert-True ($LASTEXITCODE -eq 0) "Golden test changed the Git index."
-Write-Output ("GOLDEN DIFFERENTIAL CORPUS PASS cases=" + $caseResults.Count + " oracle=executed ftk=executed normalized=contract-enforced")
+Write-Output ("GOLDEN DIFFERENTIAL CORPUS PASS cases=" + $caseResults.Count + " oracle=executed ftk=executed normalized=contract-enforced source=committed-head")
+} finally {
+    if (Test-Path -LiteralPath $sourceTar) { Remove-Item -LiteralPath $sourceTar -Force }
+    if (Test-Path -LiteralPath $sourceRoot) { Remove-Item -LiteralPath $sourceRoot -Recurse -Force }
+}

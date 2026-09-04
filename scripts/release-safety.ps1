@@ -306,3 +306,69 @@ function Get-ArtifactEntriesHash {
         $sha.Dispose()
     }
 }
+function Get-FrontendToolkitSecurityModuleAllowlist {
+    return @(
+        'effect-policy.json'
+        'img2threejs-codec-mediator.mjs'
+        'img2threejs-foundation.ps1'
+        'img2threejs-runner.ps1'
+        'img2threejs-runtime-policy.json'
+        'img2threejs-state-guard.ps1'
+        'img2threejs-structural-validation.ps1'
+        'impeccable-authority-policy.json'
+        'impeccable-context-extractor.mjs'
+        'impeccable-context-mediator.mjs'
+        'impeccable-detector.mjs'
+        'impeccable-static-runtime.mjs'
+        'impeccable-network-client.mjs'
+        'impeccable-operation-policy.json'
+        'impeccable-runner.ps1'
+        'invoke-capability.ps1'
+    )
+}
+
+function New-DeterministicZip {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$ZipPath
+    )
+
+    Add-Type -AssemblyName System.IO.Compression
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $rootPath = (Resolve-Path -LiteralPath $Root).Path
+    $zipFullPath = [IO.Path]::GetFullPath($ZipPath)
+    if (Test-Path -LiteralPath $zipFullPath) { throw "ZIP destination already exists: $zipFullPath" }
+    Assert-NoSensitiveArtifactPaths -Root $rootPath -Context 'deterministic ZIP source'
+
+    $paths = @((Get-ArtifactFileEntries -Root $rootPath) | ForEach-Object { [string]$_.path })
+    [Array]::Sort($paths, [StringComparer]::Ordinal)
+    $zipParent = Split-Path -Parent $zipFullPath
+    if ($zipParent) { New-Item -ItemType Directory -Path $zipParent -Force | Out-Null }
+
+    $zipStream = $null
+    $archive = $null
+    try {
+        $zipStream = [IO.FileStream]::new($zipFullPath, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+        $archive = [IO.Compression.ZipArchive]::new($zipStream, [IO.Compression.ZipArchiveMode]::Create, $false, [Text.Encoding]::UTF8)
+        # Policy: files only, ordinal slash paths, Optimal compression, fixed ZIP-safe UTC epoch, no external attributes.
+        $fixedTimestamp = [DateTimeOffset]::new(1980, 1, 1, 0, 0, 0, [TimeSpan]::Zero)
+        foreach ($path in $paths) {
+            $entry = $archive.CreateEntry($path, [IO.Compression.CompressionLevel]::Optimal)
+            $entry.LastWriteTime = $fixedTimestamp
+            $entry.ExternalAttributes = 0
+            $source = $null
+            $target = $null
+            try {
+                $source = [IO.File]::OpenRead((Join-Path $rootPath ($path.Replace('/', [IO.Path]::DirectorySeparatorChar))))
+                $target = $entry.Open()
+                $source.CopyTo($target)
+            } finally {
+                if ($target) { $target.Dispose() }
+                if ($source) { $source.Dispose() }
+            }
+        }
+    } finally {
+        if ($archive) { $archive.Dispose() }
+        if ($zipStream) { $zipStream.Dispose() }
+    }
+}
