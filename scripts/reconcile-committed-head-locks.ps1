@@ -39,7 +39,7 @@ function Get-ZipInventory {
     New-DeterministicZip -Root $Root -ZipPath $ZipPath
     $zip = [IO.Compression.ZipFile]::OpenRead($ZipPath)
     try {
-        return @($zip.Entries | Where-Object Name | ForEach-Object {
+        $entries = @($zip.Entries | Where-Object Name | ForEach-Object {
             $stream = $_.Open()
             $sha = [Security.Cryptography.SHA256]::Create()
             try {
@@ -51,7 +51,8 @@ function Get-ZipInventory {
                 $sha.Dispose()
                 $stream.Dispose()
             }
-        } | Sort-Object path)
+        })
+        return @(Sort-ArtifactEntriesOrdinal -Entries $entries)
     } finally {
         $zip.Dispose()
     }

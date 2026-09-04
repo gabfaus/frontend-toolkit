@@ -249,6 +249,26 @@ function Get-CompleteArtifactEntries {
     })
 }
 
+function Sort-OrdinalStrings {
+    param([Parameter(Mandatory)][string[]]$Values)
+
+    $sorted = @($Values)
+    [Array]::Sort($sorted, [StringComparer]::Ordinal)
+    return $sorted
+}
+
+function Sort-ArtifactEntriesOrdinal {
+    param([Parameter(Mandatory)][object[]]$Entries)
+
+    $sorted = [System.Collections.Generic.List[object]]::new()
+    foreach ($entry in $Entries) { [void]$sorted.Add($entry) }
+    $sorted.Sort([System.Comparison[object]]{
+        param($left, $right)
+        return [StringComparer]::Ordinal.Compare([string]$left.path, [string]$right.path)
+    })
+    return @($sorted)
+}
+
 function Test-SensitiveArtifactPath {
     param([Parameter(Mandatory)][string]$RelativePath)
 
@@ -286,19 +306,26 @@ function Assert-NoSensitiveArtifactPaths {
 function Get-ArtifactFileEntries {
     param([Parameter(Mandatory)][string]$Root)
 
-    $entries = @(Get-CompleteArtifactEntries -Root $Root | Where-Object { -not $_.IsDirectory })
-    return @($entries | ForEach-Object {
+    $allEntries = @(Get-CompleteArtifactEntries -Root $Root)
+    $reparsePoints = @($allEntries | Where-Object IsReparsePoint)
+    if ($reparsePoints.Count) {
+        throw "Artifact tree contains reparse points: $($reparsePoints.Path -join ', ')"
+    }
+    $entries = @($allEntries | Where-Object { -not $_.IsDirectory } | ForEach-Object {
         [pscustomobject][ordered]@{
             path = $_.Path
             sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.Item.FullName).Hash.ToLowerInvariant()
         }
-    } | Sort-Object path)
+    })
+    if (-not $entries.Count) { return @() }
+    return @(Sort-ArtifactEntriesOrdinal -Entries $entries)
 }
 
 function Get-ArtifactEntriesHash {
     param([Parameter(Mandatory)][object[]]$Entries)
 
-    $canonical = @($Entries | ForEach-Object { "$($_.path)|$($_.sha256)" }) -join "`n"
+    $orderedEntries = if ($Entries.Count) { @(Sort-ArtifactEntriesOrdinal -Entries $Entries) } else { @() }
+    $canonical = @($orderedEntries | ForEach-Object { "$($_.path)|$($_.sha256)" }) -join "`n"
     $sha = [Security.Cryptography.SHA256]::Create()
     try {
         return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($canonical)))).Replace('-', '').ToLowerInvariant()

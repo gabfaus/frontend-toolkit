@@ -7,17 +7,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '..\scripts\release-safety.ps1')
 
-function Get-TreeHash {
+function Get-CanonicalFileTreeHash {
     param([Parameter(Mandatory)][string]$Root)
-    $rootPath = (Resolve-Path $Root).Path
-    $entries = Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
-        $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
-        "$relative|$((Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant())"
-    } | Sort-Object
-    $sha = [Security.Cryptography.SHA256]::Create()
-    try {
-        return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($entries -join "`n"))))).Replace('-', '').ToLowerInvariant()
-    } finally { $sha.Dispose() }
+    return Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root $Root)
 }
 
 function Invoke-Codex {
@@ -75,8 +67,8 @@ try {
     }
     & $builder @snapshotOneArguments | Out-Null
     & $builder @snapshotTwoArguments | Out-Null
-    $treeHashOne = Get-TreeHash $snapshotOne
-    $treeHashTwo = Get-TreeHash $snapshotTwo
+    $treeHashOne = Get-CanonicalFileTreeHash $snapshotOne
+    $treeHashTwo = Get-CanonicalFileTreeHash $snapshotTwo
     if ($treeHashOne -ne $treeHashTwo) { throw 'Two snapshot generations produced different trees.' }
     if (-not $DevelopmentWorkingTree -and $treeHashOne -ne $distributionLock.observedSnapshotTreeSha256) {
         throw "Snapshot observation drifted: $treeHashOne"
@@ -95,7 +87,7 @@ try {
     foreach ($dependency in $externalLock.dependencies) {
         $adapterHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $snapshotOne ($dependency.distributionAdapterPath + '/SKILL.md'))).Hash.ToLowerInvariant()
         if ($adapterHash -ne $dependency.adapterEntrySha256) { throw "Snapshot adapter hash mismatch: $($dependency.id)" }
-        $snapshotHash = Get-TreeHash (Join-Path $snapshotOne $dependency.upstreamSnapshotPath)
+        $snapshotHash = Get-CanonicalFileTreeHash (Join-Path $snapshotOne $dependency.upstreamSnapshotPath)
         if ($snapshotHash -ne $dependency.snapshotTreeSha256) { throw "Snapshot upstream tree hash mismatch: $($dependency.id)" }
     }
 

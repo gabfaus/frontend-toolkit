@@ -24,8 +24,8 @@ function Assert-ReleaseManifestCoverage {
     )
 
     $actualEntries = @(Get-ArtifactFileEntries -Root $Root)
-    $actualPaths = @($actualEntries.path | Sort-Object)
-    $manifestPaths = @($Manifest.artifactFiles.path | Sort-Object)
+    $actualPaths = @(Sort-OrdinalStrings -Values @($actualEntries.path))
+    $manifestPaths = @(Sort-OrdinalStrings -Values @($Manifest.artifactFiles.path))
     if (($actualPaths -join "`n") -cne ($manifestPaths -join "`n")) {
         throw 'Release manifest does not inventory every artifact file.'
     }
@@ -97,7 +97,7 @@ try {
         sha256 = $null
         selfManifest = $true
     }
-    $artifactFiles = @($artifactFiles | Sort-Object path)
+    $artifactFiles = @(Sort-ArtifactEntriesOrdinal -Entries $artifactFiles)
     $releaseManifest = [ordered]@{
         schemaVersion = 1
         version = $manifest.version
