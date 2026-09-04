@@ -23,6 +23,8 @@ Frontend Toolkit
 
 Impeccable e img2threejs permanecem projetos upstream independentes. A descoberta usa adapters próprios do FTK; nenhum `SKILL.md` upstream fica em `.agents/skills` ou em `skills/` do artefato. O build gera snapshots imutáveis e byte-verificados dos SHAs pinados somente sob `third_party/upstreams/`, com provenance separada. O build de release continua extraindo o código próprio de `HEAD` por allowlist exata; o modo `-DevelopmentWorkingTree` existe apenas para validar gates ainda não commitados e mantém as mesmas verificações de composição, reparse points e paths sensíveis.
 
+G7-SR3I integra o Impeccable por uma cadeia fail-closed de autoridade, operação tipada, efeitos independentes e handler fixo. Contexto local passa por extractor e mediator FTK-owned; conteúdo upstream/projeto nunca concede autoridade. Como o plugin atual não recebe evidência host não-forjável, rede, telemetry, paid generation, live efetivo e mutações sensíveis permanecem discoverable, porém retornam `AUTHORIZATION_REQUIRED`. Veja [G7-SR3I](docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md).
+
 ## Política de custo e mutação do 21st
 
 Somente `21st/search` é autorizado automaticamente. Geração, iteração, consumo de créditos ou quota, recuperação/cópia/instalação de código, publicação, edição, exclusão, bookmarks, listas, conta/perfil, qualquer mutation e qualquer tool nova ou de efeito incerto exigem autorização explícita.

@@ -1,0 +1,778 @@
+{
+    "schemaVersion":  1,
+    "gate":  "G7-SR3I-D3F",
+    "status":  "pre-commit-canonical-substrate-only",
+    "resolvedAt":  "2026-09-03",
+    "registryHost":  "registry.npmjs.org",
+    "network":  {
+                    "scheme":  "https",
+                    "metadataRequests":  13,
+                    "tarballRequests":  13,
+                    "totalHttpRequests":  26,
+                    "redirects":  0,
+                    "credentialsSent":  false,
+                    "otherHostsContacted":  false
+                },
+    "acquisition":  {
+                         "packageManagerUsed":  false,
+                         "packageCodeExecuted":  false,
+                         "lifecycleScriptsExecuted":  false,
+                         "temporaryTarballsRetained":  false
+                     },    "upstream":  {
+                     "reason":  "Impeccable static-html",
+                     "commitSha":  "63b04e2530f5c7b41ea83c133daab24f34912456",
+                     "bunLockPath":  "external/impeccable/bun.lock",
+                     "bunLockBlob":  "437713e65217d1e69d00120f9331b2a63ebbba95"
+                 },
+    "snapshot":  {
+                     "path":  "third_party/runtimes/impeccable-static-html",
+                     "moduleRoot":  "third_party/runtimes/impeccable-static-html/node_modules",
+                     "packageCount":  13,
+                     "fileCount":  601,
+                     "bytes":  3696727,
+                     "treeSha256":  "5f537671feab493afc06129128ba2e116a12368f916c8ec1b40032e8130c499d",
+                     "treeHashAlgorithm":  "sha256(utf8(join LF sorted(relative-path + pipe + file-sha256)))",
+                     "preservation":  "complete canonical tarball contents",
+                     "skillDiscoverable":  false,
+                     "activeRuntimeIntegrated":  false
+                 },
+    "securityAudit":  {
+                          "reachableEntrypoints":  [
+                                                       "htmlparser2",
+                                                       "css-select",
+                                                       "css-tree",
+                                                       "domutils"
+                                                   ],
+                          "blockingEffects":  [
+
+                                              ],
+                          "unreachableFindings":  [
+                                                      {
+                                                          "package":  "source-map-js",
+                                                          "path":  "lib/quick-sort.js",
+                                                          "mechanism":  "new Function",
+                                                          "reason":  "unreachable from css-tree direct import of lib/source-map-generator.js"
+                                                      }
+                                                  ],
+                          "noRequiredInstallOrNativeBuild":  true
+                      },
+    "packages":  [
+                     {
+                         "name":  "htmlparser2",
+                         "version":  "12.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/htmlparser2/-/htmlparser2-12.0.0.tgz",
+                         "registryIntegrity":  "sha512-Tz7u1i95/g2x2jz81+x0FBVhBhY5aRTvD3tXXdFaljuNdzDLJ8UGNRrTcj2cgQvAg3iW/h77Fz15nLW0L0CrZw==",
+                         "bunLockIntegrity":  "sha512-Tz7u1i95/g2x2jz81+x0FBVhBhY5aRTvD3tXXdFaljuNdzDLJ8UGNRrTcj2cgQvAg3iW/h77Fz15nLW0L0CrZw==",
+                         "registryShasum":  "6a679d0f57c525990f9cbad8a585b320ecc6d198",
+                         "tarballSha512":  "4f3eeed62f79fe0db1da3cfcd7ec741415610616396914ef0f7b575dd15a963b8d7730cb27c506351ad3723d9c810bc0837896fe1efb173d799cb5b42f40ab67",
+                         "tarballSha256":  "bd21df686ef9b29b6786aac9aa75a9d20e1e884ad3f3089882db1d576dd4aaa0",
+                         "tarballBytes":  44710,
+                         "archiveEntries":  28,
+                         "extractedCanonicalTreeSha256":  "9f31c5e9381db9bad2b6ecd70c471499d05032ece0568ec5bfd091236380f339",
+                         "fileCount":  28,
+                         "licenseIdentifier":  "MIT",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/htmlparser2/LICENSE",
+                         "licenseFileSha256":  "204cfa747341660e4da64cd23e8c876c6b20279d247f48564993d3fc4a2eab47",
+                         "relationship":  "direct",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "domelementtype",
+                                                     "range":  "^3.0.0",
+                                                     "resolvedVersion":  "3.0.0"
+                                                 },
+                                                 {
+                                                     "name":  "domhandler",
+                                                     "range":  "^6.0.0",
+                                                     "resolvedVersion":  "6.0.1"
+                                                 },
+                                                 {
+                                                     "name":  "domutils",
+                                                     "range":  "^4.0.2",
+                                                     "resolvedVersion":  "4.0.2"
+                                                 },
+                                                 {
+                                                     "name":  "entities",
+                                                     "range":  "^8.0.0",
+                                                     "resolvedVersion":  "8.0.0"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "MIT",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "domutils":  "^4.0.2",
+                                                                       "entities":  "^8.0.0",
+                                                                       "domhandler":  "^6.0.0",
+                                                                       "domelementtype":  "^3.0.0"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:ts \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "lint:ts":  "tsc --noEmit",
+                                                                  "test:vi":  "vitest run",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write .",
+                                                                  "prepublishOnly":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "css-select",
+                         "version":  "7.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/css-select/-/css-select-7.0.0.tgz",
+                         "registryIntegrity":  "sha512-snmjEVXy+1LnwXdxhYvTMj1d9tOh4HxkA1YmoayVBeeyR2C14Pum7fcxJIm4SswYspVy866eYNwlH6xC3/VH5g==",
+                         "bunLockIntegrity":  "sha512-snmjEVXy+1LnwXdxhYvTMj1d9tOh4HxkA1YmoayVBeeyR2C14Pum7fcxJIm4SswYspVy866eYNwlH6xC3/VH5g==",
+                         "registryShasum":  "7532bab5977b1f0e83bc16036661dbe0968b4dec",
+                         "tarballSha512":  "b279a31155f2fb52e7c17771858bd3323d5df6d3a1e07c64035626a1ac9505e7b24760b5e0fba6edf7312489b84acc18b29572f3ae9e60dc251fac42dff547e6",
+                         "tarballSha256":  "7c35ad92211a399ed536174c12ede417bc8b96100895cad78be9010e9c84419f",
+                         "tarballBytes":  44543,
+                         "archiveEntries":  73,
+                         "extractedCanonicalTreeSha256":  "a27c12b639e624e3fbc60314b07ae8df41287585b490ed91375bc9879020a054",
+                         "fileCount":  73,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/css-select/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "direct",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "boolbase",
+                                                     "range":  "^2.0.0",
+                                                     "resolvedVersion":  "2.0.0"
+                                                 },
+                                                 {
+                                                     "name":  "css-what",
+                                                     "range":  "^8.0.0",
+                                                     "resolvedVersion":  "8.0.0"
+                                                 },
+                                                 {
+                                                     "name":  "domhandler",
+                                                     "range":  "^6.0.1",
+                                                     "resolvedVersion":  "6.0.1"
+                                                 },
+                                                 {
+                                                     "name":  "domutils",
+                                                     "range":  "^4.0.2",
+                                                     "resolvedVersion":  "4.0.2"
+                                                 },
+                                                 {
+                                                     "name":  "nth-check",
+                                                     "range":  "^3.0.1",
+                                                     "resolvedVersion":  "3.0.1"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "boolbase":  "^2.0.0",
+                                                                       "css-what":  "^8.0.0",
+                                                                       "domutils":  "^4.0.2",
+                                                                       "nth-check":  "^3.0.1",
+                                                                       "domhandler":  "^6.0.1"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:biome \u0026\u0026 npm run lint:tsc",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "test:vi":  "vitest run",
+                                                                  "lint:tsc":  "tsc --noEmit",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write .",
+                                                                  "prepublishOnly":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "css-tree",
+                         "version":  "3.2.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/css-tree/-/css-tree-3.2.1.tgz",
+                         "registryIntegrity":  "sha512-X7sjQzceUhu1u7Y/ylrRZFU2FS6LRiFVp6rKLPg23y3x3c3DOKAwuXGDp+PAGjh6CSnCjYeAul8pcT8bAl+lSA==",
+                         "bunLockIntegrity":  "sha512-X7sjQzceUhu1u7Y/ylrRZFU2FS6LRiFVp6rKLPg23y3x3c3DOKAwuXGDp+PAGjh6CSnCjYeAul8pcT8bAl+lSA==",
+                         "registryShasum":  "86cac7011561272b30e6b1e042ba6ce047aa7518",
+                         "tarballSha512":  "5fbb2343371e521bb5bbb63fca5ad1645536152e8b462155a7aaca2cf836df2df1ddcdc338a030b97183a7e3c01a387a0929c28d8780ba5f29713f1b025fa548",
+                         "tarballSha256":  "4c06bfe733d006103a4c070dcf8e0a3b2eb6b6a83e20e21c32d2d3b9c3ffae0a",
+                         "tarballBytes":  316943,
+                         "archiveEntries":  278,
+                         "extractedCanonicalTreeSha256":  "1c80ea9641ea1a924e3a434041dc546f85a313cfe2bfb4a3aad0c327e4430c2e",
+                         "fileCount":  278,
+                         "licenseIdentifier":  "MIT",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/css-tree/LICENSE",
+                         "licenseFileSha256":  "719a251ceca49c057ea90a1152af6546b767ec88e6d573bb6324454267b32c22",
+                         "relationship":  "direct",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "mdn-data",
+                                                     "range":  "2.27.1",
+                                                     "resolvedVersion":  "2.27.1"
+                                                 },
+                                                 {
+                                                     "name":  "source-map-js",
+                                                     "range":  "^1.2.1",
+                                                     "resolvedVersion":  "1.2.1"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "MIT",
+                                                  "engines":  {
+                                                                  "node":  "^10 || ^12.20.0 || ^14.13.0 || \u003e=15.0.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "mdn-data":  "2.27.1",
+                                                                       "source-map-js":  "^1.2.1"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "eslint lib scripts \u0026\u0026 node scripts/review-syntax-patch --lint \u0026\u0026 node scripts/update-docs --lint",
+                                                                  "test":  "mocha lib/__tests --require lib/__tests/helpers/setup.js --reporter progress",
+                                                                  "build":  "npm run bundle \u0026\u0026 npm run esm-to-cjs --",
+                                                                  "watch":  "npm run build -- --watch",
+                                                                  "bundle":  "node scripts/bundle",
+                                                                  "coverage":  "c8 --exclude lib/__tests --reporter=lcovonly npm test",
+                                                                  "test:cjs":  "mocha cjs/__tests --require lib/__tests/helpers/setup.js --reporter progress",
+                                                                  "test:dist":  "mocha dist/__tests --reporter progress",
+                                                                  "esm-to-cjs":  "node scripts/esm-to-cjs.cjs",
+                                                                  "update:docs":  "node scripts/update-docs",
+                                                                  "lint-and-test":  "npm run lint \u0026\u0026 npm test",
+                                                                  "build-and-test":  "npm run build \u0026\u0026 npm run test:dist \u0026\u0026 npm run test:cjs",
+                                                                  "prepublishOnly":  "npm run lint-and-test \u0026\u0026 npm run build-and-test",
+                                                                  "bundle-and-test":  "npm run bundle \u0026\u0026 npm run test:dist",
+                                                                  "esm-to-cjs-and-test":  "npm run esm-to-cjs \u0026\u0026 npm run test:cjs",
+                                                                  "review:syntax-patch":  "node scripts/review-syntax-patch"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "domutils",
+                         "version":  "4.0.2",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/domutils/-/domutils-4.0.2.tgz",
+                         "registryIntegrity":  "sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==",
+                         "bunLockIntegrity":  "sha512-qI4JLRKnSzqFqr7hAlS5xQDusBCjKSEG4t4+7aNrIQMHBcsC2TGEhuyABJdYkgSewL57PNLYEiibY2iPKhKpaA==",
+                         "registryShasum":  "0c1ac1fdbe8f554a60a6f5eb143ee85630327c94",
+                         "tarballSha512":  "a88e092d12a74b3a85aabee10254b9c500eeb010a3292106e2de3eeda36b21030705cb02d9318486ec8004975892049ec0be7b3cd2d812289b63688f2a12a968",
+                         "tarballSha256":  "64922a8f80c4c31a0d146e563ba054de86453c0d78e50fba66e4e8c8462a95ac",
+                         "tarballBytes":  24735,
+                         "archiveEntries":  44,
+                         "extractedCanonicalTreeSha256":  "e8453b6b9d7355c4b1f9c44d9a5ef44f9313f89d91e34541c970cbc87f107152",
+                         "fileCount":  44,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/domutils/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "direct",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "domelementtype",
+                                                     "range":  "^3.0.0",
+                                                     "resolvedVersion":  "3.0.0"
+                                                 },
+                                                 {
+                                                     "name":  "domhandler",
+                                                     "range":  "^6.0.0",
+                                                     "resolvedVersion":  "6.0.1"
+                                                 },
+                                                 {
+                                                     "name":  "dom-serializer",
+                                                     "range":  "^3.0.0",
+                                                     "resolvedVersion":  "3.1.1"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "domhandler":  "^6.0.0",
+                                                                       "dom-serializer":  "^3.0.0",
+                                                                       "domelementtype":  "^3.0.0"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "test:vi":  "vitest run",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "build:docs":  "typedoc src",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write .",
+                                                                  "prepublishOnly":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "boolbase",
+                         "version":  "2.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/boolbase/-/boolbase-2.0.0.tgz",
+                         "registryIntegrity":  "sha512-DkVaaQHymRhpYEYo9x1oo7Q7B0Y6KJUsjm3c9eTyFDby4MHLBTwZ6ZDWBel5zrYxj1WsZgC5oLpiz+93MluXeA==",
+                         "bunLockIntegrity":  "sha512-DkVaaQHymRhpYEYo9x1oo7Q7B0Y6KJUsjm3c9eTyFDby4MHLBTwZ6ZDWBel5zrYxj1WsZgC5oLpiz+93MluXeA==",
+                         "registryShasum":  "832968d211d5c008d833b86e049bb3943036e5b1",
+                         "tarballSha512":  "0e455a6901f2991869604628f71d68a3b43b07463a28952c8e6ddcf5e4f21436f2e0c1cb053c19e990d605e979ceb6318f55ac6600b9a0ba62cfef77325b9778",
+                         "tarballSha256":  "9c8433ec18090ee5b75246976b368169aa7af7685626fdb41deaffdbe683fb92",
+                         "tarballBytes":  1622,
+                         "archiveEntries":  6,
+                         "extractedCanonicalTreeSha256":  "c88c4787299ac84c56c6e661b230a4e6febf2b6e9d09e3796fd28793969bf903",
+                         "fileCount":  6,
+                         "licenseIdentifier":  "ISC",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/boolbase/LICENSE",
+                         "licenseFileSha256":  "cdf4d87ae0a6c160227263bf4e39a0a10e30e89ae7256e0f7ac7bde0836552c6",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "ISC",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "test":  "npm run build \u0026\u0026 node --test",
+                                                                  "build":  "tsc",
+                                                                  "prepare":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "css-what",
+                         "version":  "8.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/css-what/-/css-what-8.0.0.tgz",
+                         "registryIntegrity":  "sha512-DH0Bqq3DNp5tdOReuNyAA+Ev4Y2GS5FMbZpeTLP6C4CDi0h5nL0BmUPChXw3o/qbHLDWHl49sbNqQVY7bMSDdw==",
+                         "bunLockIntegrity":  "sha512-DH0Bqq3DNp5tdOReuNyAA+Ev4Y2GS5FMbZpeTLP6C4CDi0h5nL0BmUPChXw3o/qbHLDWHl49sbNqQVY7bMSDdw==",
+                         "registryShasum":  "237889d60c4afef4736892f39e133ab4c8c21f0c",
+                         "tarballSha512":  "0c7d01aaadc3369e6d74e45eb8dc8003e12fe18d864b914c6d9a5e4cb3fa0b80838b48799cbd019943c2857c37a3fa9b1cb0d61e5e3db1b36a41563b6cc48377",
+                         "tarballSha256":  "1eccce8f4d523832253a082815495f823b8621d0aab6a2eea5853d0d37eb4417",
+                         "tarballBytes":  32838,
+                         "archiveEntries":  24,
+                         "extractedCanonicalTreeSha256":  "e43ff88b4fa8ae7face161e91314d347f374b9eb00eca9e1131e8a40c7347852",
+                         "fileCount":  24,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/css-what/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:tsc \u0026\u0026 npm run lint:es \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint src",
+                                                                  "test:vi":  "vitest run",
+                                                                  "lint:tsc":  "tsc --noEmit",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write .",
+                                                                  "prepublishOnly":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "dom-serializer",
+                         "version":  "3.1.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/dom-serializer/-/dom-serializer-3.1.1.tgz",
+                         "registryIntegrity":  "sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==",
+                         "bunLockIntegrity":  "sha512-4MEa38/QexBob6gFNwu+EGdWvhJ1OKuNwdYY3Y3NyeWDQfnGeDYQUDfIRzWu5B5gsv03so2Uxd28YC6zrsx3Lw==",
+                         "registryShasum":  "54be70ee4fcc2da010f488165e62294798dc57d3",
+                         "tarballSha512":  "e0c11adfcfd07b10686fa805370bbe106756be127538ab8dc1d618dd8dcdc9e58341f9c67836105037c84735aee41e60b2fd37b28d94c5ddbc602eb3aecc772f",
+                         "tarballSha256":  "12272f96b8a76363d78b67d7695b73410f339171f56a6cc5793cb4bfc6b15aa0",
+                         "tarballBytes":  10730,
+                         "archiveEntries":  13,
+                         "extractedCanonicalTreeSha256":  "32b4b640377b3cf193c4975aa82d0731a6510e90976cc269300ab17a921ecafc",
+                         "fileCount":  13,
+                         "licenseIdentifier":  "MIT",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/dom-serializer/LICENSE",
+                         "licenseFileSha256":  "fd495b1bdd024995c6b3bd612584a4e37513250317bb5a6586f62c7756f9aff1",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "domelementtype",
+                                                     "range":  "^3.0.0",
+                                                     "resolvedVersion":  "3.0.0"
+                                                 },
+                                                 {
+                                                     "name":  "domhandler",
+                                                     "range":  "^6.0.0",
+                                                     "resolvedVersion":  "6.0.1"
+                                                 },
+                                                 {
+                                                     "name":  "entities",
+                                                     "range":  "^8.0.0",
+                                                     "resolvedVersion":  "8.0.0"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "MIT",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "entities":  "^8.0.0",
+                                                                       "domhandler":  "^6.0.0",
+                                                                       "domelementtype":  "^3.0.0"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:ts \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "lint:ts":  "tsc --noEmit -p tsconfig.eslint.json",
+                                                                  "prepare":  "npm run build",
+                                                                  "test:vi":  "vitest run",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write ."
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "domelementtype",
+                         "version":  "3.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/domelementtype/-/domelementtype-3.0.0.tgz",
+                         "registryIntegrity":  "sha512-umCQid3jKbDmVjx8jGaW7uUykm4DEUeyV21hPxNMo2nV955DhUThwqyOIDtreepP31hl84X7G5U9ZfsWvIB3Pg==",
+                         "bunLockIntegrity":  "sha512-umCQid3jKbDmVjx8jGaW7uUykm4DEUeyV21hPxNMo2nV955DhUThwqyOIDtreepP31hl84X7G5U9ZfsWvIB3Pg==",
+                         "registryShasum":  "e6c0a24bd39ca5eb7ea67a98d2f699497d7bcc55",
+                         "tarballSha512":  "ba609089dde329b0e6563c7c8c6696eee532926e031147b2576d613f134ca369d5f79e438544e1c2ac8e203b6b79ea4fdf5865f385fb1b953d65fb16bc80773e",
+                         "tarballSha256":  "078a496be3f33f3268f6749b3a5d45629f4b98beca1e53e3ef6d1ba2040811d5",
+                         "tarballBytes":  2678,
+                         "archiveEntries":  6,
+                         "extractedCanonicalTreeSha256":  "a4b14e6b0f0d4ac8f31e69c2afc2a2c01fd53e990e25b7564bbcbded335d5f21",
+                         "fileCount":  6,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/domelementtype/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "prepare":  "npm run build",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write ."
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "domhandler",
+                         "version":  "6.0.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/domhandler/-/domhandler-6.0.1.tgz",
+                         "registryIntegrity":  "sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==",
+                         "bunLockIntegrity":  "sha512-gYzvtM72ZtxQO0T048kd6HWSbbGCNOUwcnfQ01cqIJ4X2IYKFFHZ5mKvrQETcFXxsRObZulDaKmy//R7TPtsBg==",
+                         "registryShasum":  "75f351a03a6e10c35e08418f9cf0d287e00797cf",
+                         "tarballSha512":  "818cefb4cef666dc503b44f4e3c91de875926db18234e5307277d0d3572a209e17d8860a1451d9e662afad01137055f1b1139b66e94368a9b2fff47b4cfb6c06",
+                         "tarballSha256":  "c42bd0d96c5a10ebcfd938fa1fd97db12b9f592a485fb75d9aba5fa66e66d93b",
+                         "tarballBytes":  8823,
+                         "archiveEntries":  9,
+                         "extractedCanonicalTreeSha256":  "85663fb759cc390d4e0146307a0465700b806dc3dc5f19db74768a26558a628d",
+                         "fileCount":  9,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/domhandler/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "domelementtype",
+                                                     "range":  "^3.0.0",
+                                                     "resolvedVersion":  "3.0.0"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "domelementtype":  "^3.0.0"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "test:vi":  "vitest run",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "build:docs":  "typedoc --hideGenerator --plugin typedoc-plugin-missing-exports src/index.ts",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write .",
+                                                                  "prepublishOnly":  "npm run build"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "entities",
+                         "version":  "8.0.0",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/entities/-/entities-8.0.0.tgz",
+                         "registryIntegrity":  "sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA==",
+                         "bunLockIntegrity":  "sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA==",
+                         "registryShasum":  "c1df5fe3602429747fa233d0dd26f142f0ce4743",
+                         "tarballSha512":  "cf07f325e710fd47a3eadbac32ac00a94ffa28bd97681d95676260e7825ee9a84d046347e8493a8378e33421747c6f4459028664d75d3635391756509ffb019c",
+                         "tarballSha256":  "8e8b16388e19c12fc80f9f75f518a0f83d99428be6765a38f04c264a078cc25b",
+                         "tarballBytes":  86968,
+                         "archiveEntries":  58,
+                         "extractedCanonicalTreeSha256":  "c3f99ca5f902056eceacc7612f7a1e12d159a0c60a866cb82ecaad7a53d4be7d",
+                         "fileCount":  58,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/entities/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:ts \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "lint:ts":  "tsc --noEmit",
+                                                                  "test:vi":  "vitest run",
+                                                                  "benchmark":  "node --import=tsx scripts/benchmark.ts",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "build:docs":  "typedoc --hideGenerator src/index.ts",
+                                                                  "build:trie":  "node --import=tsx scripts/write-decode-map.ts",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --fix .",
+                                                                  "prepublishOnly":  "npm run build",
+                                                                  "build:encode-trie":  "node --import=tsx scripts/write-encode-map.ts"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "mdn-data",
+                         "version":  "2.27.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/mdn-data/-/mdn-data-2.27.1.tgz",
+                         "registryIntegrity":  "sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==",
+                         "bunLockIntegrity":  "sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==",
+                         "registryShasum":  "e37b9c50880b75366c4d40ac63d9bbcacdb61f0e",
+                         "tarballSha512":  "f58b9b9edddef00d0e2b0c58497ca12f29865b8b02b9f70b1ba55d88375419590f869a8bc65bcfe6f975f7cde0423265deda9baccef7d668da65a3faf00828b1",
+                         "tarballSha256":  "63985bd4ce64e9a0142d70465c3a7f54c488f3ef6da3f9512d54a728cde46870",
+                         "tarballBytes":  102934,
+                         "archiveEntries":  25,
+                         "extractedCanonicalTreeSha256":  "5143f50aa353d07158b93fb9bb840361f358faa1f6fe0e18f969a6ed34212b38",
+                         "fileCount":  25,
+                         "licenseIdentifier":  "CC0-1.0",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/mdn-data/LICENSE",
+                         "licenseFileSha256":  "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "CC0-1.0",
+                                                  "engines":  null,
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "node test/lint",
+                                                                  "test":  "npm run lint"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "nth-check",
+                         "version":  "3.0.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/nth-check/-/nth-check-3.0.1.tgz",
+                         "registryIntegrity":  "sha512-GX0gsdbGVCgnRgbeGaubfjpBXyYRWOOCVeYh08bSQvDZqxz5ndXs1OTfAt/h36G1xvI94YIspsI0sVFqAV9+RQ==",
+                         "bunLockIntegrity":  "sha512-GX0gsdbGVCgnRgbeGaubfjpBXyYRWOOCVeYh08bSQvDZqxz5ndXs1OTfAt/h36G1xvI94YIspsI0sVFqAV9+RQ==",
+                         "registryShasum":  "a5ede96060f7f0b74d7d3d8425f2a8f0610c5776",
+                         "tarballSha512":  "197d20b1d6c65428274606de19ab9b7e3a415f261158e38255e621d3c6d242f0d9ab1cf99dd5ecd4e4df02dfe1dfa1b5c6f23de1822ca6c234b1516a015f7e45",
+                         "tarballSha256":  "db23d012df85d2c0308c7b3fd3bd538664d9e0e1dca1aa96e659641b76457a8f",
+                         "tarballBytes":  7259,
+                         "archiveEntries":  19,
+                         "extractedCanonicalTreeSha256":  "e9e14845888acfe32b0c036441309cb4c2c65dc695f4813c5215115b45614121",
+                         "fileCount":  19,
+                         "licenseIdentifier":  "BSD-2-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/nth-check/LICENSE",
+                         "licenseFileSha256":  "cb992345949ccd6e8394b2cd6c465f7b897c864f845937dbf64e8997f389e164",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+                                                 {
+                                                     "name":  "boolbase",
+                                                     "range":  "^2.0.0",
+                                                     "resolvedVersion":  "2.0.0"
+                                                 }
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-2-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=20.19.0"
+                                                              },
+                                                  "dependencies":  {
+                                                                       "boolbase":  "^2.0.0"
+                                                                   },
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "lint":  "npm run lint:es \u0026\u0026 npm run lint:biome",
+                                                                  "test":  "npm run test:vi \u0026\u0026 npm run lint",
+                                                                  "build":  "tsc",
+                                                                  "format":  "npm run format:es \u0026\u0026 npm run format:biome",
+                                                                  "lint:es":  "eslint .",
+                                                                  "prepare":  "npm run build",
+                                                                  "test:vi":  "vitest run",
+                                                                  "format:es":  "npm run lint:es -- --fix",
+                                                                  "lint:biome":  "biome check .",
+                                                                  "format:biome":  "biome check --write ."
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     },
+                     {
+                         "name":  "source-map-js",
+                         "version":  "1.2.1",
+                         "registryHost":  "registry.npmjs.org",
+                         "canonicalTarballUrl":  "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
+                         "registryIntegrity":  "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
+                         "bunLockIntegrity":  "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
+                         "registryShasum":  "1ce5650fddd87abc099eda37dcff024c2667ae46",
+                         "tarballSha512":  "51758c2a12cec1529bef6f0852d40f5f17d853ebac7726ed52b2bff2e184f0240cbeb84ea70bf30c1c23d108522fb31073bbc8b084811bc550f3e203431a5f40",
+                         "tarballSha256":  "f126a6f9fca487a43219d8cb8c3a955279187a966119d548eb5cd47e999d4853",
+                         "tarballBytes":  35340,
+                         "archiveEntries":  18,
+                         "extractedCanonicalTreeSha256":  "79afec9802e46d1402e3e4daff2cdab1ca190a16811a24f0c8ff923d4b0fe665",
+                         "fileCount":  18,
+                         "licenseIdentifier":  "BSD-3-Clause",
+                         "licenseFilePath":  "third_party/runtimes/impeccable-static-html/node_modules/source-map-js/LICENSE",
+                         "licenseFileSha256":  "6cb0631f71c7749763fd3dd1d5bee52dd1070ec17f2edc1710079ad070bd2fbd",
+                         "relationship":  "transitive",
+                         "dependencyEdges":  [
+
+                                             ],
+                         "registryMetadata":  {
+                                                  "license":  "BSD-3-Clause",
+                                                  "engines":  {
+                                                                  "node":  "\u003e=0.10.0"
+                                                              },
+                                                  "dependencies":  null,
+                                                  "optionalDependencies":  null,
+                                                  "peerDependencies":  null,
+                                                  "bundledDependencies":  null,
+                                                  "scripts":  {
+                                                                  "toc":  "doctoc --title \u0027## Table of Contents\u0027 README.md \u0026\u0026 doctoc --title \u0027## Table of Contents\u0027 CONTRIBUTING.md",
+                                                                  "test":  "npm run build \u0026\u0026 node test/run-tests.js",
+                                                                  "build":  "webpack --color"
+                                                              },
+                                                  "bin":  null
+                                              },
+                         "upstreamReason":  "Impeccable static-html",
+                         "impeccablePin":  "63b04e2530f5c7b41ea83c133daab24f34912456"
+                     }
+                 ]
+}

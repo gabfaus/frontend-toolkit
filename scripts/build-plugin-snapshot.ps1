@@ -15,6 +15,22 @@ function Assert-NativeSuccess {
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $pluginSource = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
+function Get-StaticHtmlTreeHash([string]$Root) {
+    $rootPath = (Resolve-Path -LiteralPath $Root).Path
+    $entries = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
+        $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
+        "$relative|$((Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant())"
+    } | Sort-Object)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($entries -join [char]10))))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}$staticHtmlLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
+$staticHtmlSourceRoot = (Resolve-Path (Join-Path $repoRoot $staticHtmlLock.snapshot.path)).Path
+$staticHtmlSourceEntries = @(Get-ArtifactFileEntries -Root $staticHtmlSourceRoot)
+$staticHtmlSourceBytes = [long](($staticHtmlSourceEntries | ForEach-Object { (Get-Item -LiteralPath (Join-Path $staticHtmlSourceRoot $_.path)).Length } | Measure-Object -Sum).Sum)
+if ($staticHtmlSourceEntries.Count -ne [int]$staticHtmlLock.snapshot.fileCount -or $staticHtmlSourceBytes -ne [long]$staticHtmlLock.snapshot.bytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot) -cne $staticHtmlLock.snapshot.treeSha256) { throw 'Canonical static-HTML source snapshot identity mismatch.' }
+$staticHtmlExpectedPackages = @($staticHtmlLock.packages | ForEach-Object { "$($_.name)@$($_.version)" } | Sort-Object)
+if ($staticHtmlExpectedPackages.Count -ne [int]$staticHtmlLock.snapshot.packageCount) { throw 'Canonical static-HTML package count mismatch.' }
 $destinationPath = [IO.Path]::GetFullPath($Destination)
 $sourceFileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $sourceDirectoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
@@ -65,6 +81,26 @@ try {
         Copy-Item -LiteralPath $sourcePath -Destination $targetPath
     }
     Copy-Item -LiteralPath (Join-Path $approvedSourceRoot 'LICENSE') -Destination (Join-Path $destinationPath 'LICENSE')
+    $toolchainArtifact = Join-Path $destinationPath 'integrations/toolchain.lock.json'
+    New-Item -ItemType Directory -Path (Split-Path $toolchainArtifact) -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'integrations/toolchain.lock.json') -Destination $toolchainArtifact
+    $staticHtmlArtifactRoot = Join-Path $destinationPath 'third_party/static-html-dependencies'
+    $staticHtmlArtifactModuleRoot = Join-Path $staticHtmlArtifactRoot 'node_modules'
+    New-Item -ItemType Directory -Path $staticHtmlArtifactModuleRoot -Force | Out-Null
+    foreach ($entry in $staticHtmlSourceEntries) {
+        $target = Join-Path $staticHtmlArtifactRoot $entry.path
+        New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $staticHtmlSourceRoot $entry.path) -Destination $target
+    }
+    $staticHtmlArtifactEntries = @(Get-ArtifactFileEntries -Root $staticHtmlArtifactRoot)
+    $staticHtmlArtifactBytes = [long](($staticHtmlArtifactEntries | ForEach-Object { (Get-Item -LiteralPath (Join-Path $staticHtmlArtifactRoot $_.path)).Length } | Measure-Object -Sum).Sum)
+    if ($staticHtmlArtifactEntries.Count -ne $staticHtmlSourceEntries.Count -or $staticHtmlArtifactBytes -ne $staticHtmlSourceBytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlArtifactRoot) -cne (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot)) { throw 'Packaged static-HTML runtime tree differs from the canonical source tree.' }
+    foreach ($package in $staticHtmlLock.packages) {
+        $licenseRelative = (($package.licenseFilePath -split 'node_modules/', 2)[1])
+        $licensePath = Join-Path $staticHtmlArtifactRoot ('node_modules/' + $licenseRelative)
+        if (-not (Test-Path -LiteralPath $licensePath -PathType Leaf)) { throw "Static-HTML license missing: $($package.name)" }
+        if ((Get-FileHash -Algorithm SHA256 -LiteralPath $licensePath).Hash.ToLowerInvariant() -cne $package.licenseFileSha256) { throw "Static-HTML license hash mismatch: $($package.name)" }
+    }
 
     $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'
     $img2threejs = $externalLock.dependencies | Where-Object id -eq 'img2threejs'
@@ -151,6 +187,16 @@ try {
             [ordered]@{ id = 'impeccable'; path = $impeccable.distributionAdapterPath; sha256 = $impeccable.adapterEntrySha256; owner = 'Frontend Toolkit' },
             [ordered]@{ id = 'img2threejs'; path = $img2threejs.distributionAdapterPath; sha256 = $img2threejs.adapterEntrySha256; owner = 'Frontend Toolkit' }
         )
+        staticHtmlRuntime = [ordered]@{
+            sourceLock = 'integrations/impeccable-static-html-dependencies.lock.json'
+            sourceModuleRoot = $staticHtmlLock.snapshot.moduleRoot
+            artifactModuleRoot = 'third_party/static-html-dependencies/node_modules'
+            packageCount = $staticHtmlExpectedPackages.Count
+            bytes = $staticHtmlArtifactBytes
+            treeSha256 = (Get-StaticHtmlTreeHash -Root $staticHtmlArtifactRoot)
+            packages = $staticHtmlExpectedPackages
+            licenses = @($staticHtmlLock.packages | ForEach-Object { [ordered]@{ name = $_.name; license = $_.licenseIdentifier; path = ('third_party/static-html-dependencies/node_modules/' + (($_.licenseFilePath -split 'node_modules/', 2)[1])) } } | Sort-Object name)
+        }
         upstreamSnapshots = @(
             [ordered]@{ id = 'impeccable'; commitSha = $impeccable.commitSha; path = $impeccable.upstreamSnapshotPath; treeSha256 = $impeccable.snapshotTreeSha256; license = 'Apache-2.0'; licenseSha256 = $impeccable.licenseSha256; noticeSha256 = $impeccable.noticeSha256 },
             [ordered]@{ id = 'img2threejs'; commitSha = $img2threejs.commitSha; path = $img2threejs.upstreamSnapshotPath; treeSha256 = $img2threejs.snapshotTreeSha256; license = 'Apache-2.0'; licenseSha256 = $img2threejs.licenseSha256 }

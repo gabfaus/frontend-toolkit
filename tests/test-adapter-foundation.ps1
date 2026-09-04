@@ -27,7 +27,7 @@ $blocked = $false
 try { & $launcherPath -Operation 'not.registered' | Out-Null } catch { $blocked = $_.Exception.Message -match 'UNKNOWN operation' }
 if (-not $blocked) { throw 'Unknown operation was not denied.' }
 $blocked = $false
-try { & $launcherPath -Operation 'impeccable.paid-generation' | Out-Null } catch { $blocked = $_.Exception.Message -match 'not enabled' }
+try { & $launcherPath -Operation 'impeccable.paid-generation.upstream' | Out-Null } catch { $blocked = $_.Exception.Message -match 'AUTHORIZATION_REQUIRED' }
 if (-not $blocked) { throw 'Deferred paid operation was not denied.' }
 $blocked = $false
 try { & $launcherPath -Operation 'img2threejs.network-helper' | Out-Null } catch { $blocked = $_.Exception.Message -match 'not enabled' }

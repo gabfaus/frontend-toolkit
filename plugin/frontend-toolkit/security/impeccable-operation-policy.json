@@ -47,6 +47,34 @@
       "GOOGLE_APPLICATION_CREDENTIALS"
     ]
   },
+  "detectorContract": {
+    "upstreamRef": "skill-v4.1.2",
+    "upstreamCommit": "63b04e2530f5c7b41ea83c133daab24f34912456",
+    "registrySha256": "4544ccca3d7c341d878b941fbe20620750dbf9d29dd6d15e063128a1e390b345",
+    "fingerprintByteSource": "canonical Git blob bytes at upstreamCommit; CRLF checkout representations are normalized to the committed LF representation before runtime validation",
+    "unknownRulePolicy": "deny-on-fingerprint-or-identity-drift",
+    "canonicalRuleIds": [
+      "side-tab", "border-accent-on-rounded", "overused-font", "flat-type-hierarchy", "gradient-text", "ai-color-palette", "cream-palette", "nested-cards", "monotonous-spacing", "bounce-easing", "pulsing-dot", "blinking-cursor", "shape-assembled-illustration", "dark-glow", "radial-halo", "radial-spotlight-glow", "marquee", "icon-tile-stack", "italic-serif-display", "hero-eyebrow-chip", "kicker-above-heading", "numbered-section-labels", "em-dash-overuse", "marketing-buzzword", "aphoristic-cadence", "oversized-h1", "extreme-negative-tracking", "broken-image", "script-error", "content-hidden-at-rest", "edge-flush-cards", "text-occlusion", "first-viewport-column-overflow", "gray-on-color", "low-contrast", "layout-transition", "line-length", "cramped-padding", "body-text-viewport-edge", "tight-leading", "skipped-heading", "heading-rhythm", "justified-text", "tiny-text", "undersized-ui-text", "all-caps-body", "wide-tracking", "text-overflow", "repeated-container-text", "clipped-overflow-container", "design-system-font", "design-system-color", "design-system-radius", "design-system-font-size", "gpt-thin-border-wide-shadow", "repeating-stripes-gradient", "codex-grid-background", "theater-slop-phrase", "image-hover-transform"
+    ],
+    "moduleFingerprints": [
+      { "path": "scripts/detector/registry/antipatterns.mjs", "gitBlob": "0036147862a862ad00a6967aa8aca3a22449a710", "sha256": "4544ccca3d7c341d878b941fbe20620750dbf9d29dd6d15e063128a1e390b345", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/findings.mjs", "gitBlob": "fa98dd9351e866c321379d535733e8c3b148bda4", "sha256": "8b8af7212c8515d6791a8af1375d0619a9f9a707a881e6fbd850e4216b3f8eca", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/shared/constants.mjs", "gitBlob": "b9152939a8af2500fc7659982349afb934e21390", "sha256": "606f50159d56b5e972724c13933e63220696636215292e5316846426f3e12896", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/shared/color.mjs", "gitBlob": "983e15330e5277a2e377078bde0ebc6ac87393f0", "sha256": "c9664cdfcb5cc964a6c78fba82c51640bf20258601572ea0bb413c00446489f5", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/shared/fonts.mjs", "gitBlob": "4c4d7fc4528a8dafdd759a0ed6e3f7392758d71b", "sha256": "869c297295a10082d87988f31c136c5df9ddad84da0c2bbba2e85e1261e320a6", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/shared/page.mjs", "gitBlob": "b0f6e1ab532c2019a05ab4f8a46ee31c80522d81", "sha256": "b4cef5548d84fa90d15e6b42b20be9ef74ed05e4e6e46076ec5acc61b343315c", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/shared/inline-ignores.mjs", "gitBlob": "e5d64b18a825e571c22acb5e5865e93dbaaad912", "sha256": "74c80303e25f017b4671ae299b9fca424a5f7714203d19207a8d8896dfd2eecc", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/rules/checks.mjs", "gitBlob": "ee65af7af9b1339809c197e71b799a0b75dac8d3", "sha256": "e63f6adbd0893d75105e825b1656a268c512a9bc7e5f3d17d4ac70ef412d6e57", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/design-system.mjs", "gitBlob": "28e01b1d2fe69b3449bc9dd9da35b78d478ea69d", "sha256": "cacf7ae83b4ccfff84ceb6ab06549b399e0ec88750f053249db65371dd302de1", "effectClass": "LOCAL_FILESYSTEM_READS" },
+      { "path": "scripts/detector/profile/profiler.mjs", "gitBlob": "b05fbf3ef1fe255d8f15068deeb6c8a94f4ad7aa", "sha256": "5e201f3557360bd368a3977fecf925f376fd95f8a4dd6c4cc63fbd62848cda43", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/engines/regex/detect-text.mjs", "gitBlob": "26ca4f390540dd12ece6e3a80cb6cb56d652bdb5", "sha256": "8e0ecc091bcecc24eb34d34dab9bcabb1057af6a6dcf34f186fb370b26e61157", "effectClass": "PURE_LOCAL_ANALYTICS" },
+      { "path": "scripts/detector/engines/static-html/css-cascade.mjs", "gitBlob": "cc36ac9b50d20d94c4217fa10d9e6d63dc8ba852", "sha256": "6809969a6e2c58992d863c23d6f2c6fb6b8ddacc503dac2ad0e5452bf2725c54", "effectClass": "LOCAL_FILESYSTEM_READS" },
+      { "path": "scripts/detector/engines/static-html/detect-html.mjs", "gitBlob": "b4efa84acf5e5f9f37df2117681b728bb8d56f45", "sha256": "481b584ccdf3ac28065dbab11f65d638e3e7a35e14c7e62bc5da3d59d2a7efd7", "effectClass": "LOCAL_FILESYSTEM_READS" },
+      { "path": "scripts/detector/node/file-system.mjs", "gitBlob": "964f6712d58e06d6c89cab05739bfa715d31a6ff", "sha256": "a6369b2573cf8af096a5f38f85a9cf4ee3af68817846a0ec9047534cbe05d05e", "effectClass": "MIXED_LOCAL_READ_AND_LOOPBACK_SPLIT_BY_FTK" },
+      { "path": "scripts/lib/impeccable-config.mjs", "gitBlob": "827b26845346f6b3280f61c0bad989e2c4ff7013", "sha256": "7297e323a700ef8f819641169ebb1c1ae09e7f730d947eaf77a83dd415c2e3fd", "effectClass": "LOCAL_FILESYSTEM_READS_WITH_WRITE_EXPORTS_NOT_INVOKED" },
+      { "path": "scripts/detect-csp.mjs", "gitBlob": "a13505d23ba3adf679090ce6cd9e20d68bcb12eb", "sha256": "2d80520bef13cb93107699714bc0d2be5a2787a9aa079ecec91b94508a8125a4", "effectClass": "LOCAL_FILESYSTEM_READS" }
+    ]
+  },
   "networkEndpoints": {
     "impeccable.update-check": {
       "scheme": "https",
@@ -85,9 +113,9 @@
   "operations": [
     {
       "id": "impeccable.context.local",
-      "scriptHandler": "scripts/context.mjs via SR3I structural parser",
+      "scriptHandler": "ftk.impeccable.context-extractor",
       "effects": ["LOCAL_READ_ONLY"],
-      "allowedInputs": ["ProjectRoot"],
+      "allowedInputs": ["ProjectRoot", "Capability"],
       "projectPathInputs": ["ProjectRoot", "PRODUCT.md", "DESIGN.md", ".impeccable/design.json"],
       "outputBoundaries": [],
       "endpointRequirements": "none; update check and telemetry forced off",
@@ -95,8 +123,23 @@
       "persistentEffect": false,
       "projectCodeExecution": false,
       "capabilityDescription": "Local project context without automatic update, telemetry, paid calls, or global cache.",
-      "defaultState": "blocked-pending-sr3i-structural-context-parser",
-      "authorizationRequirement": "SR3I parser integration; no network authorization implied"
+      "defaultState": "enabled-through-sr3i-structural-context-extractor",
+      "authorizationRequirement": "explicit local context request; no network or other effect implied"
+    },
+    {
+      "id": "impeccable.live.event-mediate",
+      "scriptHandler": "ftk.impeccable.context-extractor live-event mode",
+      "effects": ["LOCAL_READ_ONLY"],
+      "allowedInputs": ["EventJson"],
+      "projectPathInputs": [],
+      "outputBoundaries": [],
+      "endpointRequirements": "none; event _instructions are discarded and no live handler is started",
+      "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
+      "persistentEffect": false,
+      "projectCodeExecution": false,
+      "capabilityDescription": "Typed, effect-free mediation of a known live event before separate effect evaluation.",
+      "defaultState": "enabled-through-sr3i-authority-mediator",
+      "authorizationRequirement": "known event schema only; any requested effect remains separately gated"
     },
     {
       "id": "impeccable.update-check",
@@ -205,18 +248,78 @@
     },
     {
       "id": "impeccable.detector.local",
-      "scriptHandler": "scripts/detect.mjs local engine",
+      "scriptHandler": "ftk.impeccable.detector-boundary file mode",
       "effects": ["LOCAL_READ_ONLY"],
-      "allowedInputs": ["ProjectRoot", "InputPath"],
+      "allowedInputs": ["ProjectRoot", "InputPath", "DetectorOptionsJson"],
       "projectPathInputs": ["ProjectRoot", "InputPath"],
       "outputBoundaries": [],
       "endpointRequirements": "none",
       "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
       "persistentEffect": false,
       "projectCodeExecution": false,
-      "capabilityDescription": "Static/local detector contract.",
-      "defaultState": "blocked-pending-sr3i-dispatch-integration",
+      "capabilityDescription": "Pinned canonical regex/static rules over one contained file, including bounded linked local CSS, design/config/ignore data, scopes, viewport metadata, advisory and profiler semantics.",
+      "defaultState": "enabled-through-fingerprinted-detector-boundary",
       "authorizationRequirement": "explicit local detector operation"
+    },
+    {
+      "id": "impeccable.detector.project",
+      "scriptHandler": "ftk.impeccable.detector-boundary project mode",
+      "effects": ["LOCAL_READ_ONLY"],
+      "allowedInputs": ["ProjectRoot", "InputPath", "DetectorOptionsJson"],
+      "projectPathInputs": ["ProjectRoot", "optional contained directory InputPath"],
+      "outputBoundaries": [],
+      "endpointRequirements": "none",
+      "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
+      "persistentEffect": false,
+      "projectCodeExecution": false,
+      "capabilityDescription": "Bounded deterministic project scan with canonical rules, import graph, static framework detection, design/config/ignore data and linked local CSS.",
+      "defaultState": "enabled-through-fingerprinted-detector-boundary",
+      "authorizationRequirement": "explicit local project detector operation"
+    },
+    {
+      "id": "impeccable.detector.payload",
+      "scriptHandler": "ftk.impeccable.detector-boundary typed payload mode",
+      "effects": ["LOCAL_READ_ONLY"],
+      "allowedInputs": ["Content", "ContentType", "DetectorOptionsJson"],
+      "projectPathInputs": [],
+      "outputBoundaries": [],
+      "endpointRequirements": "none",
+      "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
+      "persistentEffect": false,
+      "projectCodeExecution": false,
+      "capabilityDescription": "Bounded typed stdin-equivalent content scan with no path or directive authority.",
+      "defaultState": "enabled-through-fingerprinted-detector-boundary",
+      "authorizationRequirement": "explicit typed payload detector operation"
+    },
+    {
+      "id": "impeccable.detector.csp",
+      "scriptHandler": "ftk.impeccable.detector-boundary CSP mode",
+      "effects": ["LOCAL_READ_ONLY"],
+      "allowedInputs": ["ProjectRoot"],
+      "projectPathInputs": ["ProjectRoot", "bounded known source/config types"],
+      "outputBoundaries": [],
+      "endpointRequirements": "none",
+      "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
+      "persistentEffect": false,
+      "projectCodeExecution": false,
+      "capabilityDescription": "Pinned-equivalent CSP classification over the single FTK-governed traversal and read path.",
+      "defaultState": "enabled-through-fingerprinted-detector-boundary",
+      "authorizationRequirement": "explicit local CSP detector operation"
+    },
+    {
+      "id": "impeccable.detector.browser-file",
+      "scriptHandler": "authorization-blocked browser file detector",
+      "effects": ["LOCAL_READ_ONLY", "PROJECT_CODE_EXECUTION"],
+      "allowedInputs": ["ProjectRoot", "InputPath", "DetectorOptionsJson"],
+      "projectPathInputs": ["ProjectRoot", "one contained .html or .htm InputPath"],
+      "outputBoundaries": [],
+      "endpointRequirements": "fixed contained file target only; non-file requests are blocked",
+      "childEnvironmentAllowlist": ["SystemRoot", "TEMP", "TMP", "IMPECCABLE_NO_UPDATE_CHECK", "IMPECCABLE_NO_TELEMETRY", "DO_NOT_TRACK"],
+      "persistentEffect": false,
+      "projectCodeExecution": true,
+      "capabilityDescription": "Browser-grade local file analysis with real DOM, cascade, computed style, layout and viewport semantics. Page scripts execute; a future handler must deny non-file requests.",
+      "defaultState": "preserved-authorization-blocked",
+      "authorizationRequirement": "current user intent plus non-forgeable host PROJECT_CODE_EXECUTION grant"
     },
     {
       "id": "impeccable.detector.loopback",
@@ -280,7 +383,7 @@
     },
     {
       "id": "impeccable.hooks.status",
-      "scriptHandler": "scripts/hook-admin.mjs status",
+      "scriptHandler": "ftk.impeccable.hook-status",
       "effects": ["LOCAL_READ_ONLY"],
       "allowedInputs": ["ProjectRoot"],
       "projectPathInputs": ["ProjectRoot"],
@@ -290,7 +393,7 @@
       "persistentEffect": false,
       "projectCodeExecution": false,
       "capabilityDescription": "Read-only hook status.",
-      "defaultState": "blocked-pending-sr3i-dispatch-integration",
+      "defaultState": "enabled-read-only-ftk-handler",
       "authorizationRequirement": "explicit status operation"
     },
     {
@@ -355,7 +458,7 @@
     },
     {
       "id": "impeccable.doctor.report",
-      "scriptHandler": "scripts/doctor.mjs report-only",
+      "scriptHandler": "ftk.impeccable.boundary-doctor",
       "effects": ["LOCAL_READ_ONLY"],
       "allowedInputs": ["ProjectRoot"],
       "projectPathInputs": ["ProjectRoot"],
@@ -365,7 +468,7 @@
       "persistentEffect": false,
       "projectCodeExecution": false,
       "capabilityDescription": "Read-only doctor/report path.",
-      "defaultState": "blocked-pending-sr3i-dispatch-integration",
+      "defaultState": "enabled-read-only-ftk-handler",
       "authorizationRequirement": "explicit report operation"
     },
     {
@@ -404,13 +507,13 @@
     { "path": "scripts/context-signals.mjs", "operations": ["impeccable.context.local", "impeccable.detector.loopback"], "unmappedBehavior": "deny" },
     { "path": "scripts/concept-seed.mjs", "operations": ["impeccable.concept.local-fallback", "impeccable.concept.remote-roll", "impeccable.concept.card-fetch", "impeccable.telemetry.choice"], "unmappedBehavior": "deny" },
     { "path": "scripts/generate-image.mjs", "operations": ["impeccable.paid-generation.fake", "impeccable.paid-generation.upstream"], "unmappedBehavior": "deny" },
-    { "path": "scripts/detect.mjs", "operations": ["impeccable.detector.local", "impeccable.detector.loopback", "impeccable.detector.external"], "unmappedBehavior": "deny" },
+    { "path": "scripts/detect.mjs", "operations": ["impeccable.detector.local", "impeccable.detector.project", "impeccable.detector.payload", "impeccable.detector.browser-file", "impeccable.detector.loopback", "impeccable.detector.external"], "unmappedBehavior": "deny" },
     { "path": "scripts/doctor.mjs", "operations": ["impeccable.doctor.report", "impeccable.project.write"], "unmappedBehavior": "deny" },
     { "path": "scripts/hook-admin.mjs", "operations": ["impeccable.hooks.status", "impeccable.hooks.enable", "impeccable.hooks.disable", "impeccable.hooks.ignore", "impeccable.hooks.reset"], "unmappedBehavior": "deny" },
     { "path": "scripts/hook.mjs", "operations": [], "unmappedBehavior": "explicitly-denied-automatic-hook" },
     { "path": "scripts/hook-before-edit.mjs", "operations": [], "unmappedBehavior": "explicitly-denied-automatic-hook" },
     { "path": "scripts/hook-lib.mjs", "operations": [], "unmappedBehavior": "library-only-no-direct-runtime-operation" },
-    { "path": "scripts/live.mjs", "operations": ["impeccable.live.loopback", "impeccable.live.external"], "unmappedBehavior": "deny" },
+    { "path": "scripts/live.mjs", "operations": ["impeccable.live.event-mediate", "impeccable.live.loopback", "impeccable.live.external"], "unmappedBehavior": "deny" },
     { "path": "scripts/live-server.mjs", "operations": ["impeccable.live.loopback"], "unmappedBehavior": "deny" },
     { "path": "scripts/live-accept.mjs", "operations": ["impeccable.live.loopback"], "unmappedBehavior": "deny" },
     { "path": "scripts/live-complete.mjs", "operations": ["impeccable.live.loopback"], "unmappedBehavior": "deny" },
@@ -429,7 +532,7 @@
     { "path": "scripts/live-browser-dom.js", "operations": ["impeccable.live.loopback"], "unmappedBehavior": "deny" },
     { "path": "scripts/live-browser-session.js", "operations": ["impeccable.live.loopback"], "unmappedBehavior": "deny" },
     { "path": "scripts/critique-storage.mjs", "operations": ["impeccable.project.write"], "unmappedBehavior": "deny" },
-    { "path": "scripts/detect-csp.mjs", "operations": ["impeccable.project.write"], "unmappedBehavior": "deny" },
+    { "path": "scripts/detect-csp.mjs", "operations": ["impeccable.detector.csp"], "unmappedBehavior": "deny" },
     { "path": "scripts/embed-prompt.mjs", "operations": ["impeccable.paid-generation.upstream"], "unmappedBehavior": "deny" },
     { "path": "scripts/palette.mjs", "operations": ["impeccable.context.local"], "unmappedBehavior": "deny" },
     { "path": "scripts/pin.mjs", "operations": ["impeccable.project.write"], "unmappedBehavior": "deny" },

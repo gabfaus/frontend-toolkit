@@ -25,8 +25,10 @@ if ($secretHits.Count) { throw "Potential secret material found: $($secretHits -
 
 & (Join-Path $repoRoot 'tests/test-release-safety.ps1')
 & (Join-Path $repoRoot 'tests/test-plugin-packaging.ps1')
+& (Join-Path $repoRoot 'tests/test-impeccable-detector-capability.ps1')
+& (Join-Path $repoRoot 'tests/test-impeccable-integrated-boundary.ps1')
 & (Join-Path $repoRoot 'tests/test-plugin-distribution.ps1') -ValidateOnly
 & (Join-Path $repoRoot 'tests/test-plugin-official-validation.ps1')
 & (Join-Path $repoRoot 'scripts/invoke-installed-plugin-smoke.ps1') -ValidateOnly
 
-Write-Output 'PASS: FTK-05C license, notices, locks, validators, distribution and installed-smoke contracts validated.'
+Write-Output 'PASS: plugin hardening includes the integrated Impeccable boundary, packaging, distribution, validators and installed-smoke contracts.'

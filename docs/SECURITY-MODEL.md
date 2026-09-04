@@ -72,6 +72,10 @@ The orchestrator is instruction-only. It has no executable, filesystem, subproce
 
 ### Impeccable
 
+G7-SR3I places the integrated FTK boundary in front of every Impeccable runtime request: the pure authority mediator emits canonical requested-operation IDs, the common dispatcher verifies the common and component effect contracts, and only a fixed handler can be selected. A separate bounded extractor reads physical project-local PRODUCT.md, DESIGN.md, and surface briefs without importing the upstream context graph. Raw directives and live `_instructions` cannot become authority.
+
+The current plugin has no non-forgeable host-grant input. Network, telemetry, paid generation, persistent writes, live execution, hooks mutations, and external mutation therefore remain registered but return `AUTHORIZATION_REQUIRED` before a handler. Local context/event mediation and degraded concepts remain available. G7S-003 and G7S-004 are implementation-complete but remain open pending committed-HEAD revalidation and human review.
+
 The distributed snapshot contains Markdown plus JavaScript and MJS executables. It can inspect and modify project files, run Node/npm commands, spawn local servers and browser/agent workflows, contact impeccable.style, and use a user OPENAI_API_KEY for image generation. Its context helper performs an update check and stores state under the user profile; concept selection can send telemetry unless disabled. The reviewed context also emits an autonomy directive that claims higher authority than surrounding policy. No Toolkit hook is activated, but the Skill can offer hook activation when explicitly invoked.
 
 These capabilities exceed a passive design-review Skill. Pinning proves identity, not safety. Until network, paid generation, authority, and project-write behavior are explicitly gated and confined, Impeccable is a release blocker.
@@ -164,8 +168,8 @@ Severity scale used by this review: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, and `IN
 |---|---|---|---|---|---|
 | G7S-001 | CRITICAL | img2threejs | Preserved upstream shell sources project config | upstream sink remains non-discoverable and is never invoked by the FTK runner | **closed** after committed-HEAD revalidation and human review |
 | G7S-002 | HIGH | img2threejs | Preserved upstream state accepts escaping paths | all registered FTK state operations require canonical guard and revalidation | **closed** after committed-HEAD revalidation and human review; TOCTOU residual retained |
-| G7S-003 | HIGH | Impeccable | External instruction claims authority over host policy | reachable when context helper runs | open release blocker |
-| G7S-004 | HIGH | Impeccable | Update, telemetry, and potentially paid image network effects are not consistently approval-gated | reachable on Skill flows | open release blocker |
+| G7S-003 | HIGH | Impeccable | External instruction claims authority over host policy | raw upstream context is excluded from the integrated boundary | **open — implementation complete, pending committed-HEAD revalidation** |
+| G7S-004 | HIGH | Impeccable | Update, telemetry, and potentially paid image network effects are not consistently approval-gated | sensitive handlers stop at `AUTHORIZATION_REQUIRED` without a non-forgeable host grant | **open — implementation complete, pending committed-HEAD revalidation** |
 | G7S-005 | MEDIUM | Shadcn | Untrusted custom registry may cause environment-backed header disclosure | requires project registry selection | require explicit registry/header approval |
 | G7S-006 | MEDIUM | Release builder | Archive entry mode/path checks were stronger after materialization than before extraction | required malicious pinned upstream update | mitigated by pre-extraction Git-tree validator and synthetic archive regression |
 | G7S-007 | INFORMATIONAL | 21st | Live surface could not be re-enumerated without invoking the credentialed remote | no call made; drift remains unknown | all unknown tools fail closed |

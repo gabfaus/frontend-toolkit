@@ -25,7 +25,13 @@
       "discoveredName": "impeccable",
       "role": "design-ux-review",
       "defaultFor": ["design", "ux", "visual-critique", "layout", "typography", "responsive-review", "polish"],
-      "excludeFor": ["purely-technical-without-visual-dimension"]
+      "excludeFor": ["purely-technical-without-visual-dimension"],
+      "entrypoint": "ftk-owned-adapter-to-common-dispatcher",
+      "selectionMeaning": "requested-operation-only",
+      "authorizationInference": "deny",
+      "unknownOperationPolicy": "deny",
+      "sensitiveEffects": ["NETWORK_PASSIVE", "TELEMETRY", "PAID_GENERATION", "LOCAL_PROJECT_WRITE", "PROJECT_CODE_EXECUTION", "EXTERNAL_MUTATION"],
+      "hostBoundaryUnavailable": "authorization-required-with-safe-fallback"
     },
     "shadcn": {
       "server": "shadcn",

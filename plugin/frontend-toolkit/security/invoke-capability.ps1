@@ -16,6 +16,15 @@ param(
     [AllowEmptyString()][string]$JsonText,
     [switch]$SkipSplat,
     [switch]$SkipBuild,
+    [string]$Capability,
+    [string]$InputPath,
+    [string]$EventJson,
+    [AllowEmptyString()][string]$Content,
+    [ValidateSet('html','css','scss','sass','less','jsx','tsx','js','ts','vue','svelte','astro')][string]$ContentType,
+    [string]$DetectorOptionsJson,
+    [string]$Scope,
+    [string]$Key,
+    [string]$Mode,
     [switch]$PlanOnly
 )
 
@@ -44,6 +53,46 @@ foreach ($effect in @($definition.effects)) {
         throw ('UNKNOWN effect is fail-closed for operation: ' + $Operation)
     }
 }
+if ($definition.skill -ceq 'impeccable' -and $definition.status -cne 'enabled') {
+    $allowed = @('Operation','PlanOnly')
+    if ($Operation -in @('impeccable.live.loopback','impeccable.hooks.status','impeccable.hooks.enable','impeccable.hooks.disable','impeccable.hooks.ignore','impeccable.hooks.reset','impeccable.detector.local','impeccable.detector.project','impeccable.detector.csp','impeccable.detector.loopback','impeccable.paid-generation.fake','impeccable.paid-generation.upstream','impeccable.doctor.report')) {
+        $allowed += 'ProjectRoot'
+    }
+    if ($Operation -ceq 'impeccable.detector.browser-file') {
+        $allowed += @('ProjectRoot','InputPath','DetectorOptionsJson')
+        if ([string]::IsNullOrWhiteSpace($ProjectRoot) -or [string]::IsNullOrWhiteSpace($InputPath) -or
+            [IO.Path]::IsPathRooted($InputPath) -or $InputPath -match '(^|[\\/])\.\.([\\/]|$)' -or
+            [IO.Path]::GetExtension($InputPath).ToLowerInvariant() -notin @('.html','.htm')) {
+            throw 'Browser-file detector requires one relative contained HTML InputPath and ProjectRoot.'
+        }
+        if ($DetectorOptionsJson -and $DetectorOptionsJson.Length -gt 65536) { throw 'DetectorOptionsJson exceeds the 64 KiB limit.' }
+    }
+    Assert-AllowedImg2ThreejsParameters $allowed
+    $decision = if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) {
+        'authorization-required'
+    } elseif ($definition.status.StartsWith('explicitly-denied', [StringComparison]::Ordinal)) {
+        'denied'
+    } else {
+        'blocked'
+    }
+    if ($PlanOnly) {
+        [pscustomobject][ordered]@{
+            schemaVersion = $policy.schemaVersion
+            operation = $definition.id
+            skill = $definition.skill
+            effects = @($definition.effects)
+            authorizationDecision = $decision
+            authorizationRequirement = $definition.authorizationRequirement
+            handler = $definition.handler
+            handlerInvoked = $false
+        } | ConvertTo-Json -Depth 8
+        return
+    }
+    if ($decision -ceq 'authorization-required') {
+        throw ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
+    }
+    throw ('Operation is not enabled: ' + $Operation)
+}
 if ($definition.status -ne 'enabled') { throw ('Operation is not enabled: ' + $Operation) }
 
 if ($definition.handler -eq 'builtin.capability-summary') {
@@ -62,8 +111,29 @@ if ($definition.handler -eq 'builtin.capability-summary') {
     return
 }
 
-. (Join-Path $PSScriptRoot 'img2threejs-runner.ps1')
+if ($definition.skill -ceq 'img2threejs') { . (Join-Path $PSScriptRoot 'img2threejs-runner.ps1') }
+if ($definition.skill -ceq 'impeccable') { . (Join-Path $PSScriptRoot 'impeccable-runner.ps1') }
 switch ($definition.handler) {
+    'ftk.impeccable.operation' {
+        $allowed = @('Operation','PlanOnly')
+        if ($Operation -ceq 'impeccable.context.local') { $allowed += @('ProjectRoot','Capability') }
+        if ($Operation -in @('impeccable.detector.local','impeccable.detector.project')) { $allowed += @('ProjectRoot','InputPath','DetectorOptionsJson') }
+        if ($Operation -ceq 'impeccable.detector.payload') { $allowed += @('Content','ContentType','DetectorOptionsJson') }
+        if ($Operation -ceq 'impeccable.detector.csp') { $allowed += 'ProjectRoot' }
+        if ($Operation -in @('impeccable.hooks.status','impeccable.doctor.report')) { $allowed += 'ProjectRoot' }
+        if ($Operation -ceq 'impeccable.live.event-mediate') { $allowed += 'EventJson' }
+        if ($Operation -ceq 'impeccable.concept.local-fallback') { $allowed += @('Scope','Key','Mode') }
+        Assert-AllowedImg2ThreejsParameters $allowed
+        $arguments = @{ Operation = $Operation; PlanOnly = $PlanOnly }
+        if ($Operation -ceq 'impeccable.context.local') { $arguments.ProjectRoot = $ProjectRoot; $arguments.Capability = $Capability }
+        if ($Operation -in @('impeccable.detector.local','impeccable.detector.project')) { $arguments.ProjectRoot = $ProjectRoot; $arguments.InputPath = $InputPath; $arguments.DetectorOptionsJson = $DetectorOptionsJson }
+        if ($Operation -ceq 'impeccable.detector.payload') { $arguments.Content = $Content; $arguments.ContentType = $ContentType; $arguments.DetectorOptionsJson = $DetectorOptionsJson }
+        if ($Operation -ceq 'impeccable.detector.csp') { $arguments.ProjectRoot = $ProjectRoot }
+        if ($Operation -in @('impeccable.hooks.status','impeccable.doctor.report')) { $arguments.ProjectRoot = $ProjectRoot }
+        if ($Operation -ceq 'impeccable.live.event-mediate') { $arguments.EventJson = $EventJson }
+        if ($Operation -ceq 'impeccable.concept.local-fallback') { $arguments.Scope = $Scope; $arguments.Key = $Key; $arguments.Mode = $Mode }
+        $result = Invoke-ImpeccableOperation @arguments
+    }
     'ftk.img2threejs.glb-pipeline' {
         Assert-AllowedImg2ThreejsParameters @('Operation','ProjectRoot','ConfigPath','SkipSplat','SkipBuild','PlanOnly')
         if (-not $ProjectRoot -or -not $ConfigPath) { throw 'glb-pipeline requires ProjectRoot and ConfigPath.' }

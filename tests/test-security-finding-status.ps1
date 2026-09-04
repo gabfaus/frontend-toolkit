@@ -28,8 +28,10 @@ Assert-ContainsLiteral 'docs/G7-SR2F-IMG2THREEJS-SECURITY-CLOSEOUT.md' '| G7S-00
 Assert-ContainsLiteral 'docs/G7-SR2F-IMG2THREEJS-SECURITY-CLOSEOUT.md' '| G7S-002 | `OPEN -> IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION -> MITIGATED -> HUMAN REVIEW -> CLOSED` | **CLOSED** |'
 Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'PATH_FINDING=CLOSED'
 Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'SHELL_FINDING=CLOSED'
-Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'G7S-003 Impeccable authority override'
-Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'G7S-004 Impeccable ungated external effects'
+Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'G7S-003 OPEN - implementation complete, pending committed-HEAD revalidation'
+Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'G7S-004 OPEN - implementation complete, pending committed-HEAD revalidation'
+Assert-ContainsLiteral 'docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md' 'G7S-003: **OPEN — IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**.'
+Assert-ContainsLiteral 'docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md' 'G7S-004: **OPEN — IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**.'
 
 Write-Output 'PASS: G7S-001 and G7S-002 are CLOSED after the full lifecycle and human review.'
-Write-Output 'PASS: G7S-003 and G7S-004 remain OPEN for G7-SR3.'
+Write-Output 'PASS: G7S-003 and G7S-004 remain OPEN with implementation complete pending committed-HEAD revalidation.'

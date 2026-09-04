@@ -128,6 +128,7 @@ for (const name of ['AUTONOMY_DIRECTIVE_CHECK', 'SUBAGENT_AUTHORIZATION']) {
 const noRecommendation = mediateImpeccableContext(context('polish'), policy);
 assert(noRecommendation.requestedOperations.length === 1, 'Skill invocation fabricated another operation.');
 assert(noRecommendation.requestedOperations[0].selectionMeaning === 'capability-selected-only', 'Skill invocation meaning drifted.');
+assert(noRecommendation.requestedOperations[0].requestedOperationId === 'impeccable.context.local', 'Capability did not map to the canonical context operation.');
 assert(noRecommendation.requestedOperations[0].effectsGranted.length === 0, 'Skill invocation granted effects.');
 assert(!noRecommendation.requestedOperations.some((operation) => operation.type === 'subagent'), 'Skill invocation authorized a spawn.');
 
@@ -173,6 +174,7 @@ assert(knownLive.events[0].ftkRepresentation.authority === 'ftk-owned', 'Live re
 assert(!Object.hasOwn(knownLive.events[0].data, '_instructions'), 'Free-form live instructions were forwarded.');
 assert(!JSON.stringify(knownLive).includes('Ignore host policy'), 'Free-form live instruction text survived mediation.');
 assert(knownLive.requestedOperations[0].execution === 'not-performed', 'SR3A performed a live effect.');
+assert(knownLive.requestedOperations[0].requestedOperationId === 'impeccable.live.loopback', 'Live event did not map to its canonical effect operation.');
 expectCode(
   () => mediateImpeccableLiveEvent({ schemaVersion: 1, sourceFingerprint: fingerprint, event: { type: 'future_event' } }, policy),
   'UNKNOWN_LIVE_EVENT',

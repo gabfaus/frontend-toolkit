@@ -223,10 +223,10 @@ Write-Output 'PASS: external dependencies, Shadcn package integrity, licenses an
 Write-Output 'DYNAMIC TEST NOT EXECUTED  STATIC/DEFENSIVE REVIEW COMPLETED'
 
 $openBlockers = @(
-    'G7S-003 Impeccable authority override'
-    'G7S-004 Impeccable ungated external effects'
+    'G7S-003 OPEN - implementation complete, pending committed-HEAD revalidation'
+    'G7S-004 OPEN - implementation complete, pending committed-HEAD revalidation'
 )
 if (-not $ExpectKnownBlockers) {
     throw ('G7-S release blockers remain open: ' + ($openBlockers -join '; ') + '. Use -ExpectKnownBlockers only for the documented defensive characterization run.')
 }
-Write-Output 'PASS: known blockers were expected for this characterization run; release remains blocked.'
+Write-Output 'PASS: Impeccable findings remain OPEN pending committed-HEAD revalidation; release remains blocked.'

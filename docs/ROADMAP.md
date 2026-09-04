@@ -178,3 +178,11 @@ reutilizáveis estão em [Security Remediation Lessons](SECURITY-REMEDIATION-LES
 G7S-003 e G7S-004 continuam **OPEN**. G7-SR3 deve reutilizar a arquitetura mediated-adapter, sem
 inferir autorização deste closeout. G7-A2, instalação, staging, commit, push, tag, release e
 publicação continuam fora deste gate.
+
+### G7-SR3I — Impeccable Integrated Security Boundary
+
+Status: **IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION** em 2026-09-02.
+
+SR3I integra SR3A e SR3B pela cadeia `authority -> requested operation -> effects -> authorization -> fixed handler`. Contexto local e eventos live conhecidos usam módulos FTK-owned; UNKNOWN falha fechado; telemetry/update automáticos permanecem desligados. Como o host atual não expõe autorização não-forjável ao dispatcher, rede, paid generation, telemetry, live efetivo e mutações persistentes continuam representados, mas retornam `AUTHORIZATION_REQUIRED` antes do handler.
+
+G7S-003 e G7S-004 permanecem **OPEN**. O próximo gate exige commit humano separado, duas builds idênticas do committed HEAD, reconciliação de locks exclusivamente dessa evidência, reexecução completa de segurança/capabilities e revisão humana antes de qualquer promoção para `MITIGATED`.

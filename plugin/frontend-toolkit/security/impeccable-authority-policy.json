@@ -181,6 +181,12 @@
     "design-systems",
     "live-workflows"
   ],
+  "requestedOperationContract": {
+    "contextOperationId": "impeccable.context.local",
+    "invocationMeaning": "capability-selected-only",
+    "invocationGrantsEffects": false,
+    "unknownOperationPolicy": "deny"
+  },
   "liveEvents": {
     "schemaVersion": 1,
     "discardedFields": ["_instructions"],
@@ -193,7 +199,8 @@
         "optionalFields": ["id", "projectRoot", "pageFiles", "product", "design", "surfaceBrief"],
         "fieldTypes": {"id": "string", "projectRoot": "string", "pageFiles": "array", "product": "string", "design": "string", "surfaceBrief": "string"},
         "ftkCode": "FTK_LIVE_BOOT_CONTEXT",
-        "ftkNextAction": "retain-validated-live-context-without-effects"
+        "ftkNextAction": "retain-validated-live-context-without-effects",
+        "requestedOperationId": null
       },
       {
         "type": "generate",
@@ -201,7 +208,8 @@
         "optionalFields": ["action", "mode", "pageUrl", "screenshotPath", "freeformPrompt", "scaffold", "element", "placeholder", "insert"],
         "fieldTypes": {"id": "non-empty-string", "count": "positive-integer", "action": "string", "mode": "string", "pageUrl": "string", "screenshotPath": "string", "freeformPrompt": "string", "scaffold": "object", "element": "object", "placeholder": "object", "insert": "object"},
         "ftkCode": "FTK_LIVE_GENERATE_REQUEST",
-        "ftkNextAction": "request-separately-mediated-live-generation"
+        "ftkNextAction": "request-separately-mediated-live-generation",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "steer",
@@ -209,7 +217,8 @@
         "optionalFields": ["pageUrl"],
         "fieldTypes": {"id": "non-empty-string", "message": "string", "pageUrl": "string"},
         "ftkCode": "FTK_LIVE_STEER_REQUEST",
-        "ftkNextAction": "review-steer-data-under-current-host-authority"
+        "ftkNextAction": "review-steer-data-under-current-host-authority",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "prefetch",
@@ -217,7 +226,8 @@
         "optionalFields": ["id"],
         "fieldTypes": {"id": "string", "pageUrl": "string"},
         "ftkCode": "FTK_LIVE_PREFETCH_CONTEXT",
-        "ftkNextAction": "request-separately-mediated-local-read"
+        "ftkNextAction": "request-separately-mediated-local-read",
+        "requestedOperationId": "impeccable.context.local"
       },
       {
         "type": "variant_mount_failed",
@@ -225,7 +235,8 @@
         "optionalFields": ["url", "error"],
         "fieldTypes": {"id": "non-empty-string", "variant": "json", "url": "string", "error": "string"},
         "ftkCode": "FTK_LIVE_VARIANT_MOUNT_FAILED",
-        "ftkNextAction": "report-validated-failure-data"
+        "ftkNextAction": "report-validated-failure-data",
+        "requestedOperationId": null
       },
       {
         "type": "accept",
@@ -233,7 +244,8 @@
         "optionalFields": ["pageUrl", "paramValues"],
         "fieldTypes": {"id": "non-empty-string", "variantId": "json", "pageUrl": "string", "paramValues": "object"},
         "ftkCode": "FTK_LIVE_ACCEPT_REQUEST",
-        "ftkNextAction": "request-separately-mediated-live-mutation"
+        "ftkNextAction": "request-separately-mediated-live-mutation",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "discard",
@@ -241,7 +253,8 @@
         "optionalFields": [],
         "fieldTypes": {"id": "non-empty-string"},
         "ftkCode": "FTK_LIVE_DISCARD_REQUEST",
-        "ftkNextAction": "request-separately-mediated-live-mutation"
+        "ftkNextAction": "request-separately-mediated-live-mutation",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "manual_edit_apply",
@@ -249,7 +262,8 @@
         "optionalFields": ["pageUrl", "evidencePath", "repair"],
         "fieldTypes": {"id": "non-empty-string", "batch": "json", "pageUrl": "string", "evidencePath": "string", "repair": "object"},
         "ftkCode": "FTK_LIVE_MANUAL_EDIT_REQUEST",
-        "ftkNextAction": "request-separately-mediated-project-write"
+        "ftkNextAction": "request-separately-mediated-project-write",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "carbonize_cleanup",
@@ -257,7 +271,8 @@
         "optionalFields": [],
         "fieldTypes": {"id": "non-empty-string", "file": "string"},
         "ftkCode": "FTK_LIVE_CLEANUP_REQUEST",
-        "ftkNextAction": "request-separately-mediated-project-write"
+        "ftkNextAction": "request-separately-mediated-project-write",
+        "requestedOperationId": "impeccable.live.loopback"
       },
       {
         "type": "timeout",
@@ -265,7 +280,8 @@
         "optionalFields": [],
         "fieldTypes": {},
         "ftkCode": "FTK_LIVE_TIMEOUT",
-        "ftkNextAction": "no-effect"
+        "ftkNextAction": "no-effect",
+        "requestedOperationId": null
       },
       {
         "type": "exit",
@@ -273,7 +289,8 @@
         "optionalFields": ["id"],
         "fieldTypes": {"id": "string"},
         "ftkCode": "FTK_LIVE_EXIT",
-        "ftkNextAction": "request-separately-mediated-teardown"
+        "ftkNextAction": "request-separately-mediated-teardown",
+        "requestedOperationId": "impeccable.live.loopback"
       }
     ]
   },

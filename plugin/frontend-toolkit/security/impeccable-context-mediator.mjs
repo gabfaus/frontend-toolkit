@@ -14,7 +14,7 @@ export function validateImpeccableAuthorityPolicy(policy) {
     policy,
     [
       'schemaVersion', 'policyId', 'architecture', 'authorityOrder', 'upstream', 'inputSchema',
-      'dataBlocks', 'directives', 'subagents', 'capabilities', 'liveEvents', 'outputEnvelope',
+      'dataBlocks', 'directives', 'subagents', 'capabilities', 'requestedOperationContract', 'liveEvents', 'outputEnvelope',
     ],
     [],
     'policy',
@@ -56,6 +56,25 @@ export function validateImpeccableAuthorityPolicy(policy) {
   assertUniqueStrings(policy.liveEvents.discardedFields, 'policy.liveEvents.discardedFields');
   assertUniqueBy(policy.directives.allowlist, 'name', 'policy.directives.allowlist');
   assertUniqueBy(policy.liveEvents.schemas, 'type', 'policy.liveEvents.schemas');
+  assertPlainObject(policy.requestedOperationContract, 'policy.requestedOperationContract');
+  assertExactKeys(
+    policy.requestedOperationContract,
+    ['contextOperationId', 'invocationMeaning', 'invocationGrantsEffects', 'unknownOperationPolicy'],
+    [],
+    'policy.requestedOperationContract',
+  );
+  if (policy.requestedOperationContract.contextOperationId !== 'impeccable.context.local'
+      || policy.requestedOperationContract.invocationMeaning !== 'capability-selected-only'
+      || policy.requestedOperationContract.invocationGrantsEffects !== false
+      || policy.requestedOperationContract.unknownOperationPolicy !== 'deny') {
+    fail('INVALID_POLICY', 'Requested-operation mapping must remain exact and fail closed.');
+  }
+  for (const schema of policy.liveEvents.schemas) {
+    if (schema.requestedOperationId !== null
+        && (typeof schema.requestedOperationId !== 'string' || !/^impeccable\.[a-z0-9.-]+$/.test(schema.requestedOperationId))) {
+      fail('INVALID_POLICY', `Live event ${schema.type} has an invalid requested operation ID.`);
+    }
+  }
   return policy;
 }
 
@@ -90,7 +109,7 @@ export function mediateImpeccableContext(input, policy, options = {}) {
 
   const data = [];
   const advisory = [];
-  const requestedOperations = [capabilityRequest(invocation.capability)];
+  const requestedOperations = [capabilityRequest(invocation.capability, policy)];
   for (const block of input.blocks) {
     mediateBlock(block, policy, options, { data, advisory, requestedOperations });
   }
@@ -107,12 +126,12 @@ export function mediateImpeccableLiveEvent(input, policy) {
   }
   const sourceFingerprint = validateSourceFingerprint(input.sourceFingerprint, policy);
   const event = validateLiveEvent(input.event, policy);
-  const requestedOperations = event.ftkRepresentation.nextAction === 'no-effect'
+  const requestedOperations = event.requestedOperationId === null
     ? []
     : [{
         type: 'live-event',
-        operation: event.ftkRepresentation.nextAction,
-        mediation: 'sr3i-required',
+        requestedOperationId: event.requestedOperationId,
+        mediation: 'effect-evaluation-required',
         execution: 'not-performed',
       }];
   return envelope(policy, sourceFingerprint, {
@@ -221,6 +240,7 @@ function validateLiveEvent(event, policy) {
   return {
     type: event.type,
     data,
+    requestedOperationId: schema.requestedOperationId,
     ftkRepresentation: {
       code: schema.ftkCode,
       nextAction: schema.ftkNextAction,
@@ -264,10 +284,11 @@ function validateInvocation(invocation, policy) {
   return invocation;
 }
 
-function capabilityRequest(capability) {
+function capabilityRequest(capability, policy) {
   return {
     type: 'capability',
     capability,
+    requestedOperationId: policy.requestedOperationContract.contextOperationId,
     selectionMeaning: 'capability-selected-only',
     effectsGranted: [],
     execution: 'not-performed',

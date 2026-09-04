@@ -18,6 +18,8 @@ Skills podem conter e executar código local. Pins, hashes e proveniência ident
 
 G7-SR1 coloca adapters próprios do FTK na raiz de discovery e mantém snapshots upstream somente em `third_party/upstreams/`. Em G7-SR2D, o runner FTK adiciona `PROJECT_CODE_EXECUTION`, config estrutural, ambiente child-only allowlisted, validação JSON/GLB e state guard no boundary real. Após revalidação do committed HEAD em G7-SR2E e revisão humana, G7S-001 e G7S-002 estão **CLOSED**; G7S-003 e G7S-004 continuam **OPEN** para G7-SR3.
 
+G7-SR3I integrou tecnicamente os boundaries SR3A/SR3B. Contexto e eventos conhecidos viram requested operations tipadas antes da avaliação independente de efeitos; UNKNOWN falha fechado e handlers são fixos. O host atual não fornece grant não-forjável ao dispatcher, portanto efeitos sensíveis permanecem `AUTHORIZATION_REQUIRED`. G7S-003 e G7S-004 continuam **OPEN — IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**; esta evidência pré-commit não é mitigação nem fechamento.
+
 Hooks, Magic MCP, Jpisnice e código oficial do 21st não fazem parte da V1. Fixtures, perfis Codex e autenticação de teste devem ser isolados e descartáveis.
 
 Veja também `docs/ARCHITECTURE.md`, `docs/SECURITY-REMEDIATION-LESSONS.md`, `docs/INSTALLATION.md` e `THIRD_PARTY_NOTICES.md`.

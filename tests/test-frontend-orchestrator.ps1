@@ -63,6 +63,12 @@ if ($policy.principle -ne 'minimum-necessary-capabilities') { throw 'Minimum-cap
 $capabilityNames = @($policy.capabilities.PSObject.Properties.Name)
 Assert-ExactSet @('impeccable','shadcn','21st','img2threejs') $capabilityNames 'Capability inventory'
 if ($policy.capabilities.impeccable.role -ne 'design-ux-review') { throw 'Impeccable routing role is invalid.' }
+if ($policy.capabilities.impeccable.entrypoint -ne 'ftk-owned-adapter-to-common-dispatcher' -or
+    $policy.capabilities.impeccable.selectionMeaning -ne 'requested-operation-only' -or
+    $policy.capabilities.impeccable.authorizationInference -ne 'deny' -or
+    $policy.capabilities.impeccable.unknownOperationPolicy -ne 'deny') {
+    throw 'Impeccable integrated routing boundary is incomplete.'
+}
 if ($policy.capabilities.shadcn.priorityRule -ne 'official-components-first') { throw 'Shadcn official-component priority is invalid.' }
 if ($policy.capabilities.img2threejs.activation -ne 'explicit-or-clearly-implied-3d-only') { throw 'img2threejs activation policy is invalid.' }
 

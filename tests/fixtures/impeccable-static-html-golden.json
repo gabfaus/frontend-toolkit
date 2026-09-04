@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 2,
+  "purpose": "executable synthetic differential corpus for the pinned canonical static-HTML runtime",
+  "oracle": {
+    "engine": "external/impeccable/.agent/skills/impeccable/scripts/detector/engines/static-html/detect-html.mjs",
+    "upstreamRef": "skill-v4.1.2",
+    "upstreamCommit": "63b04e2530f5c7b41ea83c133daab24f34912456"
+  },
+  "normalizationContract": {
+    "version": 1,
+    "ignoredFields": [
+      "finding.engine",
+      "finding.scopes",
+      "profile.*.target",
+      "profile.*.ms",
+      "runtime.moduleRoot",
+      "runtime.resolvedSpecifiers",
+      "process-specific diagnostics"
+    ],
+    "reasons": {
+      "finding.engine": "Engine attribution is asserted from each execution profile.",
+      "finding.scopes": "Scopes are catalog metadata; rule identity and classification remain compared.",
+      "profile.*.target": "Oracle and FTK use different temporary absolute roots.",
+      "profile.*.ms": "Timing is diagnostic and environment-dependent.",
+      "runtime.moduleRoot": "Source and packaged layouts have different canonical roots.",
+      "runtime.resolvedSpecifiers": "Resolution paths are substrate diagnostics, not findings.",
+      "process-specific diagnostics": "Child environment and runtime IDs are safety evidence, not analytical results."
+    },
+    "preservedFields": [
+      "ruleId",
+      "finding type/classification",
+      "severity",
+      "message",
+      "selector-dependent outcome",
+      "relevant file identity",
+      "line/column when present",
+      "snippet and contrast result",
+      "advisory state",
+      "suppression state"
+    ]
+  },
+  "legacyShimContract": {
+    "name": "reduced-static-html-compatibility-test-double",
+    "behavior": [
+      "does not parse a DOM",
+      "does not match relational or attribute selectors",
+      "does not apply CSS specificity or !important",
+      "does not resolve linked CSS or computed styles",
+      "returns no canonical static-HTML findings for these cases"
+    ],
+    "requiredMisses": [
+      "low-contrast",
+      "gradient-text",
+      "ai-color-palette"
+    ]
+  },
+  "requiredSemanticFamilies": [
+    "dom-relationship",
+    "selector-semantics",
+    "cascade-specificity",
+    "important",
+    "linked-local-css",
+    "computed-static-style",
+    "contrast-or-static-visual",
+    "malformed-recoverable-html"
+  ],
+  "cases": [
+    {
+      "id": "relational-cascade-important",
+      "description": "Nested DOM, descendant/child/attribute/first-child selectors, specificity and !important decide a computed low-contrast result from linked CSS.",
+      "semanticFeatures": [
+        "dom-relationship",
+        "selector-semantics",
+        "selector-descendant",
+        "selector-child",
+        "selector-attribute",
+        "selector-advanced-first-child",
+        "cascade-specificity",
+        "important",
+        "linked-local-css",
+        "computed-static-style",
+        "contrast-or-static-visual"
+      ],
+      "entrypoint": "index.html",
+      "requiredProfileRuleIds": [
+        "parse-document",
+        "css-rules",
+        "css-selectors",
+        "compute-styles"
+      ],
+      "requiredLinkedCss": [
+        "styles.css"
+      ],
+      "files": [
+        {
+          "path": "index.html",
+          "type": "html",
+          "content": "<!doctype html><html><head><link rel=\"stylesheet\" href=\"styles.css\"></head><body><main id=\"app\" class=\"card\"><section data-role=\"panel\"><p class=\"copy\" data-kind=\"copy\">This text is intentionally long enough to be analyzed semantically.</p><p class=\"copy\">A second descendant proves the relation.</p></section></main></body></html>"
+        },
+        {
+          "path": "styles.css",
+          "type": "css",
+          "content": ".card .copy { color: #111; background: #fff; } main#app.card > section[data-role=\"panel\"] > p.copy[data-kind=\"copy\"]:first-child { color: #fff !important; background: #fff; }"
+        }
+      ],
+      "options": {
+        "profile": true
+      },
+      "expectedNormalized": {
+        "findings": [
+          {
+            "ruleId": "low-contrast",
+            "severity": "warning",
+            "classification": "quality",
+            "message": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "1.0:1 (need 4.5:1) — text #ffffff on #ffffff",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "linked-css-gradient-finding",
+      "description": "An attribute-selected heading in linked CSS exercises computed gradient text and canonical static visual findings.",
+      "semanticFeatures": [
+        "selector-semantics",
+        "selector-attribute",
+        "linked-local-css",
+        "computed-static-style",
+        "contrast-or-static-visual",
+        "representative-static-finding"
+      ],
+      "entrypoint": "index.html",
+      "requiredProfileRuleIds": [
+        "parse-document",
+        "css-rules",
+        "css-selectors",
+        "compute-styles"
+      ],
+      "requiredLinkedCss": [
+        "styles.css"
+      ],
+      "files": [
+        {
+          "path": "index.html",
+          "type": "html",
+          "content": "<!doctype html><html><head><link rel=\"stylesheet\" href=\"styles.css\"></head><body><main><h1 data-tone=\"accent\">Launch</h1></main></body></html>"
+        },
+        {
+          "path": "styles.css",
+          "type": "css",
+          "content": "h1[data-tone=\"accent\"] { color: #7c3aed; background-image: linear-gradient(#7c3aed, #ec4899); background-clip: text; -webkit-background-clip: text; }"
+        }
+      ],
+      "options": {
+        "profile": true
+      },
+      "expectedNormalized": {
+        "findings": [
+          {
+            "ruleId": "ai-color-palette",
+            "severity": "warning",
+            "classification": "slop",
+            "message": "Purple/violet gradients and cyan-on-dark are the most recognizable tells of AI-generated UIs. Choose a distinctive, intentional palette.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "Purple/violet text (#7c3aed) on heading",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          },
+          {
+            "ruleId": "gradient-text",
+            "severity": "warning",
+            "classification": "slop",
+            "message": "Gradient text is decorative rather than meaningful — a common AI tell, especially on headings and metrics. Use solid colors for text.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "background-clip: text + gradient",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          },
+          {
+            "ruleId": "ai-color-palette",
+            "severity": "warning",
+            "classification": "slop",
+            "message": "Purple/violet gradients and cyan-on-dark are the most recognizable tells of AI-generated UIs. Choose a distinctive, intentional palette.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "Purple/violet accent colors detected",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          },
+          {
+            "ruleId": "gradient-text",
+            "severity": "warning",
+            "classification": "slop",
+            "message": "Gradient text is decorative rather than meaningful — a common AI tell, especially on headings and metrics. Use solid colors for text.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "background-clip: text + gradient",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "malformed-recoverable-dom",
+      "description": "Malformed but recoverable nested markup still reaches canonical selector, cascade and contrast analysis.",
+      "semanticFeatures": [
+        "dom-relationship",
+        "selector-semantics",
+        "selector-descendant",
+        "selector-child",
+        "cascade-specificity",
+        "important",
+        "computed-static-style",
+        "malformed-recoverable-html",
+        "contrast-or-static-visual"
+      ],
+      "entrypoint": "index.html",
+      "requiredProfileRuleIds": [
+        "parse-document",
+        "css-rules",
+        "css-selectors",
+        "compute-styles"
+      ],
+      "requiredLinkedCss": [],
+      "files": [
+        {
+          "path": "index.html",
+          "type": "html",
+          "content": "<!doctype html><html><head><style>.panel .copy { color: #111; background: #fff; } section[data-role=\"panel\"] > p.copy:first-child { color: #fff !important; background: #fff; }</style></head><body><main class=\"panel\"><section data-role=\"panel\"><p class=\"copy\">Recovered paragraph with enough text to exercise the static analyzer</main></body></html>"
+        }
+      ],
+      "options": {
+        "profile": true
+      },
+      "expectedNormalized": {
+        "findings": [
+          {
+            "ruleId": "low-contrast",
+            "severity": "warning",
+            "classification": "quality",
+            "message": "Text does not meet WCAG AA contrast requirements (4.5:1 for body, 3:1 for large text). Increase the contrast between text and background.",
+            "path": "index.html",
+            "location": null,
+            "snippet": "1.0:1 (need 4.5:1) — text #ffffff on #ffffff",
+            "selector": null,
+            "advisory": false,
+            "ignored": false,
+            "suppressed": false,
+            "suppressionReason": null,
+            "importedBy": ""
+          }
+        ]
+      }
+    }
+  ]
+}

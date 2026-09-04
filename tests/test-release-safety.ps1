@@ -21,6 +21,14 @@ $requiredSecurityFiles = @(
     'security/img2threejs-runtime-policy.json'
     'security/img2threejs-state-guard.ps1'
     'security/img2threejs-structural-validation.ps1'
+    'security/impeccable-authority-policy.json'
+    'security/impeccable-context-extractor.mjs'
+    'security/impeccable-context-mediator.mjs'
+    'security/impeccable-detector.mjs'
+    'security/impeccable-static-runtime.mjs'
+    'security/impeccable-network-client.mjs'
+    'security/impeccable-operation-policy.json'
+    'security/impeccable-runner.ps1'
     'security/invoke-capability.ps1'
 )
 $actualSecurityFiles = @(Get-ChildItem -LiteralPath (Join-Path $pluginSource 'security') -File -Force |
