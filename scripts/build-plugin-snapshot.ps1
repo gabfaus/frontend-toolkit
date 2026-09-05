@@ -17,12 +17,22 @@ $pluginSource = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
 function Get-StaticHtmlTreeHash([string]$Root) {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
-    $entries = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
+    $records = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
         $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
-        "$relative|$((Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant())"
-    } | Sort-Object)
+        [pscustomobject][ordered]@{
+            path = $relative
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+        }
+    })
+    $entries = [System.Collections.Generic.List[object]]::new()
+    foreach ($record in $records) { [void]$entries.Add($record) }
+    $entries.Sort([System.Comparison[object]]{
+        param($left, $right)
+        return [StringComparer]::Ordinal.Compare([string]$left.path, [string]$right.path)
+    })
+    $canonical = @($entries | ForEach-Object { "$($_.path)|$($_.sha256)" })
     $sha = [Security.Cryptography.SHA256]::Create()
-    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($entries -join [char]10))))).Replace('-', '').ToLowerInvariant() }
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($canonical -join [char]10))))).Replace('-', '').ToLowerInvariant() }
     finally { $sha.Dispose() }
 }$staticHtmlLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
 $staticHtmlSourceRoot = (Resolve-Path (Join-Path $repoRoot $staticHtmlLock.snapshot.path)).Path

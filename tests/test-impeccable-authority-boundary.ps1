@@ -9,7 +9,7 @@ $toolchainPath = Join-Path $repoRoot 'integrations/toolchain.lock.json'
 $policy = Get-Content -Raw -LiteralPath $policyPath | ConvertFrom-Json
 if ($policy.schemaVersion -ne 1) { throw 'Authority policy schema drifted.' }
 if ($policy.upstream.commitSha -cne '63b04e2530f5c7b41ea83c133daab24f34912456') { throw 'Impeccable pin drifted.' }
-if ($policy.upstream.snapshotTreeSha256 -cne '2acc28d100263c6b5d91f9b75f4bb80e88d33ac7ffdef9a1b3618eeb2d97f2cd') { throw 'Impeccable snapshot fingerprint drifted.' }
+if ($policy.upstream.snapshotTreeSha256 -cne '43fe6a8a55ce559280d5a616aa603a550100519a4b5f7ac132760e59eba7a9b8') { throw 'Impeccable snapshot fingerprint drifted.' }
 if ($policy.upstream.runtimeImportPolicy -cne 'deny') { throw 'Upstream runtime import is not denied.' }
 if ($policy.inputSchema.unknownBlockPolicy -cne 'deny' -or $policy.directives.unknownDirectivePolicy -cne 'deny' -or $policy.liveEvents.unknownEventPolicy -cne 'deny') {
     throw 'An UNKNOWN structural class is not fail-closed.'

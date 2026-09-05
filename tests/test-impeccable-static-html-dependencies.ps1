@@ -10,12 +10,22 @@ $moduleRoot = Join-Path $repoRoot $lock.snapshot.moduleRoot
 function Assert-True([bool]$Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Get-TreeHash([string]$Root) {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
-    $entries = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
+    $records = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
         $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
-        "$relative|$((Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant())"
-    } | Sort-Object)
+        [pscustomobject][ordered]@{
+            path = $relative
+            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+        }
+    })
+    $entries = [System.Collections.Generic.List[object]]::new()
+    foreach ($record in $records) { [void]$entries.Add($record) }
+    $entries.Sort([System.Comparison[object]]{
+        param($left, $right)
+        return [StringComparer]::Ordinal.Compare([string]$left.path, [string]$right.path)
+    })
+    $canonical = @($entries | ForEach-Object { "$($_.path)|$($_.sha256)" })
     $sha = [Security.Cryptography.SHA256]::Create()
-    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($entries -join "`n"))))).Replace('-', '').ToLowerInvariant() }
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($canonical -join "`n"))))).Replace('-', '').ToLowerInvariant() }
     finally { $sha.Dispose() }
 }
 function Convert-HexToBytes([string]$Hex) {
