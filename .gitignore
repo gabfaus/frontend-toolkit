@@ -32,6 +32,22 @@ fixtures/
 release-artifacts/
 *.log
 
+# Local backups and release archives
+*.bundle
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+*.zip
+*.7z
+*.rar
+*.cer
+*.crt
+backup/
+backups/
+tmp/
+temp/
+
 # Canonical audited runtime substrate is intentionally versionable.
 !/third_party/runtimes/
 !/third_party/runtimes/impeccable-static-html/

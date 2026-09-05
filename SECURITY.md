@@ -14,7 +14,7 @@ O relatório deve conter impacto, componente afetado, versão, passos mínimos d
 
 O plugin não distribui credenciais do mantenedor. Cada usuário fornece sua própria autenticação Codex e, opcionalmente, sua própria `API_KEY_21ST`. Somente `21st/search` é automaticamente autorizado pela política do Toolkit; custo, quota, instalação/cópia e mutations exigem autorização explícita.
 
-Skills podem conter e executar código local. Pins, hashes e proveniência identificam o conteúdo, mas não garantem que ele seja seguro. A revisão atual encontrou bloqueadores nos snapshots upstream; consulte [Security model](docs/SECURITY-MODEL.md) antes de instalar.
+Skills podem conter e executar código local. Pins, hashes e proveniência identificam o conteúdo, mas não garantem que ele seja seguro. G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes; a remediação de canonicalização está **CLOSED**. Consulte [Security model](docs/SECURITY-MODEL.md) antes de instalar.
 
 G7-SR1 coloca adapters próprios do FTK na raiz de discovery e mantém snapshots upstream somente em `third_party/upstreams/`. Em G7-SR2D, o runner FTK adiciona `PROJECT_CODE_EXECUTION`, config estrutural, ambiente child-only allowlisted, validação JSON/GLB e state guard no boundary real. Após revalidação do committed HEAD em G7-SR2E e revisão humana, G7S-001 e G7S-002 estão **CLOSED**; o boundary de Impeccable foi integrado em G7-SR3I e validado no gate final abaixo.
 

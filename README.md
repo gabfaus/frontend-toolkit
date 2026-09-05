@@ -2,7 +2,7 @@
 
 Frontend Toolkit é um plugin open source para Codex que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A V1 técnica foi concluída historicamente, mas a revisão defensiva G7-S bloqueou o candidato `v1.0.0` antes da primeira publicação. Não há tag ou release.
+O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O repositório público já foi publicado, e a preparação formal da tag e da GitHub Release `v1.0.0` ocorre neste gate.
 
 ## O que o plugin oferece
 
@@ -35,7 +35,8 @@ O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiai
 
 - Windows x64 e PowerShell 5.1 ou posterior para os scripts versionados;
 - Git no `PATH` para construir a partir do source;
-- Codex CLI `0.150.1` (versão validada);
+- Codex CLI `0.150.1` (minimum validated);
+- Codex CLI `0.153.4` (current validated);
 - Node.js `24.20.0` (validado; Shadcn requer Node `>=20.18.1`);
 - CPython `3.14.7` (validado; img2threejs requer Python `>=3.10`);
 - acesso de rede para reconstruir upstreams, iniciar Shadcn e acessar o 21st;
@@ -45,7 +46,7 @@ As versões e hashes validados estão em `integrations/toolchain.lock.json`, `in
 
 ## Instalação a partir do source
 
-> **Bloqueado pelo G7-S:** não instale nem recomende o candidato atual. Os comandos abaixo permanecem documentados para reprodução controlada por mantenedores após a mitigação dos findings abertos.
+A instalação a partir do source é destinada à reprodução controlada por mantenedores. A distribuição pública deve usar o asset oficial anexado à GitHub Release `v1.0.0`, após validar o SHA-256 publicado na release.
 
 Depois de clonar este repositório:
 
@@ -114,4 +115,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. A revisão posterior G7-S está **BLOCKED** por findings Critical/High nos snapshots upstream; portanto, o Frontend Toolkit V1 não está atualmente pronto para publicação, instalação por terceiros ou recomendação. O projeto continua sem publicação, tag ou release.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O repositório público já está publicado; a tag e a GitHub Release `v1.0.0` estão em preparação neste gate.

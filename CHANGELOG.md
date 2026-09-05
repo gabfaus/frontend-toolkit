@@ -6,9 +6,9 @@ Este projeto segue [Semantic Versioning 2.0.0](https://semver.org/) e mantém mu
 
 - Preparação pública, documentação de instalação, segurança, contribuição, versionamento e release.
 
-## [1.0.0] - TBD
+## [1.0.0] - 2026-09-05
 
-Primeira release pública planejada. Ainda não foi publicada nem tagueada.
+Primeira release pública estável, preparada neste gate.
 
 ### Added
 
