@@ -135,15 +135,15 @@ Tornar o repositório autoexplicativo para terceiros, produzir um candidato loca
 
 ## G7-S — Plugin / Skills / MCP Security Review
 
-Status: **BLOCKED** em 2026-08-31. G7-A1R permanece **CLOSED**; esta revisão não reabre nem altera o gate anterior.
+Status: **CLOSED** após G7-S-FA em 2026-09-05. G7-A1R permanece **CLOSED**; esta revisão não reabre nem altera o gate anterior.
 
-A revisão defensiva confirmou por análise estática e data-flow dois bloqueadores em img2threejs: paths controláveis chegam a escrita após canonicalização sem containment em `<projeto>/.img2threejs`, e configuração controlável pelo projeto chega a `source` do Bash sem parser estrutural ou gate técnico do Toolkit. Também permanecem abertos dois findings High em Impeccable sobre conflito de autoridade e efeitos externos/rede/custo sem consentimento consistente.
+A revisão defensiva inicial, registrada em 2026-08-31, confirmou por análise estática e data-flow dois bloqueadores em img2threejs: paths controláveis chegam a escrita após canonicalização sem containment em `<projeto>/.img2threejs`, e configuração controlável pelo projeto chega a `source` do Bash sem parser estrutural ou gate técnico do Toolkit. Esses riscos foram tratados nos gates G7-SR2 e G7-SR3I e revalidados no G7-S-FA; a tabela e a seção final abaixo registram o estado atual.
 
 Shadcn foi revisado com configuração sintética inerte, sem valor de ambiente, credencial ou transferência; somente o registry oficial explicitamente nomeado compõe o smoke read-only. No 21st, apenas `search` permanece automaticamente autorizado; toda tool nova, desconhecida, paga, sujeita a quota ou mutável é `UNKNOWN — AUTHORIZATION REQUIRED`.
 
 Critério de retomada: excluir os componentes bloqueados da distribuição, adotar upstream corrigido e revisto, ou obter decisão humana explícita para manter um derivado com proveniência, ciclo de patches e testes próprios. Política do orchestrator e sandbox do host são defesa em profundidade, não substitutos para enforcement técnico.
 
-O G7-S não autoriza instalação, empacotamento, publicação, tag, commit, push nem início de G7-A2.
+As restrições acima valiam para a revisão inicial. O G7-S-FA posterior autorizou somente a aceitação final e um commit documental de fechamento; não autoriza publicação, tag, push nem início automático de fases posteriores.
 
 ## G7-SR1 — Adapter foundation
 
@@ -186,3 +186,16 @@ Status: **IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION** em 2026
 SR3I integra SR3A e SR3B pela cadeia `authority -> requested operation -> effects -> authorization -> fixed handler`. Contexto local e eventos live conhecidos usam módulos FTK-owned; UNKNOWN falha fechado; telemetry/update automáticos permanecem desligados. Como o host atual não expõe autorização não-forjável ao dispatcher, rede, paid generation, telemetry, live efetivo e mutações persistentes continuam representados, mas retornam `AUTHORIZATION_REQUIRED` antes do handler.
 
 G7S-003 e G7S-004 permanecem **OPEN**. O próximo gate exige commit humano separado, duas builds idênticas do committed HEAD, reconciliação de locks exclusivamente dessa evidência, reexecução completa de segurança/capabilities e revisão humana antes de qualquer promoção para `MITIGATED`.
+
+### G7-S-FA — Final Acceptance & Consolidated Security Closure
+
+Status: **CLOSED** em 2026-09-05 após aceitação final no HEAD limpo `ba10d74c64601573728dffa9b483b1cfdbc4bbe4`.
+
+O packaging, a distribuição completa (install/update/remove/reinstall), a reprodutibilidade e os smokes finais de segurança passaram sem rede, credenciais ou efeitos persistentes. As identidades validadas foram:
+
+- plugin tree: `813de5aed3679e3dc8d5259d0a2670cc2021bc494c032f64ceea196f2ec081e4`;
+- artifact tree: `6c0278235fa159a04e773c81f272526eafa544aa4c1b26b9226b25cb5d69a284`;
+- raw ZIP: `3be3bc6f6b1c102ea94716d8d6b271706d61ffa893bf5cbaf82dfe90f416a96d`;
+- static runtime: `1c69db8e2a571a423506e5bfba9965099dd14a1ed8077a9950f1abd0df4a7ab7`.
+
+G7S-001 e G7S-002 permanecem **CLOSED**. G7S-003 e G7S-004 foram promovidos de `MITIGATED — VERIFIED ON FINAL CLEAN COMMITTED HEAD` para **CLOSED**. Não há HIGH ou CRITICAL remanescente; a remediação de segurança G7-S está completa, a canonicalização está encerrada e o release está pronto para os gates de compatibilidade do Codex e preparação de publicação. Nenhuma dessas fases começa automaticamente.
