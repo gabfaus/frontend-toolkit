@@ -66,32 +66,32 @@ function Assert-ReleaseInventory {
     )
 
     $pluginRoot = Join-Path $CandidateRoot 'plugins/frontend-toolkit'
-    $skills = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'skills') -Directory | ForEach-Object Name | Sort-Object)
+    $skills = @(Sort-OrdinalStrings -Values @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'skills') -Directory | ForEach-Object Name))
     if (($skills -join ',') -cne 'frontend-orchestrator,img2threejs,impeccable') {
         throw "Committed-HEAD Skill inventory drifted: $($skills -join ',')"
     }
 
     $mcp = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot '.mcp.json') | ConvertFrom-Json
-    $mcpNames = @($mcp.mcpServers.PSObject.Properties.Name | Sort-Object)
+    $mcpNames = @(Sort-OrdinalStrings -Values @($mcp.mcpServers.PSObject.Properties.Name))
     if (($mcpNames -join ',') -cne '21st,shadcn') {
         throw "Committed-HEAD MCP inventory drifted: $($mcpNames -join ',')"
     }
 
     $requiredSecurity = @(Get-FrontendToolkitSecurityModuleAllowlist)
-    $security = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'security') -File -Force | ForEach-Object Name | Sort-Object)
+    $security = @(Sort-OrdinalStrings -Values @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'security') -File -Force | ForEach-Object Name))
     $newline = [string][char]10
-    if (($security -join $newline) -cne (($requiredSecurity | Sort-Object) -join $newline)) {
+    if (($security -join $newline) -cne ((Sort-OrdinalStrings -Values $requiredSecurity) -join $newline)) {
         throw 'Committed-HEAD security inventory drifted.'
     }
 
-    $upstreams = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'third_party/upstreams') -Directory | ForEach-Object Name | Sort-Object)
+    $upstreams = @(Sort-OrdinalStrings -Values @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'third_party/upstreams') -Directory | ForEach-Object Name))
     if (($upstreams -join ',') -cne 'img2threejs,impeccable') {
         throw "Committed-HEAD upstream inventory drifted: $($upstreams -join ',')"
     }
 
     $provenance = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'SNAPSHOT_PROVENANCE.json') | ConvertFrom-Json
-    $adapterIds = @($provenance.adapters.id | Sort-Object)
-    $snapshotIds = @($provenance.upstreamSnapshots.id | Sort-Object)
+    $adapterIds = @(Sort-OrdinalStrings -Values @($provenance.adapters.id))
+    $snapshotIds = @(Sort-OrdinalStrings -Values @($provenance.upstreamSnapshots.id))
     if (($adapterIds -join ',') -cne 'img2threejs,impeccable' -or ($snapshotIds -join ',') -cne 'img2threejs,impeccable') {
         throw 'Committed-HEAD adapter/upstream provenance drifted.'
     }
@@ -102,7 +102,7 @@ function Assert-ReleaseInventory {
         }
     }
 
-    $manifestPaths = @($Manifest.artifactFiles.path | Sort-Object)
+    $manifestPaths = @(Sort-OrdinalStrings -Values @($Manifest.artifactFiles.path))
     if ($manifestPaths -contains 'integrations/distribution.lock.json' -or $manifestPaths -contains 'integrations/release.lock.json') {
         throw 'A persistent lock entered the payload it measures.'
     }
@@ -188,7 +188,7 @@ try {
     $extractedInventoryTwo = @(Get-ArtifactFileEntries -Root $extractTwo)
     Assert-EqualEvidence -Name 'extracted ZIP inventory' -First $extractedInventoryOne -Second $extractedInventoryTwo
     $newline = [string][char]10
-    $manifestPaths = @($manifestOne.artifactFiles.path | Sort-Object)
+    $manifestPaths = @(Sort-OrdinalStrings -Values @($manifestOne.artifactFiles.path))
     if (($zipInventoryOne.path -join $newline) -cne ($manifestPaths -join $newline)) {
         throw 'Committed-HEAD ZIP inventory diverged from the release manifest.'
     }

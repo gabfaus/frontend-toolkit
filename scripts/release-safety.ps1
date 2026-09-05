@@ -12,8 +12,8 @@ function Assert-ExactStringSet {
         [Parameter(Mandatory)][string[]]$Expected
     )
 
-    $actualSorted = @($Actual | Sort-Object)
-    $expectedSorted = @($Expected | Sort-Object)
+    $actualSorted = @(Sort-OrdinalStrings -Values $Actual)
+    $expectedSorted = @(Sort-OrdinalStrings -Values $Expected)
     if (($actualSorted -join "`n") -cne ($expectedSorted -join "`n")) {
         $unexpected = @($actualSorted | Where-Object { $_ -cnotin $expectedSorted })
         $missing = @($expectedSorted | Where-Object { $_ -cnotin $actualSorted })
