@@ -422,16 +422,7 @@ function Assert-ClaudeCommonDifferential {
 function Assert-ClaudeArtifactNoSensitivePaths {
     param([Parameter(Mandatory)][string]$Root)
 
-    $entries = @(Get-CompleteArtifactEntries -Root $Root)
-    $reparsePoints = @($entries | Where-Object IsReparsePoint)
-    if ($reparsePoints.Count) { throw "Claude candidate contains reparse points: $($reparsePoints.Path -join ', ')" }
-    $runtimePrefix = 'security/claude/runtime'
-    $sensitive = @($entries | Where-Object {
-        $path = [string]$_.Path
-        $isAllowedRuntime = $path -eq $runtimePrefix -or $path.StartsWith($runtimePrefix + '/', [StringComparison]::Ordinal)
-        (Test-SensitiveArtifactPath -RelativePath $path) -and -not $isAllowedRuntime
-    })
-    if ($sensitive.Count) { throw "Claude candidate contains sensitive paths: $($sensitive.Path -join ', ')" }
+    Assert-NoSensitiveArtifactPaths -Root $Root -Context 'Claude candidate' -AllowedGovernedRuntimeRoots @('security/claude/runtime')
 }
 
 function Assert-ClaudeArtifactSecurity {

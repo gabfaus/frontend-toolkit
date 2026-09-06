@@ -269,9 +269,40 @@ function Sort-ArtifactEntriesOrdinal {
     return @($sorted)
 }
 
-function Test-SensitiveArtifactPath {
-    param([Parameter(Mandatory)][string]$RelativePath)
+function Get-AllowedGovernedRuntimeRoots {
+    param([AllowEmptyCollection()][string[]]$AllowedGovernedRuntimeRoots = @())
 
+    $roots = @()
+    foreach ($root in @($AllowedGovernedRuntimeRoots)) {
+        if ($root -cne 'security/claude/runtime') {
+            throw 'Only the exact governed Claude runtime root may be allowlisted.'
+        }
+        $roots += $root
+    }
+    return @($roots | Select-Object -Unique)
+}
+
+function Test-PathUnderExactGovernedRuntimeRoot {
+    param(
+        [Parameter(Mandatory)][string]$NormalizedPath,
+        [Parameter(Mandatory)][AllowEmptyCollection()][string[]]$AllowedGovernedRuntimeRoots
+    )
+
+    foreach ($root in @($AllowedGovernedRuntimeRoots)) {
+        if ($NormalizedPath -ceq $root -or $NormalizedPath.StartsWith($root + '/', [StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Test-SensitiveArtifactPath {
+    param(
+        [Parameter(Mandatory)][string]$RelativePath,
+        [AllowEmptyCollection()][string[]]$AllowedGovernedRuntimeRoots = @()
+    )
+
+    $allowedRoots = @(Get-AllowedGovernedRuntimeRoots -AllowedGovernedRuntimeRoots $AllowedGovernedRuntimeRoots)
     $normalized = $RelativePath.Replace('\', '/').Trim('/')
     $segments = @($normalized.Split('/') | Where-Object { $_ })
     if (-not $segments.Count) { return $false }
@@ -281,7 +312,19 @@ function Test-SensitiveArtifactPath {
     if ($leaf -eq '.env' -or $leaf.StartsWith('.env.')) { return $true }
     if ($leaf -in @('auth.json', 'credentials.json', 'cookies.json', 'id_rsa', 'id_dsa', 'id_ecdsa', 'id_ed25519')) { return $true }
     if ([IO.Path]::GetExtension($leaf) -in @('.pem', '.key', '.pfx', '.p12')) { return $true }
-    if (@($lowerSegments | Where-Object { $_ -in @('.git', '.ssh', '.codex', 'profiles', '.cache', 'cache', 'caches', 'runtime', 'runtimes', 'temp', 'tmp') }).Count) { return $true }
+
+    $isInsideExactRuntimeRoot = Test-PathUnderExactGovernedRuntimeRoot -NormalizedPath $normalized -AllowedGovernedRuntimeRoots $allowedRoots
+    $runtimeRootSegmentIndex = -1
+    if ($isInsideExactRuntimeRoot) { $runtimeRootSegmentIndex = 2 }
+    for ($index = 0; $index -lt $lowerSegments.Count; $index++) {
+        $segment = $lowerSegments[$index]
+        if ($segment -in @('runtime', 'runtimes')) {
+            if ($isInsideExactRuntimeRoot -and $index -eq $runtimeRootSegmentIndex -and $segment -eq 'runtime') { continue }
+            return $true
+        }
+        if ($allowedRoots.Count -gt 0 -and $segment.StartsWith('runtime', [StringComparison]::Ordinal)) { return $true }
+        if ($segment -in @('.git', '.ssh', '.codex', 'profiles', '.cache', 'cache', 'caches', 'temp', 'tmp')) { return $true }
+    }
     if (@($lowerSegments | Where-Object { $_ -match '^codex[-_]?home$' }).Count) { return $true }
     return $false
 }
@@ -289,15 +332,17 @@ function Test-SensitiveArtifactPath {
 function Assert-NoSensitiveArtifactPaths {
     param(
         [Parameter(Mandatory)][string]$Root,
-        [string]$Context = 'artifact'
+        [string]$Context = 'artifact',
+        [AllowEmptyCollection()][string[]]$AllowedGovernedRuntimeRoots = @()
     )
 
+    $allowedRoots = @(Get-AllowedGovernedRuntimeRoots -AllowedGovernedRuntimeRoots $AllowedGovernedRuntimeRoots)
     $entries = @(Get-CompleteArtifactEntries -Root $Root)
     $reparsePoints = @($entries | Where-Object IsReparsePoint)
     if ($reparsePoints.Count) {
         throw "$Context contains reparse points: $($reparsePoints.Path -join ', ')"
     }
-    $sensitive = @($entries | Where-Object { Test-SensitiveArtifactPath -RelativePath $_.Path })
+    $sensitive = @($entries | Where-Object { Test-SensitiveArtifactPath -RelativePath $_.Path -AllowedGovernedRuntimeRoots $allowedRoots })
     if ($sensitive.Count) {
         throw "$Context contains sensitive paths: $($sensitive.Path -join ', ')"
     }
@@ -357,7 +402,8 @@ function Get-FrontendToolkitSecurityModuleAllowlist {
 function New-DeterministicZip {
     param(
         [Parameter(Mandatory)][string]$Root,
-        [Parameter(Mandatory)][string]$ZipPath
+        [Parameter(Mandatory)][string]$ZipPath,
+        [AllowEmptyCollection()][string[]]$AllowedGovernedRuntimeRoots = @()
     )
 
     Add-Type -AssemblyName System.IO.Compression
@@ -365,7 +411,7 @@ function New-DeterministicZip {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
     $zipFullPath = [IO.Path]::GetFullPath($ZipPath)
     if (Test-Path -LiteralPath $zipFullPath) { throw "ZIP destination already exists: $zipFullPath" }
-    Assert-NoSensitiveArtifactPaths -Root $rootPath -Context 'deterministic ZIP source'
+    Assert-NoSensitiveArtifactPaths -Root $rootPath -Context 'deterministic ZIP source' -AllowedGovernedRuntimeRoots $AllowedGovernedRuntimeRoots
 
     $paths = @((Get-ArtifactFileEntries -Root $rootPath) | ForEach-Object { [string]$_.path })
     [Array]::Sort($paths, [StringComparer]::Ordinal)
