@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "resolvedAt": "2026-09-06",
+  "policy": "ftk-owned-browser-qa-source-only",
+  "playwright": {
+    "cli": {
+      "id": "@playwright/cli",
+      "version": "0.1.19",
+      "license": "Apache-2.0",
+      "registry": "https://registry.npmjs.org/",
+      "tarball": "https://registry.npmjs.org/@playwright/cli/-/cli-0.1.19.tgz",
+      "integrity": "sha512-eGXIsYa5D+dC6wHGf+9uEislhPGip1djK+yiNAD7BVsXN3WzzR1J4ClFAhYhyu7wSEFqhcPrqXAYeBJF1dKJ7A==",
+      "shasum": "8de691a19c25f49a19525e9676bafe8f21e0e604",
+      "upstream": "https://github.com/microsoft/playwright-cli.git",
+      "ref": "v0.1.19",
+      "commitSha": "397ee39c83a651e1314cfb010b94e8a3aac11261",
+      "officialSkillPath": "skills/playwright-cli/SKILL.md",
+      "officialSkillSha256": "1a609c93bff3eea9ab99fed93c0334c851fdc39fb6ac5335551bfb87c171d57c",
+      "cliEntrySha256": "fda252270793401d2856530a5f503adf7fc326fc07bed97e413138f67c50662b",
+      "engines": { "node": ">=18" },
+      "dependencies": {
+        "playwright": "1.63.0-alpha-2026-08-31",
+        "playwright-core": "1.63.0-alpha-2026-08-31"
+      },
+      "registryGitHead": null,
+      "registryTrustedPublisher": null,
+      "registryAttestation": null,
+      "upstreamConfirmed": true,
+      "tarballIntegrityConfirmed": true,
+      "sourceTagConfirmed": true,
+      "trustedPublisherProvenance": "ABSENT",
+      "sigstoreSlsaProvenance": "ABSENT",
+      "provenanceStatus": "validated-with-public-metadata-caveat",
+      "provenanceCaveat": "npm public metadata for 0.1.19 omits gitHead, trusted publisher and Sigstore attestation; the official tag, tarball integrity, source package.json and Skill bytes were independently matched.",
+      "upstreamIssue": {
+        "id": "microsoft/playwright#42500",
+        "url": "https://github.com/microsoft/playwright/issues/42500",
+        "statusAtValidation": "OPEN",
+        "tamperingEvidence": "none observed or reported",
+        "releaseAcceptance": "explicit convergence/release decision required"
+      },
+      "releaseDecisionRequired": true
+    },
+    "effectiveCliRuntime": [
+      {
+        "id": "playwright",
+        "version": "1.63.0-alpha-2026-08-31",
+        "license": "Apache-2.0",
+        "registry": "https://registry.npmjs.org/",
+        "tarball": "https://registry.npmjs.org/playwright/-/playwright-1.63.0-alpha-2026-08-31.tgz",
+        "integrity": "sha512-3XAsuznfu8jBVJ4QxdGvBkt0+b8ZFwuwJYyOfiIw5ZjUOrNLNRhKxzLzLuydou3gJ9c6eMwVqgzdiOwhy54Kzw==",
+        "shasum": "57b63632e1337af303268ecce9deb50f8851b00e",
+        "upstream": "https://github.com/microsoft/playwright.git",
+        "registryGitHead": null,
+        "registryAttestation": null,
+        "engines": { "node": ">=20" },
+        "dependencies": { "playwright-core": "1.63.0-alpha-2026-08-31" }
+      },
+      {
+        "id": "playwright-core",
+        "version": "1.63.0-alpha-2026-08-31",
+        "license": "Apache-2.0",
+        "registry": "https://registry.npmjs.org/",
+        "tarball": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.63.0-alpha-2026-08-31.tgz",
+        "integrity": "sha512-1ek0Lyr12h6jcs/WTcNoVtzZkQp7D/90PsMuBW/Rm6h3AsWAbzpqj0geMv8+8Tzzr9CSUYvg9kznrVZINQMXXw==",
+        "shasum": "1a9bd62a11c24d79c1aeb48f995ddc5cae3d62d5",
+        "upstream": "https://github.com/microsoft/playwright.git",
+        "registryGitHead": null,
+        "registryAttestation": null,
+        "engines": { "node": ">=20" },
+        "dependencies": {}
+      }
+    ],
+    "stableLibraryTarget": {
+      "id": "playwright",
+      "version": "1.63.0",
+      "license": "Apache-2.0",
+      "registry": "https://registry.npmjs.org/",
+      "tarball": "https://registry.npmjs.org/playwright/-/playwright-1.63.0.tgz",
+      "integrity": "sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==",
+      "shasum": "99b56f9f69b1b70c44f00bf84b2fe52348ae2511",
+      "upstream": "https://github.com/microsoft/playwright.git",
+      "ref": "v1.63.0",
+      "commitSha": "1b025d7e20a026371cd5f98ba0cdce48892737c8",
+      "registryGitHead": "1b025d7e20a026371cd5f98ba0cdce48892737c8",
+      "registryAttestation": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/playwright@1.63.0",
+        "predicateType": "https://slsa.dev/provenance/v1"
+      },
+      "engines": { "node": ">=20" },
+      "dependencies": { "playwright-core": "1.63.0" }
+    },
+    "testMechanism": {
+      "id": "@playwright/test",
+      "version": "1.63.0",
+      "classification": "preserved-project-test-mechanism",
+      "license": "Apache-2.0",
+      "registry": "https://registry.npmjs.org/",
+      "tarball": "https://registry.npmjs.org/@playwright/test/-/test-1.63.0.tgz",
+      "integrity": "sha512-oxMK4vllB9RK5NQ2l1pq1IfOf2AvnEuj/vYGDj0H2nMtmtZpKtCwt/l00GEO6xjGfpBNAvjovvYdCm50dRQkpQ==",
+      "shasum": "808020c46e8b6b91f9d628cd0ebcbb32bdfd8b6c",
+      "upstream": "https://github.com/microsoft/playwright.git",
+      "ref": "v1.63.0",
+      "commitSha": "1b025d7e20a026371cd5f98ba0cdce48892737c8",
+      "noAutomaticInstallation": true,
+      "preserves": ["assertions", "retries", "reporters", "CI", "persistent-tests"]
+    }
+  },
+  "axe": {
+    "id": "@axe-core/playwright",
+    "version": "4.13.0",
+    "classification": "CONDITIONAL",
+    "license": "MPL-2.0",
+    "registry": "https://registry.npmjs.org/",
+    "tarball": "https://registry.npmjs.org/@axe-core/playwright/-/playwright-4.13.0.tgz",
+    "integrity": "sha512-6YLx+kxXu5GJceG4ozFg+33a2EMTdjYwWGloJ3sb9Kta5pp+ZNS53uxGVog5JetIY8s++P5UrtX+cri+u0VAVg==",
+    "shasum": "4826467c9622df26f0d75b4c1747c8d92ee599de",
+    "upstream": "https://github.com/dequelabs/axe-core-npm.git",
+    "ref": "v4.13.0",
+    "commitSha": "70dca949a4e55e2fb83e4e6896fbbf788c56b6fd",
+    "peerDependencies": { "playwright-core": ">=1.0.0" },
+    "noAutomaticInstallation": true,
+    "complements": ["semantic-review", "keyboard-flow", "focus-management", "screen-reader-reasoning", "content", "reflow", "motion"]
+  },
+  "chromeDevtools": {
+    "id": "chrome-devtools-mcp",
+    "version": "1.8.0",
+    "classification": "OPTIONAL",
+    "license": "Apache-2.0",
+    "registry": "https://registry.npmjs.org/",
+    "tarball": "https://registry.npmjs.org/chrome-devtools-mcp/-/chrome-devtools-mcp-1.8.0.tgz",
+    "integrity": "sha512-Wrm9z0/5WbVs778apjWgYRkpe9bvYQWjK2zVRwqoPAtz1IHQ5+GvotM07UGXJcfrA0rj6Gt1Pnn5+w/Tf1nU4w==",
+    "shasum": "f509e26068b9b96302eba68d9965dd3022fffdd6",
+    "upstream": "https://github.com/ChromeDevTools/chrome-devtools-mcp.git",
+    "ref": "chrome-devtools-mcp-v1.8.0",
+    "commitSha": "45f187b1e3202c9f32ddba913be5d68751c3caa3",
+    "engines": { "node": "^20.19.0 || ^22.12.0 || >=23" },
+    "peerDependencies": {
+      "@toon-format/toon": "^4.1.0",
+      "@blackwell-systems/gcf": "^2.2.2"
+    },
+    "noNormalMcpRegistration": true,
+    "noAutomaticInstallation": true,
+    "updateProcedure": "Revalidate npm metadata, tarball integrity, official release tag/commit, CLI flags, telemetry/CrUX/JS defaults and the allowlist before an explicitly authorized update."
+  },
+  "updateProcedure": [
+    "Resolve only the exact versions recorded here; never substitute a latest tag.",
+    "Fetch public registry metadata and compare tarball bytes against integrity and SHA-1.",
+    "Verify each official GitHub tag/commit and license before changing a lock.",
+    "For @playwright/cli, explicitly recheck trusted publisher, Sigstore, gitHead and effective transitive runtime dependencies.",
+    "Recheck the official Skill bytes and command surface, then rerun the hermetic FTK tests.",
+    "Browser downloads, package installation, MCP registration and real-profile validation require separate authorization."
+  ]
+}

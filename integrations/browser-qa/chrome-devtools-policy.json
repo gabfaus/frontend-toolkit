@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "capability": "browser-qa.chrome-devtools",
+  "classification": "OPTIONAL",
+  "registration": "absent-from-normal-distribution",
+  "package": "chrome-devtools-mcp@1.8.0",
+  "defaults": {
+    "headless": true,
+    "isolated": true,
+    "usageStatistics": false,
+    "performanceCrux": false,
+    "javascriptEvaluation": false,
+    "restrictedUrlOrigin": true,
+    "dedicatedTemporaryWorkspace": true,
+    "existingBrowserAttach": false,
+    "extensions": false,
+    "pwaMutation": false,
+    "webMcpAndThirdPartyTools": false,
+    "unrestrictedFilesystem": false,
+    "memoryDebugging": false,
+    "updateChecks": false,
+    "externalTraffic": false
+  },
+  "startupArguments": [
+    "--headless",
+    "--isolated",
+    "--no-usage-statistics",
+    "--no-performance-crux"
+  ],
+  "environment": {
+    "CHROME_DEVTOOLS_MCP_NO_USAGE_STATISTICS": "1",
+    "CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS": "1"
+  },
+  "allowedTools": [
+    "list_pages",
+    "navigate_page",
+    "take_screenshot",
+    "list_console_messages",
+    "list_network_requests"
+  ],
+  "blockedTools": [
+    "evaluate_script",
+    "run_javascript",
+    "upload_file",
+    "install_pwa",
+    "uninstall_pwa",
+    "performance_start_trace",
+    "performance_stop_trace",
+    "get_heapsnapshot",
+    "query_heapsnapshot"
+  ],
+  "urlPolicy": {
+    "allowedOrigins": [
+      "http://localhost",
+      "http://127.0.0.1",
+      "http://[::1]"
+    ],
+    "browserUrl": null,
+    "wsEndpoint": null,
+    "userDataDir": "generated temporary directory only"
+  },
+  "execution": "configuration and allowlist only; this adapter does not start Chrome or an MCP server"
+}
