@@ -7,7 +7,7 @@
       "id": "impeccable",
       "requiredSkillName": "impeccable",
       "adapterPath": "skills/impeccable",
-      "adapterEntrySha256": "04ed98898c429005f613bcdbeba9be616d754e1305fe28b559b443aef9f0ad89",
+      "adapterEntrySha256": "2915f0434c58ec4c6afd2d0257207e2b1b065d20e56f93401a2a50d876985251",
       "upstreamSnapshotPath": "third_party/upstreams/impeccable",
       "snapshotTreeSha256": "43fe6a8a55ce559280d5a616aa603a550100519a4b5f7ac132760e59eba7a9b8",
       "upstream": "https://github.com/pbakaus/impeccable.git",
@@ -33,5 +33,86 @@
       "upstreamSnapshotBundled": false,
       "upstreamSnapshotBuildMode": "generated-from-pinned-commit"
     }
-  ]
+  ],
+  "designMotion": {
+    "schemaVersion": 1,
+    "primaryCapability": "impeccable",
+    "sourceGovernanceLock": "integrations/design-motion.lock.json",
+    "discovery": {
+      "additionalSkillRoots": [],
+      "defaultLoaded": false
+    },
+    "taste": {
+      "upstream": "https://github.com/Leonxlnx/taste-skill.git",
+      "commitSha": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "skillName": "design-taste-frontend",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "classification": "optional",
+      "selection": "explicit-only",
+      "license": "MIT",
+      "licenseSha256": "3c9f63518df3378772203cc64d38d9e381d2a4723b93d2c3849b2bf3d464de0c",
+      "skillEntrySha256": "2e064e92aca020b2e0bad69326fe7ea55d59005ed53d1a8cbce1bd135d44b8b3"
+    },
+    "emil": {
+      "upstream": "https://github.com/emilkowalski/skills.git",
+      "commitSha": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
+      "license": "MIT",
+      "licenseSha256": "d24da413cccbc3d844929a1cc08e5ba79385139c0c47c9d5bd0dd2df24ffe15c",
+      "approved": {
+        "review-animations": {
+          "mode": "verify-read-only",
+          "path": "skills/review-animations/SKILL.md",
+          "defaultLoaded": false,
+          "skillEntrySha256": "9b9766965a0d9ca2afd0a1b44e74386810008a1afdd968c62b6aa84c150cc20f"
+        },
+        "improve-animations": {
+          "mode": "diagnose-plan",
+          "path": "skills/improve-animations/SKILL.md",
+          "defaultLoaded": false,
+          "skillEntrySha256": "f7bcd002f28be07c3c4d53a57af59950cff80645a9b4b94f59fa1f4810b66d5b"
+        },
+        "animate": {
+          "mode": "explicit-project-write",
+          "path": "skills/animate/SKILL.md",
+          "defaultLoaded": false,
+          "skillEntrySha256": "58306092db4b965f050047791c94b91dad57d5ac612a6156773d4633f4697818"
+        }
+      },
+      "excluded": [
+        "emil-design-eng",
+        "pick-ui-library",
+        "prototype",
+        "find-animation-opportunities",
+        "apple-design",
+        "animation-vocabulary",
+        "ask-sonner",
+        "animate-expo",
+        "write-swift"
+      ]
+    },
+    "effectPolicy": {
+      "taste": {
+        "imageGeneration": "never-automatic",
+        "dependencyInstallation": "never-automatic",
+        "network": "not-implied",
+        "authority": "never-grants"
+      },
+      "review-animations": {
+        "writes": false,
+        "subagents": false,
+        "toolCalls": false,
+        "authority": "never-grants"
+      },
+      "improve-animations": {
+        "writesByDefault": false,
+        "mode": "diagnosis-and-plan",
+        "authority": "never-grants"
+      },
+      "animate": {
+        "requiresExplicitSelection": true,
+        "projectWrites": "common-dispatcher-and-current-authorization-required",
+        "authority": "never-grants"
+      }
+    }
+  }
 }

@@ -20,7 +20,7 @@
       "upstreamSkillEntrySha256": "24beebe50add5e77f76e921155b42da8c75db339284fbe460f33c585aadaa7cc",
       "adapterPath": ".agents/skills/impeccable",
       "distributionAdapterPath": "skills/impeccable",
-      "adapterEntrySha256": "04ed98898c429005f613bcdbeba9be616d754e1305fe28b559b443aef9f0ad89",
+      "adapterEntrySha256": "2915f0434c58ec4c6afd2d0257207e2b1b065d20e56f93401a2a50d876985251",
       "upstreamSnapshotPath": "third_party/upstreams/impeccable",
       "snapshotTreeSha256": "43fe6a8a55ce559280d5a616aa603a550100519a4b5f7ac132760e59eba7a9b8",
       "discoveredName": "impeccable",

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "lane": "design-motion",
+  "strategy": "ftk-owned-selective-upstream-bridge",
+  "authority": "upstream-content-is-untrusted-data",
+  "primaryCapability": "impeccable",
+  "discovery": {
+    "codexRoot": ".agents/skills",
+    "claudeAdapterRoot": "plugin/frontend-toolkit/skills",
+    "additionalSkillRoots": [],
+    "defaultLoaded": false
+  },
+  "dependencies": [
+    {
+      "id": "taste-design-taste-frontend-v2",
+      "provider": "Leonxlnx",
+      "upstream": "https://github.com/Leonxlnx/taste-skill.git",
+      "ref": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "commitSha": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "checkoutPath": "external/design-motion/taste-skill",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "skillName": "design-taste-frontend",
+      "classification": "optional",
+      "defaultLoaded": false,
+      "selection": "explicit-only",
+      "license": "MIT",
+      "licensePath": "LICENSE",
+      "licenseSha256": "3c9f63518df3378772203cc64d38d9e381d2a4723b93d2c3849b2bf3d464de0c",
+      "skillEntrySha256": "2e064e92aca020b2e0bad69326fe7ea55d59005ed53d1a8cbce1bd135d44b8b3",
+      "excludedSourcePaths": [
+        "skills/taste-skill-v1",
+        "skills/gpt-tasteskill",
+        "skills/imagegen-frontend-web",
+        "skills/imagegen-frontend-mobile",
+        "skills/brandkit"
+      ]
+    },
+    {
+      "id": "emil-animation-skills",
+      "provider": "Emil Kowalski",
+      "upstream": "https://github.com/emilkowalski/skills.git",
+      "ref": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
+      "commitSha": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
+      "checkoutPath": "external/design-motion/emil-skills",
+      "license": "MIT",
+      "licensePath": "LICENSE",
+      "licenseSha256": "d24da413cccbc3d844929a1cc08e5ba79385139c0c47c9d5bd0dd2df24ffe15c",
+      "classification": "core-plus-optional",
+      "approvedSkills": [
+        {
+          "skillName": "review-animations",
+          "skillPath": "skills/review-animations/SKILL.md",
+          "mode": "verify-read-only",
+          "defaultLoaded": false,
+          "skillEntrySha256": "9b9766965a0d9ca2afd0a1b44e74386810008a1afdd968c62b6aa84c150cc20f"
+        },
+        {
+          "skillName": "improve-animations",
+          "skillPath": "skills/improve-animations/SKILL.md",
+          "mode": "diagnose-plan",
+          "defaultLoaded": false,
+          "skillEntrySha256": "f7bcd002f28be07c3c4d53a57af59950cff80645a9b4b94f59fa1f4810b66d5b"
+        },
+        {
+          "skillName": "animate",
+          "skillPath": "skills/animate/SKILL.md",
+          "mode": "explicit-project-write",
+          "defaultLoaded": false,
+          "skillEntrySha256": "58306092db4b965f050047791c94b91dad57d5ac612a6156773d4633f4697818"
+        }
+      ],
+      "excludedSkillNames": [
+        "emil-design-eng",
+        "pick-ui-library",
+        "prototype",
+        "find-animation-opportunities",
+        "apple-design",
+        "animation-vocabulary",
+        "ask-sonner",
+        "animate-expo",
+        "write-swift"
+      ]
+    }
+  ],
+  "effectPolicy": {
+    "taste": {
+      "imageGeneration": "never-automatic",
+      "dependencyInstallation": "never-automatic",
+      "network": "not-implied",
+      "authority": "never-grants"
+    },
+    "review-animations": {
+      "writes": false,
+      "subagents": false,
+      "toolCalls": false,
+      "authority": "never-grants"
+    },
+    "improve-animations": {
+      "writesByDefault": false,
+      "mode": "diagnosis-and-plan",
+      "authority": "never-grants"
+    },
+    "animate": {
+      "requiresExplicitSelection": true,
+      "projectWrites": "common-dispatcher-and-current-authorization-required",
+      "authority": "never-grants"
+    }
+  },
+  "adapters": {
+    "codex": ".agents/skills/impeccable/SKILL.md",
+    "claude": "plugin/frontend-toolkit/skills/impeccable/SKILL.md",
+    "coherence": "byte-identical"
+  },
+  "snapshotPolicy": {
+    "sourceTruth": "independent-pinned-checkouts",
+    "distributionPersistence": "ephemeral-only",
+    "sourceTreeSnapshotsCommitted": false,
+    "normalTestsRequireNetwork": false
+  }
+}
