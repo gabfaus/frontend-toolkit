@@ -95,9 +95,16 @@ codex plugin list
 
 Em uma nova sessão, use os prompts de smoke documentados em `docs/RELEASE-CHECKLIST.md`. Não conceda autorização ao prompt de geração do cost gate.
 
-## Instalar o artefato oficial publicado
+## Instalar via marketplace público Claude Code
 
-Ainda não há artefato oficial publicado para `1.1.0`. Os nomes futuros são `frontend-toolkit-codex-v1.1.0.zip` e `frontend-toolkit-claude-v1.1.0.zip`; os SHA-256 serão publicados fora dos próprios ZIPs para evitar circularidade.
+Adicione o marketplace público e instale o plugin Claude Code:
+
+~~~powershell
+claude plugin marketplace add gabfaus/frontend-toolkit
+claude plugin install frontend-toolkit@frontend-toolkit
+~~~
+
+O marketplace usa o asset Claude Code `frontend-toolkit-claude-v1.1.0.zip`, fixado pelo SHA-256 `8f675e5d964532efde733be8f4ce38b7b14a6c0f6d3427748ea98921c889cd7f`.
 
 ## Desinstalar
 
