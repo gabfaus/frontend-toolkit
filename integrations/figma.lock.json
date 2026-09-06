@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "resolvedAt": "2026-09-06",
+  "repository": "https://github.com/figma/mcp-server-guide",
+  "officialRepository": true,
+  "skill": {
+    "id": "figma-design-to-code",
+    "sourcePath": "skills/figma-design-to-code/SKILL.md",
+    "ref": "ae7e5e5f80da20f1dd7445e0c6ae5ac58a5b0bce",
+    "commitSha": "ae7e5e5f80da20f1dd7445e0c6ae5ac58a5b0bce",
+    "commitTreeSha": "ff8c54644bcb04cde5e8bdb0a449ca65ed0f2245",
+    "commitIdentity": "Skills v2.2.107 (#96)",
+    "verification": "GitHub-verified",
+    "sourceSha256": "936bbe68b4731d4a8748db15f85247efde232c8ae0902857c2c79a9ed40649ea",
+    "license": "not-declared-in-repository",
+    "licenseFile": null,
+    "licenseEvidence": "No standalone LICENSE file exists at the pinned commit; the official README states that the Figma MCP Server and related resources, including these Skills, are governed by the Figma Developer Terms.",
+    "license_model": "Figma Developer Terms",
+    "terms": "Figma Developer Terms",
+    "upstream_status": "Beta",
+    "distribution_model": "link-only / upstream content not redistributed",
+    "provenance": "FTK-owned link-only adapter; upstream workflow prose is not redistributed.",
+    "adapterPaths": [
+      ".agents/skills/figma-design-to-code/SKILL.md",
+      "plugin/frontend-toolkit/skills/figma-design-to-code/SKILL.md"
+    ]
+  },
+  "mcp": {
+    "preferred": {
+      "id": "figma",
+      "transport": "streamable-http",
+      "endpoint": "https://mcp.figma.com/mcp"
+    },
+    "desktopAlternative": {
+      "id": "figma-desktop",
+      "transport": "streamable-http",
+      "endpoint": "http://127.0.0.1:3845/mcp",
+      "requiresExplicitSelection": true
+    },
+    "neverEnableBoth": true,
+    "readToolAllowlist": [
+      "get_design_context",
+      "get_metadata",
+      "get_screenshot",
+      "get_variable_defs",
+      "get_figjam",
+      "get_motion_context",
+      "get_libraries",
+      "search_design_system",
+      "get_code_connect_map"
+    ]
+  },
+  "effects": {
+    "remoteWrite": "manual-only-disabled",
+    "assetSave": "separate-local-project-write-gate",
+    "identity": "not-automatic",
+    "oauth": "not-performed",
+    "accountPlanSeatSelection": "not-automatic"
+  }
+}

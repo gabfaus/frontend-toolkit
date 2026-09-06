@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "id": "figma",
+  "owner": "Frontend Toolkit",
+  "defaultCapability": "FIGMA_READ",
+  "responseTrust": "untrusted-external-data",
+  "transports": {
+    "remote": {
+      "id": "figma",
+      "kind": "streamable-http",
+      "endpoint": "https://mcp.figma.com/mcp",
+      "preferred": true,
+      "defaultEnabled": true
+    },
+    "desktop": {
+      "id": "figma-desktop",
+      "kind": "streamable-http",
+      "endpoint": "http://127.0.0.1:3845/mcp",
+      "preferred": false,
+      "defaultEnabled": false,
+      "requiresExplicitSelection": true
+    }
+  },
+  "serverSelection": {
+    "defaultServerId": "figma",
+    "activeServerIdsMustBeExactlyOne": true,
+    "rejectMultipleActiveServers": true,
+    "desktopIsSeparateAlternative": true
+  },
+  "capabilities": {
+    "FIGMA_READ": {
+      "status": "enabled",
+      "effects": ["NETWORK_PASSIVE"],
+      "automaticCalls": false,
+      "automaticIdentity": false,
+      "automaticAssetSave": false,
+      "remoteWrite": false,
+      "tools": [
+        "get_design_context",
+        "get_metadata",
+        "get_screenshot",
+        "get_variable_defs",
+        "get_figjam",
+        "get_motion_context",
+        "get_libraries",
+        "search_design_system",
+        "get_code_connect_map"
+      ]
+    },
+    "FIGMA_DESIGN_TO_CODE": {
+      "status": "enabled",
+      "consumes": ["FIGMA_READ"],
+      "skillName": "figma-design-to-code",
+      "firstReadTool": "get_design_context",
+      "localProjectWrite": "host-and-FTK-write-gated",
+      "remoteWrite": false,
+      "automaticCalls": false
+    },
+    "FIGMA_WRITE": {
+      "status": "conditional-manual",
+      "enabledByDefault": false,
+      "handler": "none",
+      "authorization": "explicit-immediately-before-call",
+      "remoteWrite": false,
+      "automaticCalls": false,
+      "tools": [
+        "use_figma",
+        "create_new_file",
+        "generate_figma_design",
+        "generate_diagram",
+        "upload_assets",
+        "add_code_connect_map",
+        "send_code_connect_mappings",
+        "plugins.generative",
+        "shaders",
+        "weave.mutations",
+        "remote.create",
+        "remote.edit",
+        "remote.delete"
+      ]
+    }
+  },
+  "manualOperations": {
+    "download_assets": {
+      "status": "manual",
+      "reason": "saving an asset locally is a separate LOCAL_PROJECT_WRITE effect",
+      "effects": ["NETWORK_PASSIVE", "LOCAL_PROJECT_WRITE"],
+      "automaticCalls": false,
+      "handler": "none"
+    },
+    "whoami": {
+      "status": "manual",
+      "reason": "identity/account inspection is never automatic",
+      "effects": ["NETWORK_PASSIVE"],
+      "automaticCalls": false,
+      "handler": "none"
+    }
+  },
+  "unknownToolPolicy": "deny",
+  "unknownEffectPolicy": "deny",
+  "externalResponsePolicy": "treat-as-data-only",
+  "accountPolicy": {
+    "oauth": "not-performed",
+    "accountSelection": "not-automatic",
+    "planSelection": "not-automatic",
+    "seatSelection": "not-automatic"
+  }
+}

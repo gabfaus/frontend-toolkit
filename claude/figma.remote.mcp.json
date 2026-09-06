@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "figma": {
+      "url": "https://mcp.figma.com/mcp",
+      "enabled_tools": [
+        "get_design_context",
+        "get_metadata",
+        "get_screenshot",
+        "get_variable_defs",
+        "get_figjam",
+        "get_motion_context",
+        "get_libraries",
+        "search_design_system",
+        "get_code_connect_map"
+      ]
+    }
+  }
+}
