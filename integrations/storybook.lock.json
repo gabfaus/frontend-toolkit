@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "component": "storybook",
+  "classification": "conditional",
+  "targetPackages": [
+    { "package": "@storybook/addon-mcp", "version": "10.6.0", "license": "MIT" },
+    { "package": "@storybook/mcp", "version": "10.6.0", "license": "MIT" }
+  ],
+  "integrationMethod": "ftk-owned-static-detection-and-conditional-adapter",
+  "installation": "never-automatic",
+  "runtimeStartup": "never-automatic",
+  "minimumDetectableStorybookMajor": 8,
+  "supportedScopes": ["docs", "preview-development", "testing"],
+  "blockedScopes": ["review-create", "remote-review", "publication", "chromatic"],
+  "blockedEffectPolicy": "defer-authorization-required",
+  "adapterPath": "plugin/frontend-toolkit/security/storybook-adapter.mjs",
+  "tests": {
+    "realNetworkCalls": 0,
+    "installs": 0,
+    "serversStarted": 0,
+    "publications": 0
+  },
+  "updatePolicy": "manual review only; detect compatibility before offering a capability"
+}

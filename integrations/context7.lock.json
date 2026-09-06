@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "component": "context7",
+  "classification": "conditional",
+  "package": "@upstash/context7-mcp",
+  "version": "4.0.5",
+  "license": "MIT",
+  "upstream": "https://github.com/upstash/context7",
+  "documentation": "https://context7.com/docs",
+  "integrationMethod": "ftk-owned-read-only-facade",
+  "directMcpExposure": "rejected",
+  "facadePath": "claude/facade/context7-facade.mjs",
+  "policyPath": "plugin/frontend-toolkit/security/context7-operation-policy.json",
+  "exposedTools": ["resolve-library-id", "query-docs"],
+  "credentialEnvVar": "CONTEXT7_API_KEY",
+  "credentialValuesInRepository": false,
+  "tests": {
+    "realNetworkCalls": 0,
+    "cache": "disabled"
+  },
+  "updatePolicy": "manual review only; revalidate package, license, endpoint, tool inventory and data boundary"
+}

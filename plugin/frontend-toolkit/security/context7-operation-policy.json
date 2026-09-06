@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "policyId": "ftk.context7.read-only-facade",
+  "status": "conditional",
+  "architecture": "ftk-owned-read-only-mcp-facade",
+  "upstream": {
+    "package": "@upstash/context7-mcp",
+    "version": "4.0.5",
+    "license": "MIT",
+    "integration": "facade-only; direct-MCP-exposure-rejected"
+  },
+  "transport": {
+    "kind": "streamable-http",
+    "endpoint": "https://mcp.context7.com/mcp",
+    "endpointPin": "exact",
+    "redirects": "deny",
+    "networkEffect": "read-only-at-operation-level",
+    "credentialEnvVar": "CONTEXT7_API_KEY",
+    "credentialPersistence": "deny"
+  },
+  "exposedTools": [
+    {
+      "name": "resolve-library-id",
+      "remoteName": "resolve-library-id",
+      "effect": "NETWORK_READ_ONLY",
+      "maxCallsPerInvocation": 1,
+      "input": ["libraryName"]
+    },
+    {
+      "name": "query-docs",
+      "remoteName": "query-docs",
+      "effect": "NETWORK_READ_ONLY",
+      "maxCallsPerInvocation": 1,
+      "input": ["libraryId", "query"]
+    }
+  ],
+  "unknownToolPolicy": "deny",
+  "mutationPolicy": "deny",
+  "deniedRemoteTools": [
+    "refresh",
+    "add-source",
+    "update-policy",
+    "mutations",
+    "unknown-future-tools"
+  ],
+  "dataBoundary": {
+    "queryPolicy": "specific-single-concept-when-possible",
+    "maxLibraryNameChars": 200,
+    "maxLibraryIdChars": 256,
+    "maxQueryChars": 512,
+    "maxRemoteResponseBytes": 1048576,
+    "maxCallsPerInvocation": 1,
+    "sensitiveInputPolicy": "reject-obvious-secrets-tokens-credentials-pii-and-code-blocks",
+    "responsePolicy": "bounded-provenance-wrapped-untrusted-data",
+    "cache": "disabled",
+    "upstreamInstructions": "discarded-as-data"
+  }
+}
