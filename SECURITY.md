@@ -12,7 +12,21 @@ O relatório deve conter impacto, componente afetado, versão, passos mínimos d
 
 ## Security model
 
-O plugin não distribui credenciais do mantenedor. Cada usuário fornece sua própria autenticação Codex e, opcionalmente, sua própria `API_KEY_21ST`. Somente `21st/search` é automaticamente autorizado pela política do Toolkit; custo, quota, instalação/cópia e mutations exigem autorização explícita.
+O plugin não distribui credenciais do mantenedor. Cada usuário fornece sua própria autenticação do host e, opcionalmente, sua própria `API_KEY_21ST`. Somente `21st/search` é automaticamente autorizado pela política do Toolkit; custo, quota, instalação/cópia e mutations exigem autorização explícita.
+
+### Boundary Claude Code
+
+```text
+Claude Code
+  └── FTK local MCP facade
+        └── 21st remote MCP
+```
+
+O artefato Claude nunca configura diretamente o endpoint remoto do 21st: seu `.mcp.json` aponta somente para launchers locais dentro do plugin. A facade expõe exclusivamente `search`, falha fechado para ferramentas desconhecidas e não encaminha `tools/list` remoto como superfície local.
+
+`API_KEY_21ST` é uma variável externa `x-api-key`; não é persistida pelo plugin, não é incluída nos artefatos e não deve aparecer em logs. Conteúdo remoto é não confiável e passa por validação, limites de resposta e normalização antes de retornar ao host. Permissões e hooks nativos do Claude são defesa em profundidade, não a enforcement primária: o boundary FTK local deve continuar seguro mesmo sem essa configuração.
+
+O adapter Shadcn continua usando o pin `shadcn@4.19.0` por launcher local governado. Os artefatos Codex e Claude têm configurações de host distintas, mas preservam byte-identical o shared core e os módulos de security comuns.
 
 Skills podem conter e executar código local. Pins, hashes e proveniência identificam o conteúdo, mas não garantem que ele seja seguro. G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes; a remediação de canonicalização está **CLOSED**. Consulte [Security model](docs/SECURITY-MODEL.md) antes de instalar.
 

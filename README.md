@@ -1,8 +1,8 @@
 # Frontend Toolkit
 
-Frontend Toolkit é um plugin open source para Codex que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
+Frontend Toolkit é um plugin open source para Codex e Claude Code que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O repositório público já foi publicado, e a preparação formal da tag e da GitHub Release `v1.0.0` ocorre neste gate.
+O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.1.0` está em preparação como release candidate multi-host; não há tag `v1.1.0`, GitHub Release ou publicação de marketplace neste gate. A tag histórica `v1.0.0` permanece imutável.
 
 ## O que o plugin oferece
 
@@ -12,14 +12,16 @@ Frontend Toolkit
 ├── Impeccable              design, UX, crítica e refinamento visual
 ├── img2threejs             imagem para modelo procedural Three.js
 ├── Shadcn MCP              consulta ao registry oficial de componentes
-└── 21st MCP                inspiração e descoberta remota
+├── 21st MCP                inspiração e descoberta remota
+└── Claude Code adapter     empacotamento e lifecycle isolados do host Claude
 ```
 
 - **frontend-orchestrator:** escolhe a menor combinação de capacidades necessária e preserva a intenção explícita do usuário.
 - **Impeccable:** cobre composição, hierarquia, acessibilidade, responsividade e qualidade de interface.
 - **img2threejs:** transforma referências visuais em modelos Three.js construídos em código. G7-SR2D medeia state, GLB, codec, TypeScript e Vite com runtimes/argv/ambiente controlados pelo FTK; os defects preservados no snapshot v1.5.1 não são executados diretamente.
 - **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
-- **21st MCP:** serviço remoto em `https://21st.dev/api/mcp`, autenticado somente pela variável `API_KEY_21ST`.
+- **21st MCP:** no Codex, serviço remoto em `https://21st.dev/api/mcp`; no Claude Code, somente uma facade MCP local FTK faz a ponte search-only. A autenticação usa apenas a variável externa `API_KEY_21ST`.
+- **Claude Code:** adapter inicial para Windows x64, com manifesto, dois MCPs locais, launchers governados e runtime privado separado do artefato Codex.
 
 Impeccable e img2threejs permanecem projetos upstream independentes. A descoberta usa adapters próprios do FTK; nenhum `SKILL.md` upstream fica em `.agents/skills` ou em `skills/` do artefato. O build gera snapshots imutáveis e byte-verificados dos SHAs pinados somente sob `third_party/upstreams/`, com provenance separada. O build de release continua extraindo o código próprio de `HEAD` por allowlist exata; o modo `-DevelopmentWorkingTree` existe apenas para validar gates ainda não commitados e mantém as mesmas verificações de composição, reparse points e paths sensíveis.
 
@@ -27,7 +29,7 @@ G7-SR3I integra o Impeccable por uma cadeia fail-closed de autoridade, operaçã
 
 ## Política de custo e mutação do 21st
 
-Somente `21st/search` é autorizado automaticamente. Geração, iteração, consumo de créditos ou quota, recuperação/cópia/instalação de código, publicação, edição, exclusão, bookmarks, listas, conta/perfil, qualquer mutation e qualquer tool nova ou de efeito incerto exigem autorização explícita.
+Somente `21st/search` é autorizado automaticamente. No artefato Claude, a facade local expõe apenas `search` e falha fechado para ferramentas desconhecidas. Geração, iteração, consumo de créditos ou quota, recuperação/cópia/instalação de código, publicação, edição, exclusão, bookmarks, listas, conta/perfil, qualquer mutation e qualquer tool nova ou de efeito incerto exigem autorização explícita.
 
 O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiais do 21st ou hooks. Quando suportado pelo ambiente, recomenda-se também limitar tecnicamente o MCP 21st a `search`; essa configuração do consumidor complementa, mas não substitui, a política semântica do orchestrator. O 21st é opcional para todas as demais capacidades.
 
@@ -37,6 +39,7 @@ O pacote não inclui Magic MCP, Jpisnice, plugin oficial do 21st, Skills oficiai
 - Git no `PATH` para construir a partir do source;
 - Codex CLI `0.150.1` (minimum validated);
 - Codex CLI `0.153.4` (current validated);
+- Claude Code `2.1.261` (current validated; minimum validated: not yet established; Windows x64);
 - Node.js `24.20.0` (validado; Shadcn requer Node `>=20.18.1`);
 - CPython `3.14.7` (validado; img2threejs requer Python `>=3.10`);
 - acesso de rede para reconstruir upstreams, iniciar Shadcn e acessar o 21st;
@@ -46,24 +49,27 @@ As versões e hashes validados estão em `integrations/toolchain.lock.json`, `in
 
 ## Instalação a partir do source
 
-A instalação a partir do source é destinada à reprodução controlada por mantenedores. A distribuição pública deve usar o asset oficial anexado à GitHub Release `v1.0.0`, após validar o SHA-256 publicado na release.
+A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.1.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
 
 Depois de clonar este repositório:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.0.0
-codex plugin marketplace add "$PWD\release-artifacts\v1.0.0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-codex
+codex plugin marketplace add "$PWD\release-artifacts\v1.1.0-codex"
 codex plugin add frontend-toolkit@frontend-toolkit-local
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-claude
 ```
 
-O primeiro comando baixa somente os refs pinados para `external/`. O segundo cria localmente uma marketplace com o plugin completo e os snapshots; `release-artifacts/` é ignorado pelo Git. O source continua sem snapshots.
+O primeiro comando baixa somente os refs pinados para `external/`. O segundo cria a marketplace Codex com o plugin completo e os snapshots; o último cria o artefato Claude com a facade local e seu runtime privado. `release-artifacts/` é ignorado pelo Git. O source continua sem snapshots nem dependências materializadas.
 
 Veja [Instalação](docs/INSTALLATION.md) para validação, configuração de menor privilégio, instalação por artefato e autenticação isolada.
 
 ## Configuração do 21st
 
 Cada usuário autentica sua própria conta Codex e fornece sua própria `API_KEY_21ST`, externamente pelo ambiente ou por um gerenciador de secrets. Nenhuma chave do mantenedor acompanha o plugin. Nunca grave o valor em `.mcp.json`, `config.toml`, scripts, logs ou no repositório. A ausência da variável não impede discovery das três Skills nem uso do Shadcn; apenas deixa o smoke autenticado do 21st indisponível.
+
+No Claude Code, o plugin é carregado por `--plugin-dir` ou pelo lifecycle de marketplace/cache do próprio Claude. O `.mcp.json` Claude configura somente os launchers locais FTK; ele nunca configura diretamente o endpoint remoto do 21st. A instalação e a descoberta não exigem login Anthropic nem chamada de modelo.
 
 Para conferir somente a presença da variável, sem revelar seu conteúdo:
 
@@ -115,4 +121,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O repositório público já está publicado; a tag e a GitHub Release `v1.0.0` estão em preparação neste gate.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.1.0` está em preparação como release candidate multi-host; os artefatos Codex e Claude são separados, a tag `v1.1.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada.

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-05",
+  "purpose": "Claude-only MCP facade runtime; never part of the common Codex runtime.",
+  "registry": "https://registry.npmjs.org/",
+  "resolution": {
+    "method": "official npm metadata and exact tarballs",
+    "requested": [
+      "@modelcontextprotocol/client@2.0.0",
+      "@modelcontextprotocol/server@2.0.0"
+    ],
+    "scriptsDisabled": true,
+    "lifecycleScriptsExecuted": []
+  },
+  "nodeModulesTreeSha256": "TO_BE_FILLED_AFTER_MATERIALIZATION",
+  "packages": [
+    { "name": "@modelcontextprotocol/client", "version": "2.0.0", "license": "MIT", "integrity": "sha512-8f1OghQ2rjzIOfqgUCP+8GiUWqRs89njoWLNqAe8kWmDePv3s1fZXseej+QXemssEuuOvLLmLO/kqM3IQHtISw==", "tarballSha512Hex": "f1fd4e821436ae3cc839faa05023fef068945aa46cf3d9e3a162cda807bc91698378fbf7b357d95ec79e8fe4177a6b2c12eb8ebcb2e62cefe4a8cdc8407b484b", "engines": { "node": ">=20" }, "dependencies": { "@modelcontextprotocol/core": "2.0.0", "cross-spawn": "^7.0.5", "eventsource": "^3.0.2", "eventsource-parser": "^3.0.0", "jose": "^6.1.3", "pkce-challenge": "^5.0.0", "zod": "^4.2.0" } },
+    { "name": "@modelcontextprotocol/core", "version": "2.0.0", "license": "MIT", "integrity": "sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==", "tarballSha512Hex": "a49084c061bb2dfafff8f429f594f029735e3b9c336df28bec7dcc6290a8acce28141a10add8e7060128a86f918e1b2f4b514aac36cabb1f8cd478659c65aa70", "engines": { "node": ">=20" }, "dependencies": { "zod": "^4.2.0" } },
+    { "name": "@modelcontextprotocol/server", "version": "2.0.0", "license": "MIT", "integrity": "sha512-YhHWdHfpFMQfd0prsEnxKeS3Qz3ytIGmsS0sth4KDjnacIT7hxk6hXHkJ9KysxlkvTM+WZAtQbbcUhdoP4Hvtw==", "tarballSha512Hex": "6211d67477e914c41f774a6bb049f129e4b7433df2b481a6b12d2cb61e0a0e39da7084fb87193a8571e427d2b2b31964bd333e59902d41b6dc5217683f81efb7", "engines": { "node": ">=20" }, "dependencies": { "@modelcontextprotocol/core": "2.0.0", "zod": "^4.2.0" } },
+    { "name": "cross-spawn", "version": "7.0.6", "license": "MIT", "integrity": "sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==", "tarballSha512Hex": "b95d903963f69d6ceccb668ca7c69189b862f5d9731791e0879487681f4e893184c834e2249cb1d2ecb9d505ddc966ed00736e6b85c9cd429c6b73b3294777bc", "licenseFile": "LICENSE", "engines": { "node": ">= 8" }, "dependencies": { "path-key": "^3.1.0", "shebang-command": "^2.0.0", "which": "^2.0.1" } },
+    { "name": "eventsource", "version": "3.0.7", "license": "MIT", "integrity": "sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==", "tarballSha512Hex": "0914f5593cae4280fbef5196e7a5c464543f66849f5a27756a52860d832692ddb297c517ad5478a6ca6a58d11ca8abd523383a3c096d5a3c5c4923eb6e803888", "licenseFile": "LICENSE", "engines": { "node": ">=18.0.0" }, "dependencies": { "eventsource-parser": "^3.0.1" } },
+    { "name": "eventsource-parser", "version": "3.1.1", "license": "MIT", "integrity": "sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==", "tarballSha512Hex": "10a375bca00c719f0c95832968dbb137a47dc9a9331fab9a8c7707553a96273beee695b0f43ca16cfdf91c7f0c54143e7598c07c3c64f80f0d891f4a59a5e2c9", "licenseFile": "LICENSE", "engines": { "node": ">=18.0.0" } },
+    { "name": "isexe", "version": "2.0.0", "license": "ISC", "integrity": "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==", "tarballSha512Hex": "447c4c2e9f659ca1c61d19e0f5016144231b600715a67ebdb2648672addfdfac638155564e18f8aaa2db4cb96aed2b23f01f9f210d44b8210623694ab3241e23", "licenseFile": "LICENSE" },
+    { "name": "jose", "version": "6.2.12", "license": "MIT", "integrity": "sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw==", "tarballSha512Hex": "f4d88598911ec74b32d83939f23d94181487814b36ca917d7994aee0beaf8ce5f70e9f7a4b0d45dee2fe1fe0f5b31d368d965dcd44f41e0bc2cb9f42baf5dc5b", "licenseFile": "LICENSE.md" },
+    { "name": "path-key", "version": "3.1.1", "license": "MIT", "integrity": "sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==", "tarballSha512Hex": "a2399e374a9dfb2d23b3312da18e3caf43deab97703049089423aee90e5fe3595f92cc17b8ab58ae18284e92e7c887079b6e1486ac7ee53aa6d889d2c0b844e9", "licenseFile": "license", "engines": { "node": ">=8" } },
+    { "name": "pkce-challenge", "version": "5.0.1", "license": "MIT", "integrity": "sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==", "tarballSha512Hex": "c10d1bfd6e05af4d6ab691e5a92aaca5c8f712106f8a6b1d8742a51e11fc1d166732c11ad1e6b67d350b397392f5c710af7a26f86706464e1efa2b2b65657ca9", "licenseFile": "LICENSE", "engines": { "node": ">=16.20.0" } },
+    { "name": "shebang-command", "version": "2.0.0", "license": "MIT", "integrity": "sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==", "tarballSha512Hex": "907c6bdb366962d766acdd6a0e3aeb5ff675ad1d641bc0f1fa09292b51b87979af5ecc26704d614d6056614ce5ada630d7fc99a7a62e0d8efb62dbdb3747660c", "licenseFile": "license", "engines": { "node": ">=8" }, "dependencies": { "shebang-regex": "^3.0.0" } },
+    { "name": "shebang-regex", "version": "3.0.0", "license": "MIT", "integrity": "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==", "tarballSha512Hex": "efef9d161b5cc77df9dee05aabc0c347836ec417ad0730bb6503a19934089c711de9b4ab5dd884cb30af1b4ed9e3851874b4a1594c97b7933fca1cfc7a471bd4", "licenseFile": "license", "engines": { "node": ">=8" } },
+    { "name": "which", "version": "2.0.2", "license": "ISC", "integrity": "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==", "tarballSha512Hex": "04b2374e5d535b73ef97bd25df2ab763ae22f9ac29c17aac181616924a8cb676d782b303fb28fbae15b492e103c7325a6171a3116e6881aa4a34c10a34c8e26c", "licenseFile": "LICENSE", "engines": { "node": ">= 8" }, "dependencies": { "isexe": "^2.0.0" } },
+    { "name": "zod", "version": "4.5.4", "license": "MIT", "integrity": "sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==", "tarballSha512Hex": "b02f79b53e621c71fd82da63e80f35921f8d11a44050537eaa550f0d46d17ce32f35fe50081aac6f75a0be7a55b4ae58fb851f03a2aab9fa2db93bcc1a24e5b0", "licenseFile": "LICENSE" }
+  ]
+}

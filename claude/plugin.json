@@ -1,0 +1,14 @@
+{
+  "name": "frontend-toolkit",
+  "version": "1.1.0",
+  "displayName": "Frontend Toolkit",
+  "description": "Route frontend, UX, component and image-to-3D work across three Skills and guarded Shadcn and 21st MCP integrations.",
+  "author": {
+    "name": "Gabriel"
+  },
+  "repository": "https://github.com/gabfaus/frontend-toolkit",
+  "license": "Apache-2.0",
+  "keywords": ["frontend", "ux", "shadcn", "threejs"],
+  "mcpServers": "./.mcp.json",
+  "defaultEnabled": false
+}

@@ -2,12 +2,12 @@
 
 ## Escolha do formato
 
-A release pública deve entregar uma marketplace local contendo um único plugin. O repositório-fonte não versiona snapshots externos; `scripts/build-release-candidate.ps1` os gera dos SHAs pinados e cria o candidato instalável.
+A release pública deverá entregar artefatos separados para Codex e Claude Code. O repositório-fonte não versiona snapshots externos; os builders os geram dos SHAs pinados e criam candidatos instaláveis a partir do mesmo source commit.
 
 O artefato contém:
 
 ```text
-frontend-toolkit-v1.0.0/
+frontend-toolkit-v1.1.0-codex/
 ├── .agents/plugins/marketplace.json
 ├── plugins/frontend-toolkit/
 │   ├── .codex-plugin/plugin.json
@@ -20,6 +20,8 @@ frontend-toolkit-v1.0.0/
 └── RELEASE_MANIFEST.json
 ```
 
+O artefato Claude possui `.claude-plugin/plugin.json`, `.mcp.json`, as mesmas três Skills e os mesmos arquivos comuns, além de `security/claude/` com os dois launchers, a facade 21st search-only e o runtime MCP privado. O artefato Claude é separado do artefato Codex.
+
 ## Requisitos
 
 Para instalar um artefato pronto: Codex CLI `0.150.1` (minimum validated), Node.js compatível com Shadcn e Python compatível com img2threejs. O Codex CLI `0.153.4` é a versão current validated. Para construir do source também são necessários Git, PowerShell e acesso aos upstreams registrados.
@@ -28,6 +30,7 @@ Versões validadas:
 
 - Codex CLI `0.150.1`;
 - Codex CLI `0.153.4`;
+- Claude Code `2.1.261` (current validated; minimum validated: not yet established; Windows x64);
 - Node.js `24.20.0`;
 - CPython `3.14.7`;
 - Windows x64 e PowerShell 5.1+.
@@ -38,7 +41,8 @@ Na raiz de um clone limpo:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.0.0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-codex
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-claude
 ```
 
 A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licenças. O builder falha se o destino existir, sobrepuser o source ou se qualquer checkout divergir do lock.
@@ -67,7 +71,7 @@ Adicionar a marketplace e o plugin materializa arquivos e registra as três Skil
 
 Usar uma Skill pode executar código local, iniciar subprocessos, ler ou escrever no workspace e acessar rede conforme o fluxo escolhido. Iniciar o Shadcn via `npx` pode baixar e executar o pacote exato pinado se ele não estiver em cache. Usar um MCP pode iniciar seu processo e comunicação de rede. Comandos retornados por registry ou MCP são dados: revise-os antes de executar.
 
-G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. Para uso por terceiros, instale somente o asset oficial anexado à GitHub Release `v1.0.0` e valide seu SHA-256 contra o valor publicado na release.
+G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. Este gate prepara o RC `1.1.0`, mas não cria tag, GitHub Release ou marketplace público. Para uso por terceiros, aguarde os assets oficiais e valide seus SHA-256 contra o manifest externo da futura release.
 
 Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
 
@@ -93,7 +97,7 @@ Em uma nova sessão, use os prompts de smoke documentados em `docs/RELEASE-CHECK
 
 ## Instalar o artefato oficial publicado
 
-Baixe o asset ZIP oficial anexado à GitHub Release `v1.0.0`, valide o SHA-256 `3be3bc6f6b1c102ea94716d8d6b271706d61ffa893bf5cbaf82dfe90f416a96d` contra a release e use a pasta extraída como marketplace no comando `codex plugin marketplace add`.
+Ainda não há artefato oficial publicado para `1.1.0`. Os nomes futuros são `frontend-toolkit-codex-v1.1.0.zip` e `frontend-toolkit-claude-v1.1.0.zip`; os SHA-256 serão publicados fora dos próprios ZIPs para evitar circularidade.
 
 ## Desinstalar
 

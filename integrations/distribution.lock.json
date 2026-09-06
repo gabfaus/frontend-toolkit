@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "validatedAt": "2026-09-01",
+  "validatedAt": "2026-09-05",
   "strategy": "mediated-adapter-generated-snapshots",
   "architecture": "ftk-owned-mediated-adapter",
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "813de5aed3679e3dc8d5259d0a2670cc2021bc494c032f64ceea196f2ec081e4",
+  "observedSnapshotTreeSha256": "146268d1574a1f94928ebbeb196c9b03a2647eda1574d13da3ecac1e7866379f",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",
@@ -47,5 +47,5 @@
     "pluginCreator": "source-and-distribution-pass",
     "skillCreator": "all three discovered Skills are FTK-owned adapters; upstream snapshots are non-discoverable reference payloads"
   },
-  "notes": "Observed v1.0.0 tree hash covers the three FTK-owned Skills, the security boundary, the project Apache-2.0 LICENSE and non-discoverable byte-equivalent upstream snapshots. Regenerate and update this observation whenever packaging content changes."
+  "notes": "Observed v1.1.0 RC tree hash covers the three FTK-owned Skills, the security boundary, the project Apache-2.0 LICENSE and non-discoverable byte-equivalent upstream snapshots. Regenerate and update this observation whenever packaging content changes."
 }

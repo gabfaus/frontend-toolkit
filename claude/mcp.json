@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "${CLAUDE_PLUGIN_ROOT}/security/claude/launch-shadcn.ps1"
+      ]
+    },
+    "21st": {
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "${CLAUDE_PLUGIN_ROOT}/security/claude/launch-21st-facade.ps1"
+      ],
+      "env": {
+        "API_KEY_21ST": "${API_KEY_21ST}"
+      }
+    }
+  }
+}

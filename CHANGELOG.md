@@ -6,6 +6,18 @@ Este projeto segue [Semantic Versioning 2.0.0](https://semver.org/) e mantém mu
 
 - Preparação pública, documentação de instalação, segurança, contribuição, versionamento e release.
 
+## [1.1.0] - 2026-09-05
+
+Release candidate multi-host; publicação, tag e GitHub Release ainda não foram criadas.
+
+### Added
+
+- Suporte ao Claude Code com preservação do shared core do Codex.
+- Empacotamento específico do Claude e lifecycle local de marketplace/cache.
+- Adapter Shadcn governado pelo pin `4.19.0`.
+- Facade 21st local com superfície search-only.
+- Pipeline determinístico de release multi-host a partir do mesmo source commit.
+
 ## [1.0.0] - 2026-09-05
 
 Primeira release pública estável, preparada neste gate.
