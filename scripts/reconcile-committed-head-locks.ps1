@@ -2,7 +2,10 @@
 param(
     [Parameter(Mandatory)][ValidateSet('CommittedHead', 'DevelopmentWorkingTree')][string]$SourceMode,
     [Parameter(Mandatory)][ValidatePattern('^[0-9a-f]{40}$')][string]$ExpectedCommit,
-    [switch]$Apply
+    [switch]$Apply,
+    [string]$DistributionLockPath,
+    [string]$ReleaseLockPath,
+    [switch]$RequireLockedCurrentCandidate
 )
 
 Set-StrictMode -Version Latest
@@ -121,6 +124,110 @@ function Set-JsonHashProperty {
     return $regex.Replace($JsonText, { param($match) $match.Groups[1].Value + $Value + $match.Groups[3].Value }, 1)
 }
 
+function Assert-RequiredJsonProperties {
+    param(
+        [Parameter(Mandatory)]$Document,
+        [Parameter(Mandatory)][string]$Context,
+        [Parameter(Mandatory)][string[]]$Properties
+    )
+
+    $available = @($Document.PSObject.Properties.Name)
+    if (-not $available.Count) { throw "$Context has an unexpected JSON structure." }
+    foreach ($property in $Properties) {
+        if ($property -notin $available) { throw "$Context is missing required property: $property" }
+    }
+}
+
+function Assert-LockSha256 {
+    param(
+        [Parameter(Mandatory)][string]$Context,
+        [Parameter(Mandatory)]$Value
+    )
+
+    if ($Value -isnot [string] -or $Value -cnotmatch '^[0-9a-f]{64}$') {
+        throw "$Context is not a valid lowercase SHA-256 identity."
+    }
+}
+
+function Read-PersistentLockDocument {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][ValidateSet('Distribution', 'Release')][string]$Kind
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        throw "$Kind persistent lock is missing: $Path"
+    }
+    try {
+        $document = Get-Content -Raw -LiteralPath $Path | ConvertFrom-Json
+    } catch {
+        throw "$Kind persistent lock is not valid JSON: $Path"
+    }
+    if ($null -eq $document) { throw "$Kind persistent lock is empty: $Path" }
+
+    if ($Kind -eq 'Distribution') {
+        Assert-RequiredJsonProperties -Document $document -Context 'Distribution lock' -Properties @(
+            'schemaVersion', 'strategy', 'architecture', 'generator', 'externalLock',
+            'observedSnapshotTreeSha256', 'snapshotPersistence', 'sourceComposition',
+            'components', 'hooksEnabled', 'twentyFirstAutomaticTools'
+        )
+        if ($document.schemaVersion -ne 2 -or
+            $document.strategy -cne 'mediated-adapter-generated-snapshots' -or
+            $document.architecture -cne 'ftk-owned-mediated-adapter' -or
+            $document.generator -cne 'scripts/build-plugin-snapshot.ps1' -or
+            $document.externalLock -cne 'integrations/external.lock.json' -or
+            $document.snapshotPersistence -cne 'ephemeral-only' -or
+            $document.hooksEnabled -ne $false -or
+            (@($document.twentyFirstAutomaticTools) -join ',') -cne 'search') {
+            throw 'Distribution lock contains an unexpected governance structure.'
+        }
+        Assert-LockSha256 -Context 'Distribution lock observedSnapshotTreeSha256' -Value $document.observedSnapshotTreeSha256
+        Assert-RequiredJsonProperties -Document $document.sourceComposition -Context 'Distribution lock sourceComposition' -Properties @(
+            'strategy', 'unexpectedFilesystemEntries', 'sensitivePathDefense', 'enumeration'
+        )
+        if ($document.sourceComposition.strategy -cne 'git-head-explicit-file-allowlist' -or
+            $document.sourceComposition.unexpectedFilesystemEntries -cne 'fail' -or
+            $document.sourceComposition.sensitivePathDefense -cne 'fail' -or
+            $document.sourceComposition.enumeration -cne 'all-files-force') {
+            throw 'Distribution lock source composition is unexpected.'
+        }
+        $components = @($document.components)
+        $componentIds = @(Sort-OrdinalStrings -Values @($components | ForEach-Object id))
+        if ($components.Count -ne 2 -or ($componentIds -join ',') -cne 'img2threejs,impeccable') {
+            throw 'Distribution lock component structure is unexpected.'
+        }
+        foreach ($component in $components) {
+            Assert-RequiredJsonProperties -Document $component -Context "Distribution lock component $($component.id)" -Properties @(
+                'id', 'adapterEntrySha256', 'snapshotTreeSha256'
+            )
+            Assert-LockSha256 -Context "Distribution lock component $($component.id) adapterEntrySha256" -Value $component.adapterEntrySha256
+            Assert-LockSha256 -Context "Distribution lock component $($component.id) snapshotTreeSha256" -Value $component.snapshotTreeSha256
+        }
+    } else {
+        Assert-RequiredJsonProperties -Document $document -Context 'Release lock' -Properties @(
+            'schemaVersion', 'candidateVersion', 'builder', 'marketplaceName', 'sourceSnapshots',
+            'artifactSnapshots', 'observedPluginTreeSha256', 'observedArtifactTreeSha256',
+            'sourceComposition', 'artifactInventory', 'publicationStatus', 'tagStatus', 'releaseStatus'
+        )
+        if ($document.schemaVersion -ne 1 -or
+            $document.builder -cne 'scripts/build-release-candidate.ps1' -or
+            $document.marketplaceName -cne 'frontend-toolkit-local' -or
+            $document.sourceSnapshots -cne 'ephemeral-only' -or
+            $document.artifactSnapshots -cne 'generated-from-pinned-upstreams' -or
+            $document.sourceComposition -cne 'git-head-explicit-file-allowlist' -or
+            $document.artifactInventory -cne 'all-files-force; manifest-self-listed-unhashed' -or
+            $document.publicationStatus -cne 'not-published' -or
+            $document.tagStatus -cne 'not-created' -or
+            $document.releaseStatus -cne 'not-created' -or
+            $document.candidateVersion -notmatch '^\d+\.\d+\.\d+$') {
+            throw 'Release lock contains an unexpected governance structure.'
+        }
+        Assert-LockSha256 -Context 'Release lock observedPluginTreeSha256' -Value $document.observedPluginTreeSha256
+        Assert-LockSha256 -Context 'Release lock observedArtifactTreeSha256' -Value $document.observedArtifactTreeSha256
+    }
+    return $document
+}
+
 if ($SourceMode -cne 'CommittedHead') {
     throw 'Persistent release/distribution hashes require SourceMode=CommittedHead; DevelopmentWorkingTree is diagnostic-only.'
 }
@@ -152,8 +259,17 @@ $candidateTwo = Join-Path $fixture 'candidate-two'
 $zipOne = Join-Path $fixture 'candidate-one.zip'
 $zipTwo = Join-Path $fixture 'candidate-two.zip'
 $builder = Join-Path $repoRoot 'scripts/build-release-candidate.ps1'
-$distributionLockPath = Join-Path $repoRoot 'integrations/distribution.lock.json'
-$releaseLockPath = Join-Path $repoRoot 'integrations/release.lock.json'
+$customLockPaths = $PSBoundParameters.ContainsKey('DistributionLockPath') -or $PSBoundParameters.ContainsKey('ReleaseLockPath')
+if ($customLockPaths -and (-not $PSBoundParameters.ContainsKey('DistributionLockPath') -or -not $PSBoundParameters.ContainsKey('ReleaseLockPath'))) {
+    throw 'DistributionLockPath and ReleaseLockPath must be provided together.'
+}
+if ($Apply -and $customLockPaths) {
+    throw 'Apply is restricted to the repository persistent locks.'
+}
+$distributionLockPath = if ($customLockPaths) { [IO.Path]::GetFullPath($DistributionLockPath) } else { Join-Path $repoRoot 'integrations/distribution.lock.json' }
+$releaseLockPath = if ($customLockPaths) { [IO.Path]::GetFullPath($ReleaseLockPath) } else { Join-Path $repoRoot 'integrations/release.lock.json' }
+$distributionLockBefore = (Get-FileHash -Algorithm SHA256 -LiteralPath $distributionLockPath).Hash
+$releaseLockBefore = (Get-FileHash -Algorithm SHA256 -LiteralPath $releaseLockPath).Hash
 
 try {
     $buildOne = & $builder -Destination $candidateOne
@@ -196,7 +312,48 @@ try {
         throw 'Builder output and manifest hashes disagree.'
     }
 
+    $distributionLock = Read-PersistentLockDocument -Path $distributionLockPath -Kind Distribution
+    $releaseLock = Read-PersistentLockDocument -Path $releaseLockPath -Kind Release
+    $candidateVersion = [string]$manifestOne.version
+    $persistentCandidateVersion = [string]$releaseLock.candidateVersion
+    $persistentPluginIdentities = @(
+        [string]$distributionLock.observedSnapshotTreeSha256
+        [string]$releaseLock.observedPluginTreeSha256
+    )
+    $persistentArtifactIdentity = [string]$releaseLock.observedArtifactTreeSha256
+    $candidatePluginIdentity = [string]$buildOne.PluginTreeSha256
+    $candidateArtifactIdentity = [string]$buildOne.ArtifactTreeSha256
+    Assert-LockSha256 -Context 'Candidate plugin tree identity' -Value $candidatePluginIdentity
+    Assert-LockSha256 -Context 'Candidate artifact tree identity' -Value $candidateArtifactIdentity
+    Assert-LockSha256 -Context 'Candidate ZIP identity' -Value $zipShaOne
+    $pluginIdentitiesAreCoherent = $persistentPluginIdentities[0] -ceq $persistentPluginIdentities[1]
+    $hashIdentitiesMatchCandidate = $pluginIdentitiesAreCoherent -and
+        $persistentPluginIdentities[0] -ceq $candidatePluginIdentity -and
+        $persistentArtifactIdentity -ceq $candidateArtifactIdentity
+    $versionMatchesCandidate = $persistentCandidateVersion -ceq $candidateVersion
+    $anyPersistentIdentityMatchesCandidate = @(
+        $persistentPluginIdentities | Where-Object { $_ -ceq $candidatePluginIdentity }
+        if ($persistentArtifactIdentity -ceq $candidateArtifactIdentity) { $persistentArtifactIdentity }
+    ).Count -gt 0
+
+    if ($hashIdentitiesMatchCandidate -and $versionMatchesCandidate) {
+        $lockState = 'locked-current-candidate'
+    } elseif ($hashIdentitiesMatchCandidate -or $anyPersistentIdentityMatchesCandidate -or -not $pluginIdentitiesAreCoherent) {
+        $lockState = 'torn-lock-state'
+    } else {
+        $lockState = 'validated-pending-freeze'
+    }
+    if ($lockState -eq 'torn-lock-state') {
+        throw 'Persistent locks are partially or inconsistently aligned with the candidate: TORN_LOCK_STATE.'
+    }
+    if ($RequireLockedCurrentCandidate -and $lockState -cne 'locked-current-candidate') {
+        throw 'Persistent locks do not satisfy LOCKED_CURRENT_CANDIDATE.'
+    }
+
     if ($Apply) {
+        if (-not $versionMatchesCandidate) {
+            throw 'Cannot apply hashes while candidateVersion differs from the candidate version; FTK-09L must update release metadata coherently.'
+        }
         $distributionText = Get-Content -Raw -LiteralPath $distributionLockPath
         $releaseText = Get-Content -Raw -LiteralPath $releaseLockPath
         $distributionText = Set-JsonHashProperty -JsonText $distributionText -Property 'observedSnapshotTreeSha256' -Value $buildOne.PluginTreeSha256
@@ -205,6 +362,10 @@ try {
         [IO.File]::WriteAllText($distributionLockPath, $distributionText, (New-Object Text.UTF8Encoding($false)))
         [IO.File]::WriteAllText($releaseLockPath, $releaseText, (New-Object Text.UTF8Encoding($false)))
     }
+
+    $outputLockState = if ($Apply) { 'locked-current-candidate' } else { $lockState }
+    $distributionLockUnchanged = $distributionLockBefore -ceq (Get-FileHash -Algorithm SHA256 -LiteralPath $distributionLockPath).Hash
+    $releaseLockUnchanged = $releaseLockBefore -ceq (Get-FileHash -Algorithm SHA256 -LiteralPath $releaseLockPath).Hash
 
     [pscustomobject][ordered]@{
         schemaVersion = 1
@@ -222,6 +383,18 @@ try {
         rawZipBytesEqual = $true
         extractedInventoriesEqual = $true
         inventoryValidated = $true
+        candidateVersion = $candidateVersion
+        persistentCandidateVersion = $persistentCandidateVersion
+        candidatePluginTreeSha256 = $candidatePluginIdentity
+        candidateArtifactTreeSha256 = $candidateArtifactIdentity
+        candidateZipSha256 = $zipShaOne
+        persistentPluginTreeSha256 = $distributionLock.observedSnapshotTreeSha256
+        persistentReleasePluginTreeSha256 = $releaseLock.observedPluginTreeSha256
+        persistentArtifactTreeSha256 = $releaseLock.observedArtifactTreeSha256
+        persistentLocksMatchCandidate = ($outputLockState -eq 'locked-current-candidate')
+        lockUpdateRequired = ($outputLockState -eq 'validated-pending-freeze')
+        lockState = $outputLockState
+        persistentLocksUnchanged = ($distributionLockUnchanged -and $releaseLockUnchanged)
         applied = [bool]$Apply
     }
 } finally {
