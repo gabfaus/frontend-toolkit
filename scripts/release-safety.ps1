@@ -219,6 +219,13 @@ function Get-FrontendToolkitSourceDirectoryAllowlist {
     )
 }
 
+function Get-FrontendToolkitDistributionSkillAllowlist {
+    $skillNames = @(Get-FrontendToolkitSourceDirectoryAllowlist |
+        Where-Object { $_ -match '^skills/[^/]+$' } |
+        ForEach-Object { $_.Substring('skills/'.Length) })
+    return @(Sort-OrdinalStrings -Values $skillNames)
+}
+
 function Assert-ApprovedSourceComposition {
     param(
         [Parameter(Mandatory)][string]$RepoRoot,

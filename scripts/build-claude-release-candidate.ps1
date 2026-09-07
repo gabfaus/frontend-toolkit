@@ -549,9 +549,8 @@ try {
     Assert-ClaudeMcp -Mcp $claudeMcp
     Assert-ClaudeCommonDifferential -CommonRoot $commonStage -ClaudeRoot $claudeStage -ClaudeOnlyPaths $claudeOnlyPaths
     Assert-ClaudeArtifactSecurity -Root $claudeStage
-    foreach ($requiredSkill in @('skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md')) {
-        if (-not (Test-Path -LiteralPath (Join-Path $claudeStage $requiredSkill) -PathType Leaf)) { throw "Claude candidate skill is missing: $requiredSkill" }
-    }
+    $actualClaudeSkills = @(Get-ChildItem -LiteralPath (Join-Path $claudeStage 'skills') -Directory -Force | ForEach-Object Name)
+    Assert-ExactStringSet -Name 'Claude candidate Skill inventory' -Actual $actualClaudeSkills -Expected @(Get-FrontendToolkitDistributionSkillAllowlist)
 
     New-Item -ItemType Directory -Path (Split-Path $destinationPath) -Force | Out-Null
     New-Item -ItemType Directory -Path $destinationPath -Force | Out-Null

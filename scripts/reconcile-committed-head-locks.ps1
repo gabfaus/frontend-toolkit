@@ -67,9 +67,8 @@ function Assert-ReleaseInventory {
 
     $pluginRoot = Join-Path $CandidateRoot 'plugins/frontend-toolkit'
     $skills = @(Sort-OrdinalStrings -Values @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'skills') -Directory | ForEach-Object Name))
-    if (($skills -join ',') -cne 'frontend-orchestrator,img2threejs,impeccable') {
-        throw "Committed-HEAD Skill inventory drifted: $($skills -join ',')"
-    }
+    $expectedSkills = @(Get-FrontendToolkitDistributionSkillAllowlist)
+    Assert-ExactStringSet -Name 'Committed-HEAD Skill inventory' -Actual $skills -Expected $expectedSkills
 
     $mcp = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot '.mcp.json') | ConvertFrom-Json
     $mcpNames = @(Sort-OrdinalStrings -Values @($mcp.mcpServers.PSObject.Properties.Name))

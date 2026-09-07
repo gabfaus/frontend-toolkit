@@ -212,7 +212,9 @@ try {
     foreach ($path in @($commonPaths | Where-Object { $_ -cnotin $removed })) {
         Assert-Equal (Get-RelativeFileHash -Root $claudeCandidate -RelativePath $path) (Get-RelativeFileHash -Root $commonCandidate -RelativePath $path) ('Common byte identity ' + $path)
     }
-    foreach ($requiredArtifact in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'external-skills.lock.json', 'SNAPSHOT_PROVENANCE.json', 'integrations/toolchain.lock.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md')) {
+    $claudeSkillNames = @(Get-ChildItem -LiteralPath (Join-Path $claudeCandidate 'skills') -Directory -Force | ForEach-Object Name)
+    Assert-SetEqual -Actual $claudeSkillNames -Expected @('figma-design-to-code', 'frontend-orchestrator', 'img2threejs', 'impeccable') -Label 'Claude Skill inventory'
+    foreach ($requiredArtifact in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'external-skills.lock.json', 'SNAPSHOT_PROVENANCE.json', 'integrations/toolchain.lock.json', 'skills/figma-design-to-code/SKILL.md', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md')) {
         if (-not (Test-Path -LiteralPath (Join-Path $claudeCandidate $requiredArtifact) -PathType Leaf)) { throw "Required artifact file is missing: $requiredArtifact" }
     }
     if (Test-Path -LiteralPath (Join-Path $claudeCandidate '.codex-plugin')) { throw 'Claude artifact contains .codex-plugin.' }

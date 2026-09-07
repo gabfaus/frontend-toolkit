@@ -244,9 +244,10 @@ try {
     }
     [IO.File]::WriteAllText((Join-Path $destinationPath 'SNAPSHOT_PROVENANCE.json'), (($provenance | ConvertTo-Json -Depth 10) + "`n"), (New-Object Text.UTF8Encoding($false)))
     Assert-NoSensitiveArtifactPaths -Root $destinationPath -Context 'plugin distribution'
+    $distributionSkills = @(Get-FrontendToolkitDistributionSkillAllowlist)
     Write-Output ([pscustomobject]@{
         Destination = $destinationPath
-        Skills = 'frontend-orchestrator,impeccable,img2threejs'
+        Skills = ($distributionSkills -join ',')
         SourceCommits = "$($impeccable.commitSha),$($img2threejs.commitSha)"
         Licenses = 'Apache-2.0,Apache-2.0'
     })
