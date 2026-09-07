@@ -8,13 +8,40 @@ $snapshotRoot = Join-Path $repoRoot $lock.snapshot.path
 $moduleRoot = Join-Path $repoRoot $lock.snapshot.moduleRoot
 
 function Assert-True([bool]$Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
+$textExtensions = @('.cjs', '.js', '.json', '.map', '.md', '.snap', '.ts')
+function Get-CanonicalStaticBytes([string]$Path, [string]$Root) {
+    $rootPath = (Resolve-Path -LiteralPath $Root).Path
+    $relative = (Resolve-Path -LiteralPath $Path).Path.Substring($rootPath.Length + 1).Replace([char]92, [char]47)
+    $extension = [IO.Path]::GetExtension($Path).ToLowerInvariant()
+    $known = $extension -eq '.cjs' -or $extension -eq '.js' -or $extension -eq '.json' -or $extension -eq '.map' -or $extension -eq '.md' -or $extension -eq '.snap' -or $extension -eq '.ts'
+    $known = $known -or [IO.Path]::GetFileName($Path) -ceq 'LICENSE'
+    if (-not $known) { throw 'Unknown static-HTML content type.' }
+    $source = [IO.File]::ReadAllBytes($Path)
+    $bytes = [System.Collections.Generic.List[byte]]::new()
+    for ($index = 0; $index -lt $source.Length; $index++) {
+        if ($source[$index] -eq 13 -and $index + 1 -lt $source.Length -and $source[$index + 1] -eq 10) { [void]$bytes.Add(10); $index++ } else { [void]$bytes.Add($source[$index]) }
+    }
+    return $bytes.ToArray()
+}
+function Get-CanonicalStaticHash([string]$Path, [string]$Root) {
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash((Get-CanonicalStaticBytes -Path $Path -Root $Root)))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+function Get-CanonicalStaticByteCount([string]$Root) {
+    $total = [long]0
+    foreach ($file in @(Get-ChildItem -LiteralPath $Root -Recurse -File -Force)) {
+        $total += [long](Get-CanonicalStaticBytes -Path $file.FullName -Root $Root).Length
+    }
+    return $total
+}
 function Get-TreeHash([string]$Root) {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
     $records = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
         $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
         [pscustomobject][ordered]@{
             path = $relative
-            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+            sha256 = if ($rootPath -match 'impeccable-static-html' -or $rootPath -match 'node_modules') { Get-CanonicalStaticHash -Path $_.FullName -Root $rootPath } else { (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant() }
         }
     })
     $entries = [System.Collections.Generic.List[object]]::new()
@@ -62,7 +89,7 @@ Assert-True ($LASTEXITCODE -eq 1) 'Canonical snapshot is not versionable due to 
 
 $allFiles = @(Get-ChildItem -LiteralPath $snapshotRoot -Recurse -File -Force)
 Assert-True ($allFiles.Count -eq $lock.snapshot.fileCount) 'Snapshot file count drifted.'
-Assert-True ([long](($allFiles | Measure-Object Length -Sum).Sum) -eq [long]$lock.snapshot.bytes) 'Snapshot byte count drifted.'
+Assert-True ((Get-CanonicalStaticByteCount $snapshotRoot) -eq [long]$lock.snapshot.bytes) 'Snapshot canonical byte count drifted.'
 Assert-True ((Get-TreeHash $snapshotRoot) -ceq $lock.snapshot.treeSha256) 'Snapshot tree hash drifted.'
 Assert-True (@(Get-ChildItem -LiteralPath $snapshotRoot -Recurse -Force -Attributes ReparsePoint).Count -eq 0) 'Snapshot contains a reparse point.'
 Assert-True (@(Get-ChildItem -LiteralPath $moduleRoot -Recurse -Directory -Force | Where-Object Name -eq 'node_modules').Count -eq 0) 'Snapshot contains an unexpected nested node_modules.'
@@ -85,7 +112,7 @@ foreach ($package in @($lock.packages)) {
     Assert-True (@(Get-ChildItem -LiteralPath $packageRoot -Recurse -File -Force).Count -eq $package.fileCount) "Package file count drift: $($package.name)"
     $licensePath = Join-Path $repoRoot $package.licenseFilePath
     Assert-True (Test-Path -LiteralPath $licensePath -PathType Leaf) "License file missing: $($package.name)"
-    Assert-True ((Get-FileHash -Algorithm SHA256 -LiteralPath $licensePath).Hash.ToLowerInvariant() -ceq $package.licenseFileSha256) "License hash drift: $($package.name)"
+    Assert-True ((Get-CanonicalStaticHash $licensePath $snapshotRoot) -ceq $package.licenseFileSha256) "License hash drift: $($package.name)"
     Assert-True ($manifest.license -ceq $package.licenseIdentifier) "License identifier drift: $($package.name)"
 
     $manifestEdges = @(); $dependencies = $manifest.psobject.Properties['dependencies']; if ($dependencies -and $dependencies.Value) { $manifestEdges = @($dependencies.Value.psobject.Properties | ForEach-Object { "$($_.Name)|$($_.Value)" } | Sort-Object) }

@@ -2,7 +2,8 @@ param(
     [string]$CodexPath = $env:FTK_CODEX_PATH,
     [ValidateRange(1, 10)]
     [int[]]$ScenarioId = (1..10),
-    [switch]$ValidateOnly
+    [switch]$ValidateOnly,
+    [switch]$Real21st
 )
 
 Set-StrictMode -Version Latest
@@ -52,17 +53,103 @@ if (((& $CodexPath --version).Trim() -replace '^codex-cli\s+', '') -ne '0.150.1'
 $credentialAvailable = -not [string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable('API_KEY_21ST','Process'))
 if ($ValidateOnly) {
     [pscustomobject]@{
-        Mode = 'validate-only'
+        Mode = if ($Real21st) { 'real-e2e-validate-only' } else { 'hermetic-validate-only' }
         ScenarioCount = @($matrix.scenarios).Count
         CodexVersion = $toolchain.StableCodexVersion
         ShadcnVersion = $shadcn.version
         TwentyFirstTools = @('search')
         CredentialGate = if ($credentialAvailable) { 'available' } else { 'waiting' }
-        Sandbox = 'danger-full-access'
+        CredentialRequired = [bool]$Real21st
+        Real21stCalls = 0
+        PersistentMutation = 0
+        FixtureTeardown = 'complete'
     }
     return
 }
-if (-not $credentialAvailable) { throw 'FTK-04B requires API_KEY_21ST for the approved search-only scenario.' }
+if ($Real21st -and -not $credentialAvailable) { throw 'FTK-04B real E2E mode requires API_KEY_21ST supplied externally.' }
+
+if (-not $Real21st) {
+    # Hermetic routing consumes only the versioned local policy/matrix. It does
+    # not start Codex exec, an MCP transport, or a remote 21st request.
+    $twentyFirstPolicy = $policy.capabilities.'21st'
+    $defaultTools = @($twentyFirstPolicy.defaultAllowedTools | ForEach-Object { [string]$_ })
+    if (@(Compare-Object @('search') @($defaultTools | Sort-Object)).Count) {
+        throw 'Hermetic 21st routing requires the exact default tool set: search.'
+    }
+    if ($twentyFirstPolicy.unclassifiedToolPolicy -ne 'do-not-execute-without-explicit-authorization') {
+        throw 'Unknown 21st tools are not fail-closed.'
+    }
+    $requiredAuthorizationClasses = @(
+        'metered','generation','ai-credits','copy-install-quota','retrieval-quota',
+        'mutation','publish','edit','delete','bookmark-or-list','account-or-profile','uncertain'
+    )
+    $configuredAuthorizationClasses = @($twentyFirstPolicy.explicitAuthorizationRequiredFor | ForEach-Object { [string]$_ } | Sort-Object)
+    if (@(Compare-Object @($requiredAuthorizationClasses | Sort-Object) $configuredAuthorizationClasses).Count) {
+        throw '21st authorization classes drifted from the hermetic cost/mutation contract.'
+    }
+
+    $routeResults = @()
+    foreach ($scenario in @($matrix.scenarios | Where-Object { $_.id -in $ScenarioId } | Sort-Object id)) {
+        $required = @($scenario.required | ForEach-Object { [string]$_ })
+        $forbidden = @($scenario.forbidden | ForEach-Object { [string]$_ })
+        $route = if ($required.Count) { $required -join ',' } else { 'none' }
+        if ($route -match '^21st/(?!search$)') { throw "Scenario $($scenario.id) selected a non-search 21st tool." }
+        if ($scenario.id -eq 3 -and $route -ne '21st/search') { throw 'Scenario 3 must route to 21st/search.' }
+        if ($scenario.id -in @(7,8) -and @($forbidden | Where-Object { $_ -match '21st/(generate|copy-install)-before-authorization' }).Count -eq 0) {
+            throw "Scenario $($scenario.id) does not retain its 21st authorization gate."
+        }
+        $authorizationRequired = $false
+        if ($scenario.PSObject.Properties.Name -contains 'authorizationRequiredFor') {
+            $authorizationRequired = @($scenario.authorizationRequiredFor).Count -gt 0
+        }
+        $routeResults += [pscustomobject]@{
+            Id = [int]$scenario.id
+            Route = $route
+            EnabledTools = @('search')
+            NonSearch21st = 0
+            AuthorizationRequired = $authorizationRequired
+        }
+    }
+
+    $securityScenarios = @($matrix.securityScenarios)
+    $unknownTool = $securityScenarios | Where-Object id -CEQ 'unknown-21st-tool'
+    if (-not $unknownTool -or $unknownTool.expected -notcontains 'classify-unknown' -or
+        $unknownTool.expected -notcontains 'authorization-required') {
+        throw 'Unknown 21st tool security scenario is not fail-closed.'
+    }
+    $generationScenario = $securityScenarios | Where-Object id -CEQ 'mcp-generation-injection'
+    $costScenario = $securityScenarios | Where-Object id -CEQ 'cost-gate-social-engineering'
+    if (-not $generationScenario -or $generationScenario.expected -notcontains 'authorization-required' -or
+        -not $costScenario -or $costScenario.expected -notcontains 'no-metered-call') {
+        throw '21st generation/cost gates are incomplete.'
+    }
+
+    $facadePath = Join-Path $repoRoot 'claude/facade/21st-facade.mjs'
+    $facade = Get-Content -Raw -LiteralPath $facadePath
+    if ($facade -notmatch 'getApiKey\s*=\s*\(\)\s*=>\s*process\.env\.API_KEY_21ST' -or
+        $facade -notmatch 'AUTH_UNAVAILABLE' -or
+        $facade -notmatch 'if \(typeof apiKey .*length') {
+        throw 'Production 21st credential gate is missing or weakened.'
+    }
+
+    [pscustomobject]@{
+        Mode = 'hermetic'
+        ScenariosPassed = @($routeResults).Count
+        Results = $routeResults
+        CodexVersion = $toolchain.StableCodexVersion
+        TwentyFirstTools = @('search')
+        CredentialGate = 'preserved-production-only'
+        CredentialRequired = $false
+        Real21stCalls = 0
+        PaidOrMutableCalls = 0
+        PersistentMutation = 0
+        FixtureMutation = 0
+        FixtureTeardown = 'complete'
+        NetworkAssertion = 'remote-transport-not-started'
+        UnknownTool = 'fail-closed'
+    }
+    return
+}
 
 $temporaryRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
 $fixture = Join-Path $temporaryRoot ('frontend-toolkit-routing-' + [guid]::NewGuid().ToString('N'))

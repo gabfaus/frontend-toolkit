@@ -15,13 +15,41 @@ function Assert-NativeSuccess {
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $pluginSource = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
+$staticHtmlTextExtensions = @('.cjs', '.js', '.json', '.map', '.md', '.snap', '.ts')
+
+function Get-StaticHtmlCanonicalBytes {
+    param([string]$Path, [string]$Root)
+    $rootPath = (Resolve-Path -LiteralPath $Root).Path.TrimEnd([char]92, [char]47)
+    $relative = $Path.Substring($rootPath.Length + 1).Replace([char]92, [char]47)
+    $extension = [IO.Path]::GetExtension($Path).ToLowerInvariant()
+    $isKnownLicense = [IO.Path]::GetFileName($Path) -ceq 'LICENSE'
+    $knownText = $extension -eq '.cjs' -or $extension -eq '.js' -or $extension -eq '.json' -or $extension -eq '.map' -or $extension -eq '.md' -or $extension -eq '.snap' -or $extension -eq '.ts' -or $isKnownLicense
+    if (-not $knownText) { throw 'Unknown static-HTML content type.' }
+    return Get-CanonicalLfBytes -Path $Path
+}
+
+function Get-StaticHtmlFileHash {
+    param([string]$Path, [string]$Root)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash((Get-StaticHtmlCanonicalBytes -Path $Path -Root $Root)))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+function Get-StaticHtmlCanonicalByteCount {
+    param([string]$Root)
+    $total = [long]0
+    foreach ($file in @(Get-ChildItem -LiteralPath $Root -Recurse -File -Force)) {
+        $total += [long](Get-StaticHtmlCanonicalBytes -Path $file.FullName -Root $Root).Length
+    }
+    return $total
+}
 function Get-StaticHtmlTreeHash([string]$Root) {
     $rootPath = (Resolve-Path -LiteralPath $Root).Path
     $records = @(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
         $relative = $_.FullName.Substring($rootPath.Length + 1).Replace('\', '/')
         [pscustomobject][ordered]@{
             path = $relative
-            sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+            sha256 = Get-StaticHtmlFileHash -Path $_.FullName -Root $rootPath
         }
     })
     $entries = [System.Collections.Generic.List[object]]::new()
@@ -37,7 +65,7 @@ function Get-StaticHtmlTreeHash([string]$Root) {
 }$staticHtmlLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
 $staticHtmlSourceRoot = (Resolve-Path (Join-Path $repoRoot $staticHtmlLock.snapshot.path)).Path
 $staticHtmlSourceEntries = @(Get-ArtifactFileEntries -Root $staticHtmlSourceRoot)
-$staticHtmlSourceBytes = [long](($staticHtmlSourceEntries | ForEach-Object { (Get-Item -LiteralPath (Join-Path $staticHtmlSourceRoot $_.path)).Length } | Measure-Object -Sum).Sum)
+$staticHtmlSourceBytes = Get-StaticHtmlCanonicalByteCount -Root $staticHtmlSourceRoot
 if ($staticHtmlSourceEntries.Count -ne [int]$staticHtmlLock.snapshot.fileCount -or $staticHtmlSourceBytes -ne [long]$staticHtmlLock.snapshot.bytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot) -cne $staticHtmlLock.snapshot.treeSha256) { throw 'Canonical static-HTML source snapshot identity mismatch.' }
 $staticHtmlExpectedPackages = @($staticHtmlLock.packages | ForEach-Object { "$($_.name)@$($_.version)" } | Sort-Object)
 if ($staticHtmlExpectedPackages.Count -ne [int]$staticHtmlLock.snapshot.packageCount) { throw 'Canonical static-HTML package count mismatch.' }
@@ -103,13 +131,15 @@ try {
         Copy-Item -LiteralPath (Join-Path $staticHtmlSourceRoot $entry.path) -Destination $target
     }
     $staticHtmlArtifactEntries = @(Get-ArtifactFileEntries -Root $staticHtmlArtifactRoot)
-    $staticHtmlArtifactBytes = [long](($staticHtmlArtifactEntries | ForEach-Object { (Get-Item -LiteralPath (Join-Path $staticHtmlArtifactRoot $_.path)).Length } | Measure-Object -Sum).Sum)
-    if ($staticHtmlArtifactEntries.Count -ne $staticHtmlSourceEntries.Count -or $staticHtmlArtifactBytes -ne $staticHtmlSourceBytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlArtifactRoot) -cne (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot)) { throw 'Packaged static-HTML runtime tree differs from the canonical source tree.' }
+    $staticHtmlArtifactBytes = Get-StaticHtmlCanonicalByteCount -Root $staticHtmlArtifactRoot
+    $artifactStaticHash = Get-StaticHtmlTreeHash -Root $staticHtmlArtifactRoot
+    $sourceStaticHash = Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot
+    if ($staticHtmlArtifactEntries.Count -ne $staticHtmlSourceEntries.Count -or $staticHtmlArtifactBytes -ne $staticHtmlSourceBytes -or $artifactStaticHash -cne $sourceStaticHash) { throw 'Packaged static-HTML runtime tree differs from the canonical source tree.' }
     foreach ($package in $staticHtmlLock.packages) {
         $licenseRelative = (($package.licenseFilePath -split 'node_modules/', 2)[1])
         $licensePath = Join-Path $staticHtmlArtifactRoot ('node_modules/' + $licenseRelative)
         if (-not (Test-Path -LiteralPath $licensePath -PathType Leaf)) { throw "Static-HTML license missing: $($package.name)" }
-        if ((Get-FileHash -Algorithm SHA256 -LiteralPath $licensePath).Hash.ToLowerInvariant() -cne $package.licenseFileSha256) { throw "Static-HTML license hash mismatch: $($package.name)" }
+        if ((Get-StaticHtmlFileHash -Path $licensePath -Root $staticHtmlArtifactRoot) -cne $package.licenseFileSha256) { throw "Static-HTML license hash mismatch: $($package.name)" }
     }
 
     $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'

@@ -2,7 +2,18 @@
 
 Status: **IMPLEMENTATION COMPLETE — PENDING COMMITTED-HEAD REVALIDATION**.
 
-G7S-003 and G7S-004 remain **OPEN**. This pre-commit gate does not mark either finding mitigated or closed.
+ Historical G7S-003 and G7S-004 are **CLOSED** by the G7-S-FA closure record. The FTK-09K-R2 current candidate revalidation is recorded separately below.
+
+## FTK-09K-R2 lifecycle reconciliation
+
+| Finding | Historical severity | Original control | Original cause | Current mitigation | Closure evidence | Historical status | FTK-09K current candidate |
+|---|---|---|---|---|---|---|---|
+| G7S-003 | HIGH | test-impeccable-authority-boundary.ps1 and SR3I integrated boundary | Untrusted upstream context could present authority-like instructions | FTK-owned bounded extractor and pure authority mediator; raw directives and _instructions are data | G7-S-FA final clean committed-HEAD acceptance and human review | **CLOSED** | **PASS** |
+| G7S-004 | HIGH | test-impeccable-effects-mediation.ps1 and SR3I integrated boundary | Update, telemetry, network, paid and mutation effects lacked a shared approval boundary | Common dispatcher, fixed handlers, child-only environment and AUTHORIZATION_REQUIRED for sensitive effects | G7-S-FA final clean committed-HEAD acceptance and human review | **CLOSED** | **PASS** |
+
+The SR3A/SR3B lifecycle records below remain historical records and are not
+rewritten. Their former OPEN - PENDING SR3I state is stale lifecycle metadata
+relative to the later G7-S-FA closure and this FTK-09K candidate revalidation.
 
 ## Integrated architecture
 

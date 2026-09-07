@@ -150,7 +150,7 @@ try {
     }
     foreach ($orchestratorPath in $orchestratorPaths) {
         $orchestrator = Get-Content -Raw -LiteralPath $orchestratorPath
-        Assert-True ($orchestrator -match 'Capability selection creates a typed requested operation' -and $orchestrator -match 'never infer network') 'Orchestrator can infer Impeccable authorization.'
+        Assert-True ($orchestrator -match 'Capability selection creates\s+a typed requested operation' -and $orchestrator -match 'network grant never supplies') 'Orchestrator can infer Impeccable authorization.'
     }
     Assert-True ($authorityPolicy.subagents.hostPermissionRequired -and -not $authorityPolicy.subagents.mediatorExecutesSpawn -and $authorityPolicy.subagents.fallback -ceq 'inline') 'Subagent recommendation became spawn authorization or lost inline fallback.'
     foreach ($detectorOperation in @('impeccable.detector.local','impeccable.detector.project','impeccable.detector.payload','impeccable.detector.csp','impeccable.detector.browser-file','impeccable.detector.loopback','impeccable.detector.external')) {

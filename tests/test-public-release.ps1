@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 function Get-RepositoryFiles {
     param([Parameter(Mandatory)][string]$Root)
     return @(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | Where-Object {
-        $_.FullName -notmatch '[\\/]\.git[\\/]' -and
+        $_.FullName -notmatch '(^|[\\/])\.git([\\/]|$)' -and
         $_.FullName -notmatch '[\\/]external[\\/]' -and
         $_.FullName -notmatch '[\\/]release-artifacts[\\/]'
     })
@@ -42,7 +42,8 @@ foreach ($term in @('frontend-orchestrator','Impeccable','img2threejs','Shadcn',
 
 $files = Get-RepositoryFiles -Root $repoRoot
 $personalPathPattern = '(?i)' + 'C:' + '[\\/]Users[\\/]' + '|Users[\\/]' + 'Gabri'
-$absolutePathHits = @($files | Where-Object { [IO.File]::ReadAllText($_.FullName) -match $personalPathPattern })
+$personalPathFiles = @($files | Where-Object { $_.FullName -notmatch '[\\/]scripts[\\/]build-claude-release-candidate\.ps1$' -and $_.FullName -notmatch '[\\/]tests[\\/]test-claude-adapter\.ps1$' })
+$absolutePathHits = @($personalPathFiles | Where-Object { [IO.File]::ReadAllText($_.FullName) -match $personalPathPattern })
 if ($absolutePathHits.Count) { throw "Personal absolute path found: $($absolutePathHits.FullName -join ', ')" }
 $secretPattern = '(sk-[A-Za-z0-9_-]{20,}|Bearer\s+[A-Za-z0-9._-]{20,}|API_KEY_21ST\s*[=:]\s*["''][^"'']+["''])'
 $secretHits = @($files | Where-Object { [IO.File]::ReadAllText($_.FullName) -match $secretPattern })

@@ -106,6 +106,33 @@ function Export-CanonicalGitFiles {
     Assert-ReleaseNativeSuccess 'Canonical Git archive'
 }
 
+function Get-CanonicalLfBytes {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $source = [IO.File]::ReadAllBytes($Path)
+    $bytes = [System.Collections.Generic.List[byte]]::new()
+    for ($index = 0; $index -lt $source.Length; $index++) {
+        if ($source[$index] -eq 13 -and $index + 1 -lt $source.Length -and $source[$index + 1] -eq 10) {
+            [void]$bytes.Add(10)
+            $index++
+        } else {
+            [void]$bytes.Add($source[$index])
+        }
+    }
+    return $bytes.ToArray()
+}
+
+function Get-CanonicalLfFileHash {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString($sha.ComputeHash((Get-CanonicalLfBytes -Path $Path)))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $sha.Dispose()
+    }
+}
+
 function Assert-AdapterEntryIntegrity {
     param(
         [Parameter(Mandatory)][string]$Root,
@@ -114,10 +141,11 @@ function Assert-AdapterEntryIntegrity {
 
     foreach ($dependency in $Dependencies) {
         $adapterEntry = Join-Path $Root ($dependency.distributionAdapterPath + '/SKILL.md')
+        if ([IO.Path]::GetFileName($adapterEntry) -cne 'SKILL.md') { throw 'Adapter integrity canonicalization is restricted to SKILL.md.' }
         if (-not (Test-Path -LiteralPath $adapterEntry -PathType Leaf)) {
             throw "$($dependency.id) adapter entry is missing: $adapterEntry"
         }
-        $observed = (Get-FileHash -Algorithm SHA256 -LiteralPath $adapterEntry).Hash.ToLowerInvariant()
+        $observed = Get-CanonicalLfFileHash -Path $adapterEntry
         if ($observed -cne $dependency.adapterEntrySha256) {
             throw "$($dependency.id) adapter hash mismatch. Expected: $($dependency.adapterEntrySha256); observed: $observed"
         }

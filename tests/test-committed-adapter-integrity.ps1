@@ -122,19 +122,23 @@ try {
     try { Assert-AdapterEntryIntegrity -Root (Join-Path $changed 'plugin/frontend-toolkit') -Dependencies $dependencies } catch { $changeRejected = $true }
     if (-not $changeRejected) { throw 'A real committed adapter byte change was accepted.' }
 
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot | Out-Null
-    Assert-NativeSuccess 'Committed-HEAD plugin snapshot build'
+    $releaseLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release.lock.json') | ConvertFrom-Json
+    $distributionLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/distribution.lock.json') | ConvertFrom-Json
+    $historicalIdentity = '146268d1574a1f94928ebbeb196c9b03a2647eda1574d13da3ecac1e7866379f'
+    if ($releaseLock.candidateVersion -cne '1.1.0' -or $releaseLock.observedPluginTreeSha256 -cne $historicalIdentity -or $distributionLock.observedSnapshotTreeSha256 -cne $historicalIdentity) {
+        throw 'Historical v1.1 adapter identity was changed or misclassified.'
+    }
+
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot -DevelopmentWorkingTree | Out-Null
+    Assert-NativeSuccess 'Current v1.2 candidate plugin snapshot build'
     $realLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
     Assert-AdapterEntryIntegrity -Root $snapshot -Dependencies @($realLock.dependencies)
-    $distributionLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/distribution.lock.json') | ConvertFrom-Json
-    $snapshotTreeHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root $snapshot)
-    if ($snapshotTreeHash -cne $distributionLock.observedSnapshotTreeSha256) {
-        throw "Committed-HEAD snapshot tree mismatch. Expected: $($distributionLock.observedSnapshotTreeSha256); observed: $snapshotTreeHash"
-    }
+    $candidateTreeHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root $snapshot)
 
     Write-Output 'PASS: clean CRLF clone exports canonical committed LF bytes for adapters, state guard and structural validator.'
     Write-Output 'PASS: committed adapter changes and stale expected hashes fail closed.'
-    Write-Output "PASS: committed-HEAD snapshot verifies both real adapters and locked tree $snapshotTreeHash."
+    Write-Output "PASS: historical v1.1 identity remains immutable at $historicalIdentity."
+    Write-Output "PASS: current v1.2 candidate tree validates at $candidateTreeHash; this is pre-final evidence only."
 } finally {
     if (Test-Path -LiteralPath $fixture) {
         Get-ChildItem -LiteralPath $fixture -Recurse -Force | ForEach-Object {

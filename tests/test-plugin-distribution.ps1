@@ -85,7 +85,7 @@ try {
     $skills = @(Get-ChildItem -LiteralPath (Join-Path $snapshotOne 'skills') -Directory | Sort-Object Name | Select-Object -ExpandProperty Name)
     if (($skills -join ',') -ne 'figma-design-to-code,frontend-orchestrator,img2threejs,impeccable') { throw "Snapshot Skills mismatch: $($skills -join ',')" }
     foreach ($dependency in $externalLock.dependencies) {
-        $adapterHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $snapshotOne ($dependency.distributionAdapterPath + '/SKILL.md'))).Hash.ToLowerInvariant()
+        $adapterHash = Get-CanonicalLfFileHash -Path (Join-Path $snapshotOne ($dependency.distributionAdapterPath + '/SKILL.md'))
         if ($adapterHash -ne $dependency.adapterEntrySha256) { throw "Snapshot adapter hash mismatch: $($dependency.id)" }
         $snapshotHash = Get-CanonicalFileTreeHash (Join-Path $snapshotOne $dependency.upstreamSnapshotPath)
         if ($snapshotHash -ne $dependency.snapshotTreeSha256) { throw "Snapshot upstream tree hash mismatch: $($dependency.id)" }

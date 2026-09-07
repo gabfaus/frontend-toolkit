@@ -153,8 +153,7 @@ function Resolve-ImpeccablePinnedUpstreamRoot {
     if (Test-Path -LiteralPath $snapshot -PathType Container) { return (Resolve-Path -LiteralPath $snapshot).Path }
 
     # DevelopmentWorkingTree fallback: diagnostic/test input only, never release evidence.
-    $mainWorktree = Join-Path (Split-Path $repoRoot -Parent) 'frontend-toolkit'
-    $checkout = Join-Path $mainWorktree 'external/impeccable'
+    $checkout = Join-Path $repoRoot 'external/impeccable'
     if (-not (Test-Path -LiteralPath $checkout -PathType Container)) { throw 'Pinned Impeccable upstream is unavailable.' }
     $lock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
     $entry = @($lock.dependencies | Where-Object id -CEQ 'impeccable')

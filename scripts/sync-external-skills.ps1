@@ -14,6 +14,24 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git is required on PATH. No private Codex runtime fallback is allowed.'
 }
 
+function Get-CanonicalGovernedTextHash {
+    param([string]$Path)
+    if ([IO.Path]::GetFileName($Path) -cne 'SKILL.md') { throw 'External adapter canonicalization is restricted to SKILL.md.' }
+    $source = [IO.File]::ReadAllBytes($Path)
+    $bytes = [System.Collections.Generic.List[byte]]::new()
+    for ($index = 0; $index -lt $source.Length; $index++) {
+        if ($source[$index] -eq 13 -and $index + 1 -lt $source.Length -and $source[$index + 1] -eq 10) {
+            [void]$bytes.Add(10)
+            $index++
+        } else {
+            [void]$bytes.Add($source[$index])
+        }
+    }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash($bytes.ToArray()))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
 function Resolve-RepoPath {
     param([Parameter(Mandatory)][string]$RelativePath)
 
@@ -98,7 +116,7 @@ foreach ($dependency in $lock.dependencies) {
             throw "Adapter must be an FTK-owned physical directory: $candidate"
         }
         $adapterEntry = Join-Path $candidate 'SKILL.md'
-        $adapterHash = (Get-FileHash -LiteralPath $adapterEntry -Algorithm SHA256).Hash.ToLowerInvariant()
+        $adapterHash = Get-CanonicalGovernedTextHash -Path $adapterEntry
         if ($adapterHash -ne $dependency.adapterEntrySha256) {
             throw "FTK adapter hash mismatch for $($dependency.id): $adapterHash"
         }

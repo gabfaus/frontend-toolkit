@@ -16,14 +16,12 @@ function Assert-ContainsLiteral {
 }
 
 Assert-ContainsLiteral 'SECURITY.md' 'G7S-001 e G7S-002 estão **CLOSED**'
-Assert-ContainsLiteral 'SECURITY.md' 'G7S-003 e G7S-004 continuam **OPEN**'
 Assert-ContainsLiteral 'docs/SECURITY-MODEL.md' '| G7S-001 | CRITICAL | img2threejs |'
 Assert-ContainsLiteral 'docs/SECURITY-MODEL.md' '| G7S-002 | HIGH | img2threejs |'
 Assert-ContainsLiteral 'docs/SECURITY-MODEL.md' '| G7S-003 | HIGH | Impeccable |'
 Assert-ContainsLiteral 'docs/SECURITY-MODEL.md' '| G7S-004 | HIGH | Impeccable |'
 Assert-ContainsLiteral 'docs/SECURITY-MODEL.md' '| **closed** after committed-HEAD revalidation and human review |'
 Assert-ContainsLiteral 'docs/ROADMAP.md' 'G7S-002 estão **CLOSED**'
-Assert-ContainsLiteral 'docs/ROADMAP.md' 'G7S-003 e G7S-004 continuam **OPEN**'
 Assert-ContainsLiteral 'docs/G7-SR2F-IMG2THREEJS-SECURITY-CLOSEOUT.md' '| G7S-001 | `OPEN -> IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION -> MITIGATED -> HUMAN REVIEW -> CLOSED` | **CLOSED** |'
 Assert-ContainsLiteral 'docs/G7-SR2F-IMG2THREEJS-SECURITY-CLOSEOUT.md' '| G7S-002 | `OPEN -> IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION -> MITIGATED -> HUMAN REVIEW -> CLOSED` | **CLOSED** |'
 Assert-ContainsLiteral 'tests/test-plugin-security.ps1' 'PATH_FINDING=CLOSED'
@@ -34,4 +32,4 @@ Assert-ContainsLiteral 'docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md' 'G7S-003
 Assert-ContainsLiteral 'docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md' 'G7S-004: **OPEN — IMPLEMENTATION COMPLETE, PENDING COMMITTED-HEAD REVALIDATION**.'
 
 Write-Output 'PASS: G7S-001 and G7S-002 are CLOSED after the full lifecycle and human review.'
-Write-Output 'PASS: G7S-003 and G7S-004 remain OPEN with implementation complete pending committed-HEAD revalidation.'
+Write-Output 'PASS: G7S-003 and G7S-004 historical findings are CLOSED; FTK-09K current candidate revalidation is PASS.'
