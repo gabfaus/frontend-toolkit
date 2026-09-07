@@ -75,7 +75,7 @@ try {
     }
     $packagedSecurityModules = @(Get-ChildItem -LiteralPath (Join-Path $snapshotOne 'security') -File -Force | ForEach-Object Name | Sort-Object)
     Assert-ExactStringSet -Name 'packaged security inventory' -Actual $packagedSecurityModules -Expected (Get-FrontendToolkitSecurityModuleAllowlist)
-    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/img2threejs-codec-mediator.mjs', 'security/img2threejs-foundation.ps1', 'security/img2threejs-runner.ps1', 'security/img2threejs-runtime-policy.json', 'security/img2threejs-state-guard.ps1', 'security/img2threejs-structural-validation.ps1', 'security/impeccable-authority-policy.json', 'security/impeccable-context-extractor.mjs', 'security/impeccable-context-mediator.mjs', 'security/impeccable-detector.mjs', 'security/impeccable-static-runtime.mjs', 'security/impeccable-network-client.mjs', 'security/impeccable-operation-policy.json', 'security/impeccable-runner.ps1', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
+    foreach ($required in @('LICENSE', 'THIRD_PARTY_NOTICES.md', 'SNAPSHOT_PROVENANCE.json', 'skills/frontend-orchestrator/SKILL.md', 'skills/figma-design-to-code/SKILL.md', 'skills/impeccable/SKILL.md', 'skills/img2threejs/SKILL.md', 'security/effect-policy.json', 'security/img2threejs-codec-mediator.mjs', 'security/img2threejs-foundation.ps1', 'security/img2threejs-runner.ps1', 'security/img2threejs-runtime-policy.json', 'security/img2threejs-state-guard.ps1', 'security/img2threejs-structural-validation.ps1', 'security/impeccable-authority-policy.json', 'security/impeccable-context-extractor.mjs', 'security/impeccable-context-mediator.mjs', 'security/impeccable-detector.mjs', 'security/impeccable-static-runtime.mjs', 'security/impeccable-network-client.mjs', 'security/impeccable-operation-policy.json', 'security/impeccable-runner.ps1', 'security/invoke-capability.ps1', 'third_party/upstreams/impeccable/LICENSE', 'third_party/upstreams/impeccable/NOTICE.md', 'third_party/upstreams/impeccable/plugin/skills/impeccable/SKILL.md', 'third_party/upstreams/img2threejs/LICENSE', 'third_party/upstreams/img2threejs/SKILL.md')) {
         if (-not (Test-Path -LiteralPath (Join-Path $snapshotOne $required))) { throw "Distribution attribution missing: $required" }
     }
     $provenance = Get-Content -Raw -LiteralPath (Join-Path $snapshotOne 'SNAPSHOT_PROVENANCE.json') | ConvertFrom-Json
@@ -83,7 +83,7 @@ try {
     $impeccableProvenance = $provenance.upstreamSnapshots | Where-Object id -eq 'impeccable'
     if ($impeccableProvenance.noticeSha256 -ne $impeccableLock.noticeSha256) { throw 'Impeccable NOTICE provenance drifted.' }
     $skills = @(Get-ChildItem -LiteralPath (Join-Path $snapshotOne 'skills') -Directory | Sort-Object Name | Select-Object -ExpandProperty Name)
-    if (($skills -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') { throw "Snapshot Skills mismatch: $($skills -join ',')" }
+    if (($skills -join ',') -ne 'figma-design-to-code,frontend-orchestrator,img2threejs,impeccable') { throw "Snapshot Skills mismatch: $($skills -join ',')" }
     foreach ($dependency in $externalLock.dependencies) {
         $adapterHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $snapshotOne ($dependency.distributionAdapterPath + '/SKILL.md'))).Hash.ToLowerInvariant()
         if ($adapterHash -ne $dependency.adapterEntrySha256) { throw "Snapshot adapter hash mismatch: $($dependency.id)" }
@@ -112,7 +112,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Plugin installation failed.' }
     $installedPath = $install.installedPath
     $skills = @(Get-ChildItem -LiteralPath (Join-Path $installedPath 'skills') -Directory | Select-Object -ExpandProperty Name | Sort-Object)
-    if (($skills -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') { throw "Installed Skills mismatch: $($skills -join ',')" }
+    if (($skills -join ',') -ne 'figma-design-to-code,frontend-orchestrator,img2threejs,impeccable') { throw "Installed Skills mismatch: $($skills -join ',')" }
     $mcp = Get-Content -Raw -LiteralPath (Join-Path $installedPath '.mcp.json') | ConvertFrom-Json
     if ((@($mcp.mcpServers.PSObject.Properties.Name | Sort-Object) -join ',') -ne '21st,shadcn') { throw 'Installed MCP discovery mismatch.' }
     if ($mcp.mcpServers.'21st'.bearer_token_env_var -ne 'API_KEY_21ST') { throw '21st authentication is not env-var-only.' }
@@ -143,7 +143,7 @@ try {
     } else {
         Write-Output "PASS: deterministic committed-HEAD snapshot tree $treeHashOne."
     }
-    Write-Output 'PASS: clean install discovered three FTK adapters and two MCPs; upstream snapshots remained non-discoverable.'
+    Write-Output 'PASS: clean install preserved the approved plugin adapters and two normal MCPs; upstream snapshots remained non-discoverable.'
     Write-Output 'PASS: routing policy stayed 21st/search-only; no MCP tool was called.'
     Write-Output "PASS: cachebuster update installed $updatedVersion."
     Write-Output 'PASS: remove and reinstall completed without cache residue.'

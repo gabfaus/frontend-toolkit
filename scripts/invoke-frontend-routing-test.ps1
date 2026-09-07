@@ -41,7 +41,7 @@ $shadcn = $mcpLock.servers | Where-Object id -eq 'shadcn'
 $twentyFirst = $mcpLock.servers | Where-Object id -eq '21st'
 
 if ($toolchain.StableCodexVersion -ne '0.150.1') { throw 'FTK-04B requires Codex CLI 0.150.1.' }
-if ($policy.principle -ne 'minimum-necessary-capabilities' -or @($matrix.scenarios).Count -ne 10) { throw 'Versioned routing contract is invalid.' }
+if ($policy.principle -ne 'minimum-necessary-capabilities' -or $matrix.schemaVersion -ne 2 -or @($matrix.scenarios).Count -ne 17) { throw 'Versioned routing contract is invalid.' }
 if (@($ScenarioId | Sort-Object -Unique).Count -ne @($ScenarioId).Count) { throw 'Scenario identifiers must be unique.' }
 if (@($policy.capabilities.'21st'.defaultAllowedTools) -ne 'search') { throw '21st default allowlist is not search-only.' }
 if ($shadcn.version -ne '4.19.0' -or $twentyFirst.authentication.envVar -ne 'API_KEY_21ST') { throw 'MCP locks do not match the approved baseline.' }

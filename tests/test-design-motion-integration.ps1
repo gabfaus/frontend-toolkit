@@ -71,8 +71,8 @@ foreach ($forbiddenPath in @('skills/taste-skill-v1','skills/gpt-tasteskill','sk
     if ($codexAdapter.IndexOf($forbiddenPath, [StringComparison]::OrdinalIgnoreCase) -ge 0) { throw "Rejected or deferred upstream path exposed: $forbiddenPath" }
 }
 
-Assert-SetEqual @(Get-ChildItem -LiteralPath (Join-Path $repoRoot '.agents/skills') -Directory -Force | Select-Object -ExpandProperty Name) @('frontend-orchestrator','img2threejs','impeccable') 'Codex discovery inventory'
-Assert-SetEqual @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/skills') -Directory -Force | Select-Object -ExpandProperty Name) @('frontend-orchestrator','img2threejs','impeccable') 'Claude/plugin discovery inventory'
+Assert-SetEqual @(Get-ChildItem -LiteralPath (Join-Path $repoRoot '.agents/skills') -Directory -Force | Select-Object -ExpandProperty Name) @('figma-design-to-code','frontend-accessibility','frontend-orchestrator','img2threejs','impeccable','playwright-cli') 'Codex discovery inventory'
+Assert-SetEqual @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/skills') -Directory -Force | Select-Object -ExpandProperty Name) @('figma-design-to-code','frontend-orchestrator','img2threejs','impeccable') 'Claude/plugin discovery inventory'
 if (Test-Path -LiteralPath (Join-Path $repoRoot 'external/design-motion')) { throw 'Tests must not require external design-motion checkouts.' }
 
 $fixtureRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk-09f-fixture-' + [guid]::NewGuid().ToString('N'))

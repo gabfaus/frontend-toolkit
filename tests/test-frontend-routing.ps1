@@ -14,10 +14,10 @@ if ($harness -notmatch 'SYNTHETIC_REFERENCE\.png' -or $harness -notmatch "Scenar
 if ($harness -notmatch 'External checkout changed during routing' -or $harness -notmatch 'FixtureTeardown = if \(\$fixtureRemoved\) \{ ''complete'' \}') { throw 'Scenario 10 checkout or teardown guard is missing.' }
 
 $matrix = Get-Content -Raw -LiteralPath (Join-Path $repoRoot '.agents/skills/frontend-orchestrator/references/scenarios.json') | ConvertFrom-Json
-if (@($matrix.scenarios).Count -ne 10) { throw 'FTK-04B scenario contract drifted.' }
+if ($matrix.schemaVersion -ne 2 -or @($matrix.scenarios).Count -ne 17) { throw 'FTK-04B scenario contract drifted.' }
 if ($ValidateOnly) {
     $validation = & $harnessPath -ValidateOnly
-    if ($validation.ScenarioCount -ne 10 -or $validation.TwentyFirstTools -ne 'search') { throw 'FTK-04B validate-only contract failed.' }
+    if ($validation.ScenarioCount -ne 17 -or $validation.TwentyFirstTools -ne 'search') { throw 'FTK-04B validate-only contract failed.' }
     Write-Output 'PASS: FTK-04B harness, scenario 10 confinement and teardown contracts validated without behavioral reruns.'
     return
 }

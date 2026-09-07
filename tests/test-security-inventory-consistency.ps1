@@ -23,5 +23,5 @@ $headPaths = @(& git -c "safe.directory=$safeRepo" -C $repoRoot ls-tree -r --nam
 if ($LASTEXITCODE -ne 0) { throw 'Committed security tree inventory failed.' }
 $headSecurity = @($headPaths | ForEach-Object { $_.Substring('plugin/frontend-toolkit/security/'.Length) } | Sort-Object)
 Assert-ExactStringSet -Name 'committed-head security inventory' -Actual $headSecurity -Expected $expected
-Assert-True ($expected.Count -eq 16) 'Closed security inventory is not exactly 16 reviewed modules.'
-Write-Output 'PASS: reconciler, release-safety, plugin packaging and committed HEAD agree on the exact 16-module security inventory.'
+Assert-True ($expected.Count -eq 20) 'Converged security inventory is not exactly 20 reviewed modules.'
+Write-Output 'PASS: reconciler, release-safety, plugin packaging and committed HEAD agree on the exact 20-module convergence security inventory.'

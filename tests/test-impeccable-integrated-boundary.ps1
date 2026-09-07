@@ -158,10 +158,10 @@ try {
     }
     Assert-True ($operationPolicy.operations.id -ccontains 'impeccable.hooks.status' -and $operationPolicy.operations.id -ccontains 'impeccable.doctor.report' -and $operationPolicy.operations.id -ccontains 'impeccable.project.write') 'Hooks, doctor/report, or project-write capability was removed.'
 
-    # Packaging is exact and discovery remains three Skills/two MCPs.
+    # Packaging is exact and discovery remains six Codex Skills, four plugin Skills, and two normal MCPs.
     . (Join-Path $repoRoot 'scripts/release-safety.ps1')
     $expectedSecurity = @(
-        'security/effect-policy.json','security/img2threejs-codec-mediator.mjs','security/img2threejs-foundation.ps1',
+        'security/effect-policy.json','security/context7-operation-policy.json','security/figma-capability-mediator.mjs','security/figma-operation-policy.json','security/storybook-adapter.mjs','security/img2threejs-codec-mediator.mjs','security/img2threejs-foundation.ps1',
         'security/img2threejs-runner.ps1','security/img2threejs-runtime-policy.json','security/img2threejs-state-guard.ps1',
         'security/img2threejs-structural-validation.ps1','security/impeccable-authority-policy.json',
         'security/impeccable-context-extractor.mjs','security/impeccable-context-mediator.mjs',
@@ -175,8 +175,8 @@ try {
     Assert-ExactSet $actualSecurity $expectedSecurity 'Actual security inventory'
     Assert-ExactSet $allowedSecurity $expectedSecurity 'Allowlisted security inventory'
     $skills = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot '.agents/skills') -Directory -Force | Select-Object -ExpandProperty Name)
-    Assert-ExactSet $skills @('frontend-orchestrator','img2threejs','impeccable') 'Discovered Skills'
-    Assert-True (@(Get-ChildItem -LiteralPath (Join-Path $repoRoot '.agents/skills') -Recurse -Filter SKILL.md -File).Count -eq 3) 'Upstream SKILL became discoverable.'
+    Assert-ExactSet $skills @('figma-design-to-code','frontend-accessibility','frontend-orchestrator','img2threejs','impeccable','playwright-cli') 'Discovered Skills'
+    Assert-True (@(Get-ChildItem -LiteralPath (Join-Path $repoRoot '.agents/skills') -Recurse -Filter SKILL.md -File).Count -eq 6) 'Upstream SKILL became discoverable.'
     $mcp = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/.mcp.json') | ConvertFrom-Json
     Assert-ExactSet @($mcp.mcpServers.PSObject.Properties.Name) @('21st','shadcn') 'MCP inventory'
 

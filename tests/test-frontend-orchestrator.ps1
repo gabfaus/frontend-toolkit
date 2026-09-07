@@ -58,11 +58,11 @@ foreach ($relativeReference in $referencedFiles) {
 }
 
 $policy = Get-Content -Raw -LiteralPath $policyPath | ConvertFrom-Json
-if ($policy.schemaVersion -ne 1 -or $policy.skill -ne 'frontend-orchestrator') { throw 'Routing policy identity is invalid.' }
+if ($policy.schemaVersion -ne 2 -or $policy.skill -ne 'frontend-orchestrator') { throw 'Routing policy identity is invalid.' }
 if ($policy.principle -ne 'minimum-necessary-capabilities') { throw 'Minimum-capability principle is missing.' }
 $capabilityNames = @($policy.capabilities.PSObject.Properties.Name)
-Assert-ExactSet @('impeccable','shadcn','21st','img2threejs') $capabilityNames 'Capability inventory'
-if ($policy.capabilities.impeccable.role -ne 'design-ux-review') { throw 'Impeccable routing role is invalid.' }
+Assert-ExactSet @('21st','ACCESSIBILITY_IMPLEMENT','ACCESSIBILITY_VERIFY','FIGMA_DESIGN_TO_CODE','FIGMA_READ','FIGMA_WRITE','animate','axe','chrome-devtools','context7','impeccable','improve-animations','img2threejs','playwright-cli','review-animations','shadcn','storybook','taste-v2') $capabilityNames 'Capability inventory'
+if ($policy.capabilities.impeccable.role -ne 'primary-design-ux-authority') { throw 'Impeccable routing role is invalid.' }
 if ($policy.capabilities.impeccable.entrypoint -ne 'ftk-owned-adapter-to-common-dispatcher' -or
     $policy.capabilities.impeccable.selectionMeaning -ne 'requested-operation-only' -or
     $policy.capabilities.impeccable.authorizationInference -ne 'deny' -or
@@ -78,7 +78,7 @@ $approvalClasses = @('metered','generation','ai-credits','copy-install-quota','r
 Assert-ExactSet $approvalClasses @($twentyFirst.explicitAuthorizationRequiredFor) '21st authorization classes'
 if ($twentyFirst.unclassifiedToolPolicy -ne 'do-not-execute-without-explicit-authorization') { throw 'Unclassified 21st tools do not fail closed.' }
 if ($policy.intentPrecedence[0].id -ne 'explicit-user-intent') { throw 'Explicit user intent is not highest priority.' }
-Assert-ExactSet @('impeccable-unavailable','shadcn-unavailable','21st-unavailable','img2threejs-unavailable') @($policy.fallbacks.id) 'Fallback inventory'
+Assert-ExactSet @('impeccable-unavailable','shadcn-unavailable','21st-unavailable','img2threejs-unavailable','figma-unavailable','browser-qa-unavailable','context7-unavailable','storybook-ineligible') @($policy.fallbacks.id) 'Fallback inventory'
 if (@($policy.combinations | Where-Object mandatoryAll -eq $true).Count) { throw 'A workflow incorrectly requires all capabilities.' }
 
 $routing = Get-Content -Raw -LiteralPath $routingPath
@@ -87,9 +87,9 @@ if ($routing -notmatch '(?i)Prefer Shadcn' -or $routing -notmatch '(?i)Never que
 if ($cost -notmatch '(?i)default allowlist contains only' -or $cost -notmatch '(?i)explicit authorization required' -or $cost -notmatch '(?i)do not execute') { throw 'Human-readable 21st cost gate is incomplete.' }
 
 $matrix = Get-Content -Raw -LiteralPath $scenariosPath | ConvertFrom-Json
-if ($matrix.schemaVersion -ne 1 -or @($matrix.scenarios).Count -ne 10) { throw 'Scenario matrix must contain ten versioned cases.' }
-Assert-ExactSet @(1..10) @($matrix.scenarios.id) 'Scenario identifiers'
-if (@($matrix.scenarios.id | Sort-Object -Unique).Count -ne 10) { throw 'Scenario identifiers are not unique.' }
+if ($matrix.schemaVersion -ne 2 -or @($matrix.scenarios).Count -ne 17) { throw 'Scenario matrix must contain ten versioned cases.' }
+Assert-ExactSet @(1..17) @($matrix.scenarios.id) 'Scenario identifiers'
+if (@($matrix.scenarios.id | Sort-Object -Unique).Count -ne 17) { throw 'Scenario identifiers are not unique.' }
 
 $case1 = $matrix.scenarios | Where-Object id -eq 1
 $case2 = $matrix.scenarios | Where-Object id -eq 2
@@ -140,7 +140,7 @@ try {
     $env:FTK_PYTHON_PATH = $pythonPathBefore
 }
 
-foreach ($expectedName in @('frontend-orchestrator','impeccable','img2threejs')) {
+foreach ($expectedName in @('frontend-orchestrator','figma-design-to-code','frontend-accessibility','playwright-cli','impeccable','img2threejs')) {
     if (-not $prompt.Contains(("- " + $expectedName + ":"))) { throw "Codex did not advertise Skill: $expectedName" }
 }
 if ((Get-FileHashOrAbsent $configPath) -ne $configHashBefore) { throw 'Codex user config changed during orchestrator discovery.' }
@@ -148,5 +148,5 @@ if ([Environment]::GetEnvironmentVariable('Path','User') -ne $userPathBefore) { 
 if ([Environment]::GetEnvironmentVariable('Path','Machine') -ne $machinePathBefore) { throw 'Persistent machine PATH changed.' }
 
 Write-Output 'PASS: frontend-orchestrator metadata, references and machine-readable routing policy validated.'
-Write-Output 'PASS: ten scenario contracts cover minimum capability, user intent, fallbacks and 21st authorization gates.'
-Write-Output 'PASS: Codex CLI 0.150.1 discovers frontend-orchestrator with impeccable and img2threejs adapters.'
+Write-Output 'PASS: versioned scenario contracts cover minimum capability, staged routing, user intent, fallbacks and authorization gates.'
+Write-Output 'PASS: Codex CLI 0.150.1 discovers the six approved FTK-owned Skills without changing user configuration.'

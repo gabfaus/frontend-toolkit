@@ -44,7 +44,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "Official adapter validation failed for $adapterSkill." }
     }
     Write-Output 'PASS: canonical plugin validator accepted source and complete distribution.'
-    Write-Output 'PASS: skill-creator accepted all three FTK-owned discovered Skills.'
+    Write-Output 'PASS: skill-creator accepted the orchestrator and external FTK-owned adapters; additional common adapters remain governed by the convergence allowlist.'
 } finally {
     $env:PYTHONUTF8 = $oldPythonUtf8
     if (Test-Path -LiteralPath $fixture) { [IO.Directory]::Delete('\\?\' + [IO.Path]::GetFullPath($fixture), $true) }

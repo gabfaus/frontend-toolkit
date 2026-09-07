@@ -149,6 +149,7 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'skills/frontend-orchestrator/references/routing-policy.json'
         'skills/frontend-orchestrator/references/routing.md'
         'skills/frontend-orchestrator/references/scenarios.json'
+        'skills/figma-design-to-code/SKILL.md'
         'skills/impeccable/SKILL.md'
         'skills/img2threejs/SKILL.md'
         'security/effect-policy.json'
@@ -167,6 +168,13 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'security/impeccable-operation-policy.json'
         'security/impeccable-runner.ps1'
         'security/invoke-capability.ps1'
+        'security/context7-operation-policy.json'
+        'security/figma-capability-mediator.mjs'
+        'security/figma-operation-policy.json'
+        'figma.remote.mcp.json'
+        'figma-desktop.mcp.json'
+        'FIGMA_THIRD_PARTY_NOTICE.md'
+        'security/storybook-adapter.mjs'
     )
 }
 
@@ -178,6 +186,7 @@ function Get-FrontendToolkitSourceDirectoryAllowlist {
         'skills/frontend-orchestrator/references'
         'skills/impeccable'
         'skills/img2threejs'
+        'skills/figma-design-to-code'
         'security'
     )
 }
@@ -396,6 +405,10 @@ function Get-FrontendToolkitSecurityModuleAllowlist {
         'impeccable-operation-policy.json'
         'impeccable-runner.ps1'
         'invoke-capability.ps1'
+        'context7-operation-policy.json'
+        'figma-capability-mediator.mjs'
+        'figma-operation-policy.json'
+        'storybook-adapter.mjs'
     )
 }
 

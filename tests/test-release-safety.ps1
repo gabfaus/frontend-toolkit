@@ -15,6 +15,10 @@ $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $directoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
 $requiredSecurityFiles = @(
     'security/effect-policy.json'
+'security/context7-operation-policy.json'
+    'security/figma-capability-mediator.mjs'
+    'security/figma-operation-policy.json'
+    'security/storybook-adapter.mjs'
     'security/img2threejs-codec-mediator.mjs'
     'security/img2threejs-foundation.ps1'
     'security/img2threejs-runner.ps1'

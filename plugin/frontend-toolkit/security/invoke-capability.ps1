@@ -93,7 +93,28 @@ if ($definition.skill -ceq 'impeccable' -and $definition.status -cne 'enabled') 
     }
     throw ('Operation is not enabled: ' + $Operation)
 }
-if ($definition.status -ne 'enabled') { throw ('Operation is not enabled: ' + $Operation) }
+if ($definition.status -ne 'enabled') {
+    if ($PlanOnly) {
+        [pscustomobject][ordered]@{
+            schemaVersion = $policy.schemaVersion
+            operation = $definition.id
+            skill = $definition.skill
+            capability = $definition.capability
+            effects = @($definition.effects)
+            availability = if ($definition.availability) { $definition.availability } else { 'blocked' }
+            authorizationDecision = if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) { 'authorization-required' } else { 'denied' }
+            authorizationRequirement = $definition.authorizationRequirement
+            handler = $definition.handler
+            handlerInvoked = $false
+            externalCall = $false
+        } | ConvertTo-Json -Depth 12
+        return
+    }
+    if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) {
+        throw ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
+    }
+    throw ('Operation is not enabled: ' + $Operation)
+}
 
 if ($definition.handler -eq 'builtin.capability-summary') {
     Assert-AllowedImg2ThreejsParameters @('Operation')
@@ -156,6 +177,26 @@ switch ($definition.handler) {
         $result = Invoke-Img2ThreejsStateOperation -Operation $Operation -ProjectRoot $ProjectRoot -StatePath $StatePath `
             -Reference $Reference -Profile $Profile -Spec $Spec -MaxPerPass $MaxPerPass -MaxTotal $MaxTotal `
             -Step $Step -MarkStatus $MarkStatus -Evidence $Evidence -Reason $Reason -JsonText $JsonText
+    }
+    'ftk.request-only' {
+        Assert-AllowedImg2ThreejsParameters @('Operation','PlanOnly')
+        [pscustomobject][ordered]@{
+            schemaVersion = $policy.schemaVersion
+            architecture = $policy.architecture
+            operation = $definition.id
+            skill = $definition.skill
+            capability = $definition.capability
+            effects = @($definition.effects)
+            availability = if ($definition.availability) { $definition.availability } else { 'available' }
+            execution = 'not-performed'
+            handlerInvoked = $false
+            externalCall = $false
+            requestOnly = $true
+            authorizationDecision = 'request-created-no-effect-grant'
+            authorizationRequirement = $definition.authorizationRequirement
+            transport = $definition.transport
+        } | ConvertTo-Json -Depth 12
+        return
     }
     default { throw ('Unrecognized handler is denied for operation: ' + $Operation) }
 }

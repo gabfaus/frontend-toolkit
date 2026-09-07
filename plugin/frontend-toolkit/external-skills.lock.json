@@ -7,7 +7,7 @@
       "id": "impeccable",
       "requiredSkillName": "impeccable",
       "adapterPath": "skills/impeccable",
-      "adapterEntrySha256": "2915f0434c58ec4c6afd2d0257207e2b1b065d20e56f93401a2a50d876985251",
+      "adapterEntrySha256": "3aa59d54c25b533370cb7a46d662a4519a2b7a29b889c30b35d11686d2dc5998",
       "upstreamSnapshotPath": "third_party/upstreams/impeccable",
       "snapshotTreeSha256": "43fe6a8a55ce559280d5a616aa603a550100519a4b5f7ac132760e59eba7a9b8",
       "upstream": "https://github.com/pbakaus/impeccable.git",

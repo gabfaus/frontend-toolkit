@@ -170,14 +170,15 @@ if ($facadeLauncherSource -match '(?i)https?://') { throw '21st launcher contain
 if (-not (Test-Path -LiteralPath (Join-Path $runtimeSourcePath 'package-lock.json') -PathType Leaf)) { throw 'Claude-only runtime lock is missing.' }
 if (-not (Test-Path -LiteralPath (Join-Path $runtimeSourcePath 'dependency-provenance.json') -PathType Leaf)) { throw 'Claude-only dependency provenance is missing.' }
 
-# Codex-only source is a protected baseline for this gate, except the public version bump.
+# FTK-09J explicitly permits common Skill/security/policy convergence; host-specific
+# checks still protect the normal MCP transport, toolchain and upstream snapshots.
 $headCodexManifest = ((& git -C $repoRoot show 'HEAD:plugin/frontend-toolkit/.codex-plugin/plugin.json') -join [Environment]::NewLine) | ConvertFrom-Json
 $workingCodexManifest = Get-JsonFile -Path $codexManifestPath
 $headCodexManifest.PSObject.Properties.Remove('version')
 $workingCodexManifest.PSObject.Properties.Remove('version')
 if (($headCodexManifest | ConvertTo-Json -Depth 20 -Compress) -cne ($workingCodexManifest | ConvertTo-Json -Depth 20 -Compress)) { throw 'Codex manifest changed beyond its public version.' }
-& git -C $repoRoot diff --quiet HEAD -- 'plugin/frontend-toolkit/.mcp.json' 'plugin/frontend-toolkit/skills' 'plugin/frontend-toolkit/security' 'integrations/mcp.lock.json' 'integrations/toolchain.lock.json' 'third_party'
-if ($LASTEXITCODE -ne 0) { throw 'A protected Codex/common path differs from HEAD.' }
+& git -C $repoRoot diff --quiet HEAD -- 'plugin/frontend-toolkit/.mcp.json' 'integrations/mcp.lock.json' 'integrations/toolchain.lock.json' 'third_party'
+if ($LASTEXITCODE -ne 0) { throw 'A protected Codex transport/toolchain/upstream path differs from HEAD.' }
 
 $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ('ftk03a-test-' + [guid]::NewGuid().ToString('N'))
 $commonCandidate = Join-Path $tempRoot 'common'

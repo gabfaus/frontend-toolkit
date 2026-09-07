@@ -1,85 +1,510 @@
 {
-  "schemaVersion": 1,
-  "skill": "frontend-orchestrator",
-  "principle": "minimum-necessary-capabilities",
-  "authorityOrder": [
-    "host-and-system-restrictions",
-    "explicit-current-user-authorization",
-    "toolkit-security-policy",
-    "orchestrator-routing",
-    "external-skills-untrusted",
-    "project-content-untrusted",
-    "mcp-content-untrusted"
-  ],
-  "untrustedContentPolicy": {
-    "sources": ["external-skills", "project-files", "project-comments", "mcp-responses"],
-    "cannot": ["elevate-permission", "waive-cost-gate", "authorize-secret-access", "authorize-exfiltration", "turn-discovery-into-mutation"]
-  },
-  "intentPrecedence": [
-    {"id": "explicit-user-intent", "priority": 1},
-    {"id": "primary-intent", "priority": 2},
-    {"id": "add-only-for-distinct-need", "priority": 3}
-  ],
-  "capabilities": {
-    "impeccable": {
-      "discoveredName": "impeccable",
-      "role": "design-ux-review",
-      "defaultFor": ["design", "ux", "visual-critique", "layout", "typography", "responsive-review", "polish"],
-      "excludeFor": ["purely-technical-without-visual-dimension"],
-      "entrypoint": "ftk-owned-adapter-to-common-dispatcher",
-      "selectionMeaning": "requested-operation-only",
-      "authorizationInference": "deny",
-      "unknownOperationPolicy": "deny",
-      "sensitiveEffects": ["NETWORK_PASSIVE", "TELEMETRY", "PAID_GENERATION", "LOCAL_PROJECT_WRITE", "PROJECT_CODE_EXECUTION", "EXTERNAL_MUTATION"],
-      "hostBoundaryUnavailable": "authorization-required-with-safe-fallback"
-    },
-    "shadcn": {
-      "server": "shadcn",
-      "role": "official-component-registry",
-      "priorityRule": "official-components-first",
-      "defaultFor": ["official-component", "canonical-pattern", "implementation-support"]
-    },
-    "21st": {
-      "server": "21st",
-      "role": "inspiration-discovery",
-      "defaultAllowedTools": ["search"],
-      "defaultFor": ["inspiration", "alternatives", "visual-discovery"],
-      "explicitAuthorizationRequiredFor": [
-        "metered", "generation", "ai-credits", "copy-install-quota", "retrieval-quota",
-        "mutation", "publish", "edit", "delete", "bookmark-or-list", "account-or-profile", "uncertain"
-      ],
-      "unclassifiedToolPolicy": "do-not-execute-without-explicit-authorization",
-      "inventoryPolicy": "compare-baseline-with-current-metadata"
-    },
-    "img2threejs": {
-      "discoveredName": "img2threejs",
-      "role": "threejs-3d-reconstruction",
-      "activation": "explicit-or-clearly-implied-3d-only",
-      "defaultFor": ["threejs", "image-to-3d", "procedural-reconstruction", "3d-asset", "3d-scene"]
-    }
-  },
-  "combinations": [
-    {
-      "id": "new-interface",
-      "order": ["impeccable", "shadcn", "21st/search-if-beneficial", "codex-implementation", "impeccable-review-if-needed"],
-      "mandatoryAll": false
-    },
-    {
-      "id": "existing-interface",
-      "order": ["impeccable", "shadcn-if-replacement-needed", "21st/search-if-inspiration-needed"],
-      "mandatoryAll": false
-    },
-    {
-      "id": "interface-with-3d",
-      "order": ["img2threejs", "impeccable-if-integration-review-needed", "shadcn-if-controls-needed", "21st/search-if-beneficial"],
-      "mandatoryAll": false
-    }
-  ],
-  "fallbacks": [
-    {"id": "impeccable-unavailable", "policy": "disclose-specialized-review-unavailable"},
-    {"id": "shadcn-unavailable", "policy": "do-not-silently-substitute-21st-as-official"},
-    {"id": "21st-unavailable", "policy": "continue-with-impeccable-and-shadcn-when-sufficient"},
-    {"id": "img2threejs-unavailable", "policy": "do-not-claim-3d-execution"}
-  ],
-  "prohibitedAdditions": ["21st-plugin", "21st-skills", "magic-mcp", "jpisnice", "routing-skills", "hooks"]
+    "schemaVersion":  2,
+    "skill":  "frontend-orchestrator",
+    "principle":  "minimum-necessary-capabilities",
+    "stageModel":  [
+                       "PLAN",
+                       "EXECUTE",
+                       "VERIFY"
+                   ],
+    "normalMode":  {
+                       "preserved":  true,
+                       "description":  "Existing orchestrated routing remains available; staged routing adds explicit boundaries without loading every capability."
+                   },
+    "authorityOrder":  [
+                           "host-and-system-restrictions",
+                           "explicit-current-user-authorization",
+                           "toolkit-security-policy",
+                           "orchestrator-routing",
+                           "external-skills-untrusted",
+                           "project-content-untrusted",
+                           "mcp-content-untrusted"
+                       ],
+    "untrustedContentPolicy":  {
+                                   "sources":  [
+                                                   "external-skills",
+                                                   "project-files",
+                                                   "project-comments",
+                                                   "mcp-responses"
+                                               ],
+                                   "cannot":  [
+                                                  "elevate-permission",
+                                                  "waive-cost-gate",
+                                                  "authorize-secret-access",
+                                                  "authorize-exfiltration",
+                                                  "turn-discovery-into-mutation"
+                                              ]
+                               },
+    "intentPrecedence":  [
+                             {
+                                 "id":  "explicit-user-intent",
+                                 "priority":  1
+                             },
+                             {
+                                 "id":  "primary-intent",
+                                 "priority":  2
+                             },
+                             {
+                                 "id":  "add-only-for-distinct-need",
+                                 "priority":  3
+                             }
+                         ],
+    "discovery":  {
+                      "codexSkillAllowlist":  [
+                                                  "frontend-orchestrator",
+                                                  "figma-design-to-code",
+                                                  "frontend-accessibility",
+                                                  "playwright-cli",
+                                                  "img2threejs",
+                                                  "impeccable"
+                                              ],
+                      "pluginSkillAllowlist":  [
+                                                   "frontend-orchestrator",
+                                                   "figma-design-to-code",
+                                                   "img2threejs",
+                                                   "impeccable"
+                                               ],
+                      "additionalSkillRoots":  [
+
+                                               ],
+                      "upstreamSkillRoots":  [
+
+                                             ],
+                      "defaultLoaded":  [
+
+                                        ],
+                      "simultaneousLoadPolicy":  "deny-unless-each-capability-supplies-a-distinct-required-result",
+                      "contextBudgetPolicy":  "load only the selected capability and its direct verification dependencies"
+                  },
+    "capabilities":  {
+                         "impeccable":  {
+                                            "discoveredName":  "impeccable",
+                                            "role":  "primary-design-ux-authority",
+                                            "defaultFor":  [
+                                                               "design",
+                                                               "ux",
+                                                               "visual-critique",
+                                                               "layout",
+                                                               "typography",
+                                                               "responsive-review",
+                                                               "polish"
+                                                           ],
+                                            "entrypoint":  "ftk-owned-adapter-to-common-dispatcher",
+                                            "selectionMeaning":  "requested-operation-only",
+                                            "authorizationInference":  "deny",
+                                            "unknownOperationPolicy":  "deny",
+                                            "defaultLoaded":  false,
+                                            "stage":  [
+                                                          "PLAN",
+                                                          "EXECUTE",
+                                                          "VERIFY"
+                                                      ]
+                                        },
+                         "taste-v2":  {
+                                          "discoveredName":  "design-taste-frontend",
+                                          "role":  "optional-design-alternative",
+                                          "sourceLock":  "integrations/design-motion.lock.json",
+                                          "selection":  "explicit-only",
+                                          "defaultLoaded":  false,
+                                          "imageGeneration":  "never-automatic",
+                                          "installation":  "never-automatic",
+                                          "authority":  "never-grants",
+                                          "stage":  [
+                                                        "PLAN"
+                                                    ]
+                                      },
+                         "review-animations":  {
+                                                   "discoveredName":  "review-animations",
+                                                   "role":  "motion-verification",
+                                                   "sourceLock":  "integrations/design-motion.lock.json",
+                                                   "mode":  "verify-read-only",
+                                                   "defaultLoaded":  false,
+                                                   "writes":  false,
+                                                   "authority":  "never-grants",
+                                                   "stage":  [
+                                                                 "VERIFY"
+                                                             ]
+                                               },
+                         "improve-animations":  {
+                                                    "discoveredName":  "improve-animations",
+                                                    "role":  "motion-diagnosis-and-plan",
+                                                    "sourceLock":  "integrations/design-motion.lock.json",
+                                                    "mode":  "diagnose-plan",
+                                                    "defaultLoaded":  false,
+                                                    "writesByDefault":  false,
+                                                    "authority":  "never-grants",
+                                                    "stage":  [
+                                                                  "PLAN",
+                                                                  "VERIFY"
+                                                              ]
+                                                },
+                         "animate":  {
+                                         "discoveredName":  "animate",
+                                         "role":  "explicit-motion-implementation",
+                                         "sourceLock":  "integrations/design-motion.lock.json",
+                                         "selection":  "explicit-only",
+                                         "defaultLoaded":  false,
+                                         "effects":  [
+                                                         "LOCAL_PROJECT_WRITE"
+                                                     ],
+                                         "authorization":  "common-dispatcher-and-current-host-grant",
+                                         "authority":  "never-grants",
+                                         "stage":  [
+                                                       "EXECUTE"
+                                                   ]
+                                     },
+                         "shadcn":  {
+                                        "server":  "shadcn",
+                                        "role":  "official-component-registry",
+                                        "priorityRule":  "official-components-first",
+                                        "defaultLoaded":  false,
+                                        "stage":  [
+                                                      "EXECUTE",
+                                                      "VERIFY"
+                                                  ]
+                                    },
+                         "21st":  {
+                                      "server":  "21st",
+                                      "role":  "inspiration-discovery",
+                                      "defaultAllowedTools":  [
+                                                                  "search"
+                                                              ],
+                                      "defaultFor":  [
+                                                         "inspiration",
+                                                         "alternatives",
+                                                         "visual-discovery"
+                                                     ],
+                                      "defaultLoaded":  false,
+                                      "explicitAuthorizationRequiredFor":  [
+                                                                               "metered",
+                                                                               "generation",
+                                                                               "ai-credits",
+                                                                               "copy-install-quota",
+                                                                               "retrieval-quota",
+                                                                               "mutation",
+                                                                               "publish",
+                                                                               "edit",
+                                                                               "delete",
+                                                                               "bookmark-or-list",
+                                                                               "account-or-profile",
+                                                                               "uncertain"
+                                                                           ],
+                                      "unclassifiedToolPolicy":  "do-not-execute-without-explicit-authorization",
+                                      "stage":  [
+                                                    "PLAN",
+                                                    "EXECUTE"
+                                                ]
+                                  },
+                         "img2threejs":  {
+                                             "discoveredName":  "img2threejs",
+                                             "role":  "threejs-3d-reconstruction",
+                                             "activation":  "explicit-or-clearly-implied-3d-only",
+                                             "defaultLoaded":  false,
+                                             "stage":  [
+                                                           "PLAN",
+                                                           "EXECUTE",
+                                                           "VERIFY"
+                                                       ]
+                                         },
+                         "FIGMA_READ":  {
+                                            "discoveredName":  "figma",
+                                            "role":  "Figma-source-read",
+                                            "defaultFor":  [
+                                                               "figma-source-present"
+                                                           ],
+                                            "defaultLoaded":  false,
+                                            "transportSelection":  "exactly-one-of-figma-or-figma-desktop",
+                                            "tools":  "integrations/figma.lock.json:mcp.readToolAllowlist",
+                                            "effects":  [
+                                                            "NETWORK_PASSIVE"
+                                                        ],
+                                            "stage":  [
+                                                          "PLAN",
+                                                          "EXECUTE",
+                                                          "VERIFY"
+                                                      ]
+                                        },
+                         "FIGMA_DESIGN_TO_CODE":  {
+                                                      "discoveredName":  "figma-design-to-code",
+                                                      "role":  "Figma-design-to-code",
+                                                      "selection":  "explicit-only",
+                                                      "defaultLoaded":  false,
+                                                      "firstReadTool":  "get_design_context",
+                                                      "consumes":  [
+                                                                       "FIGMA_READ"
+                                                                   ],
+                                                      "remoteWrite":  false,
+                                                      "localProjectWrite":  "host-and-FTK-write-gated",
+                                                      "stage":  [
+                                                                    "PLAN",
+                                                                    "EXECUTE",
+                                                                    "VERIFY"
+                                                                ]
+                                                  },
+                         "FIGMA_WRITE":  {
+                                             "discoveredName":  "figma",
+                                             "role":  "Figma-remote-write",
+                                             "selection":  "authorization-required",
+                                             "defaultLoaded":  false,
+                                             "handler":  "none",
+                                             "remoteWrite":  false,
+                                             "stage":  [
+                                                           "EXECUTE"
+                                                       ]
+                                         },
+                         "playwright-cli":  {
+                                                "discoveredName":  "playwright-cli",
+                                                "role":  "browser-qa",
+                                                "classification":  "CORE",
+                                                "defaultFor":  [
+                                                                   "browser-qa"
+                                                               ],
+                                                "defaultLoaded":  false,
+                                                "policy":  "integrations/browser-qa/playwright-runtime-policy.json",
+                                                "stage":  [
+                                                              "VERIFY",
+                                                              "EXECUTE"
+                                                          ]
+                                            },
+                         "ACCESSIBILITY_VERIFY":  {
+                                                      "discoveredName":  "frontend-accessibility",
+                                                      "role":  "accessibility-evidence-verification",
+                                                      "classification":  "CORE",
+                                                      "defaultFor":  [
+                                                                         "accessibility-verification"
+                                                                     ],
+                                                      "defaultLoaded":  false,
+                                                      "readOnly":  true,
+                                                      "stage":  [
+                                                                    "VERIFY"
+                                                                ]
+                                                  },
+                         "ACCESSIBILITY_IMPLEMENT":  {
+                                                         "discoveredName":  "frontend-accessibility",
+                                                         "role":  "accessibility-implementation",
+                                                         "classification":  "CONDITIONAL",
+                                                         "selection":  "explicit-only",
+                                                         "defaultLoaded":  false,
+                                                         "authorization":  "explicit-current-user-project-write",
+                                                         "mustFollow":  [
+                                                                            "ACCESSIBILITY_VERIFY"
+                                                                        ],
+                                                         "stage":  [
+                                                                       "EXECUTE"
+                                                                   ]
+                                                     },
+                         "axe":  {
+                                     "discoveredName":  "frontend-accessibility",
+                                     "role":  "supplementary-accessibility-evidence",
+                                     "classification":  "CONDITIONAL",
+                                     "defaultLoaded":  false,
+                                     "requiresAlreadyInstalled":  "@axe-core/playwright@4.13.0",
+                                     "installation":  "never-automatic",
+                                     "stage":  [
+                                                   "VERIFY"
+                                               ]
+                                 },
+                         "chrome-devtools":  {
+                                                 "discoveredName":  "chrome-devtools-boundary",
+                                                 "role":  "advanced-browser-diagnostics",
+                                                 "classification":  "OPTIONAL",
+                                                 "defaultLoaded":  false,
+                                                 "registration":  "absent-from-normal-distribution",
+                                                 "arbitraryJavaScript":  false,
+                                                 "stage":  [
+                                                               "VERIFY"
+                                                           ]
+                                             },
+                         "context7":  {
+                                          "discoveredName":  "context7-facade",
+                                          "role":  "current-documentation-grounding",
+                                          "classification":  "CONDITIONAL",
+                                          "defaultLoaded":  false,
+                                          "facadeOnly":  true,
+                                          "exposedTools":  [
+                                                               "resolve-library-id",
+                                                               "query-docs"
+                                                           ],
+                                          "unknownToolPolicy":  "deny",
+                                          "stage":  [
+                                                        "PLAN",
+                                                        "VERIFY"
+                                                    ]
+                                      },
+                         "storybook":  {
+                                           "discoveredName":  "storybook-adapter",
+                                           "role":  "eligible-existing-project-storybook",
+                                           "classification":  "CONDITIONAL",
+                                           "defaultLoaded":  false,
+                                           "eligibility":  "already-present-and-compatible",
+                                           "installation":  "never-automatic",
+                                           "runtimeStartup":  "never-automatic",
+                                           "scopes":  [
+                                                          "docs",
+                                                          "preview-development",
+                                                          "testing"
+                                                      ],
+                                           "blockedScopes":  [
+                                                                 "review-create",
+                                                                 "remote-review",
+                                                                 "publication",
+                                                                 "chromatic"
+                                                             ],
+                                           "stage":  [
+                                                         "PLAN",
+                                                         "EXECUTE",
+                                                         "VERIFY"
+                                                     ]
+                                       }
+                     },
+    "stageRoutes":  {
+                        "PLAN":  {
+                                     "primarySelection":  "one",
+                                     "conditionalAdditions":  "distinct-need-only",
+                                     "sideEffects":  "none",
+                                     "candidates":  [
+                                                        "impeccable",
+                                                        "taste-v2",
+                                                        "improve-animations",
+                                                        "FIGMA_READ",
+                                                        "context7",
+                                                        "storybook",
+                                                        "img2threejs",
+                                                        "shadcn",
+                                                        "21st"
+                                                    ]
+                                 },
+                        "EXECUTE":  {
+                                        "preserved":  [
+                                                          "shadcn",
+                                                          "21st/search",
+                                                          "img2threejs"
+                                                      ],
+                                        "explicitOnly":  [
+                                                             "animate",
+                                                             "FIGMA_DESIGN_TO_CODE",
+                                                             "ACCESSIBILITY_IMPLEMENT"
+                                                         ],
+                                        "sideEffects":  "host-and-FTK-policy-gated"
+                                    },
+                        "VERIFY":  {
+                                       "core":  [
+                                                    "playwright-cli",
+                                                    "ACCESSIBILITY_VERIFY",
+                                                    "review-animations"
+                                                ],
+                                       "conditional":  [
+                                                           "axe"
+                                                       ],
+                                       "optional":  [
+                                                        "chrome-devtools"
+                                                    ],
+                                       "sideEffects":  "read-only-by-default"
+                                   }
+                    },
+    "combinations":  [
+                         {
+                             "id":  "new-interface",
+                             "order":  [
+                                           "impeccable",
+                                           "shadcn-if-needed",
+                                           "21st/search-if-beneficial",
+                                           "codex-implementation",
+                                           "ACCESSIBILITY_VERIFY-if-in-scope"
+                                       ],
+                             "mandatoryAll":  false
+                         },
+                         {
+                             "id":  "existing-interface",
+                             "order":  [
+                                           "impeccable",
+                                           "shadcn-if-replacement-needed",
+                                           "ACCESSIBILITY_VERIFY-if-in-scope",
+                                           "21st/search-if-inspiration-needed"
+                                       ],
+                             "mandatoryAll":  false
+                         },
+                         {
+                             "id":  "interface-with-3d",
+                             "order":  [
+                                           "img2threejs",
+                                           "impeccable-if-integration-review-needed",
+                                           "shadcn-if-controls-needed",
+                                           "ACCESSIBILITY_VERIFY-if-in-scope"
+                                       ],
+                             "mandatoryAll":  false
+                         },
+                         {
+                             "id":  "figma-source",
+                             "order":  [
+                                           "FIGMA_READ",
+                                           "FIGMA_DESIGN_TO_CODE-if-explicit",
+                                           "impeccable-if-visual-review-needed",
+                                           "ACCESSIBILITY_VERIFY-if-in-scope"
+                                       ],
+                             "mandatoryAll":  false
+                         }
+                     ],
+    "facades":  {
+                    "context7":  {
+                                     "path":  "claude/facade/context7-facade.mjs",
+                                     "directMcpExposure":  "rejected",
+                                     "tools":  [
+                                                   "resolve-library-id",
+                                                   "query-docs"
+                                               ]
+                                 },
+                    "storybook":  {
+                                      "path":  "plugin/frontend-toolkit/security/storybook-adapter.mjs",
+                                      "remotePublication":  "blocked-authorization-required"
+                                  }
+                },
+    "externalTransportPolicy":  {
+                                    "figma":  {
+                                                  "remote":  "figma",
+                                                  "desktop":  "figma-desktop",
+                                                  "neverEnableBoth":  true
+                                              },
+                                    "browser":  {
+                                                    "default":  "playwright-cli-wrapper",
+                                                    "playwrightMcp":  "absent-rejected"
+                                                }
+                                },
+    "unknownCapabilityPolicy":  "fail-closed",
+    "unknownToolPolicy":  "fail-closed",
+    "unknownEffectPolicy":  "fail-closed",
+    "fallbacks":  [
+                      {
+                          "id":  "impeccable-unavailable",
+                          "policy":  "disclose-specialized-review-unavailable"
+                      },
+                      {
+                          "id":  "shadcn-unavailable",
+                          "policy":  "do-not-silently-substitute-21st-as-official"
+                      },
+                      {
+                          "id":  "21st-unavailable",
+                          "policy":  "continue-with-impeccable-and-shadcn-when-sufficient"
+                      },
+                      {
+                          "id":  "img2threejs-unavailable",
+                          "policy":  "do-not-claim-3d-execution"
+                      },
+                      {
+                          "id":  "figma-unavailable",
+                          "policy":  "preserve-safe-local-fallback-and-disclose"
+                      },
+                      {
+                          "id":  "browser-qa-unavailable",
+                          "policy":  "preserve-read-only-evidence-fallback-and-disclose"
+                      },
+                      {
+                          "id":  "context7-unavailable",
+                          "policy":  "continue-without-current-grounding-and-disclose"
+                      },
+                      {
+                          "id":  "storybook-ineligible",
+                          "policy":  "do-not-install-or-start-and-disclose"
+                      }
+                  ]
 }

@@ -1,5 +1,14 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+function Get-CanonicalTextHash {
+    param([Parameter(Mandatory)][string]$Path)
+    $text = [IO.File]::ReadAllText($Path)
+    $normalized = $text.Replace(([string][char]13 + [string][char]10), [string][char]10).Replace([string][char]13, [string][char]10)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($normalized)))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
 . (Join-Path $PSScriptRoot '..\scripts\release-safety.ps1')
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -13,7 +22,7 @@ if ($manifest.license -ne 'Apache-2.0' -or -not (Test-Path -LiteralPath (Join-Pa
 if ($manifest.skills -ne './skills/' -or $manifest.mcpServers -ne './.mcp.json') { throw 'Plugin component paths drifted.' }
 if (-not (Test-Path -LiteralPath (Join-Path $pluginRoot 'skills/frontend-orchestrator/SKILL.md'))) { throw 'frontend-orchestrator is not bundled.' }
 $skillNames = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'skills') -Directory | Sort-Object Name | Select-Object -ExpandProperty Name)
-if (($skillNames -join ',') -ne 'frontend-orchestrator,img2threejs,impeccable') { throw "Plugin source Skills drifted: $($skillNames -join ',')" }
+if (($skillNames -join ',') -ne 'figma-design-to-code,frontend-orchestrator,img2threejs,impeccable') { throw "Plugin source Skills drifted: $($skillNames -join ',')" }
 if ($manifest.PSObject.Properties.Name -contains 'hooks' -or (Test-Path -LiteralPath (Join-Path $pluginRoot 'hooks'))) { throw 'Hooks must remain disabled.' }
 
 $shadcn = $mcp.mcpServers.shadcn
@@ -28,7 +37,7 @@ foreach ($dependency in $external.dependencies) {
     if ($dependency.license -ne 'Apache-2.0' -or $dependency.commitSha -notmatch '^[0-9a-f]{40}$') { throw "Invalid external Skill provenance: $($dependency.id)" }
     if (-not $dependency.adapterBundled -or $dependency.upstreamSnapshotBundled) { throw "Source bundling state drifted: $($dependency.id)" }
     $adapter = Join-Path $pluginRoot ($dependency.adapterPath + '/SKILL.md')
-    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $adapter).Hash.ToLowerInvariant() -ne $dependency.adapterEntrySha256) { throw "Adapter provenance drifted: $($dependency.id)" }
+    if ((Get-CanonicalTextHash $adapter) -ne $dependency.adapterEntrySha256) { throw "Adapter provenance drifted: $($dependency.id)" }
 }
 if (Test-Path -LiteralPath (Join-Path $pluginRoot 'third_party')) { throw 'Upstream snapshots must not exist in plugin source.' }
 $effectPolicy = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot 'security/effect-policy.json') | ConvertFrom-Json
@@ -45,4 +54,4 @@ $impeccable = $externalLock.dependencies | Where-Object id -eq 'impeccable'
 if ($impeccable.noticeSha256 -notmatch '^[0-9a-f]{64}$' -or -not (Test-Path -LiteralPath (Join-Path $repoRoot $impeccable.noticeFile))) { throw 'Impeccable NOTICE provenance is incomplete.' }
 if ((Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $impeccable.noticeFile)).Hash.ToLowerInvariant() -ne $impeccable.noticeSha256) { throw 'Impeccable NOTICE hash drifted.' }
 
-Write-Output 'PASS: plugin source contains exactly three FTK adapters, two MCPs and a fail-closed effect policy.'
+Write-Output 'PASS: plugin source contains the approved Figma adapter, two normal MCPs and a fail-closed effect policy.'
