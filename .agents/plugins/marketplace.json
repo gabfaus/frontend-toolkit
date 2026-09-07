@@ -1,0 +1,15 @@
+{
+  "name": "frontend-toolkit",
+  "interface": {
+    "displayName": "Frontend Toolkit"
+  },
+  "plugins": [
+    {
+      "name": "frontend-toolkit",
+      "source": {
+        "source": "local",
+        "path": "./plugin/frontend-toolkit"
+      }
+    }
+  ]
+}

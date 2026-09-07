@@ -13,6 +13,9 @@ Release, marketplace publico e push permanecem pendentes de autorizacao humana.
 
 - Matriz machine-readable de cobertura do frontend-orchestrator para capabilities, hosts, efeitos e comportamento fail-closed.
 - Readiness documentado para Codex, Claude Code e ChatGPT Web.
+- Marketplace Codex em `.agents/plugins/marketplace.json` com source local relativo compatível com importação e sincronização GitHub.
+- Playwright aceito como `ACCEPT_WITH_RESTRICTIONS`, com integridade verificada, provenance pública ausente explicitamente documentada, dependências alpha divulgadas e sem tarball npm vendorizado ou instalação/download automático.
+- O artefato atual é Desktop only no ChatGPT Web; uma distribuição Web-safe fica como follow-up separado.
 
 ### Changed
 

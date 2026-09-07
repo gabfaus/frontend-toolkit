@@ -238,7 +238,7 @@
     },
     "ChatGPT Web": {
       "expectedSkills": [],
-      "result": "NOT_PUBLISHED_NO_WEB_SAFE_PROFILE",
+      "result": "NOT_SUPPORTED_DESKTOP_ONLY",
       "payloadSkills": [],
       "note": "Only policy/documentation text is portable today; no runtime capability is promised by the current Desktop/local artifact."
     }

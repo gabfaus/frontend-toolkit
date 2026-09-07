@@ -106,15 +106,43 @@ claude plugin install frontend-toolkit@frontend-toolkit
 
 O marketplace usa o asset Claude Code frontend-toolkit-claude-v1.2.0.zip, SHA-256 676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089. Esse apontamento registra a identidade congelada; a URL so deve ser usada apos a auditoria/publicacao do FTK-09M.
 
+## Importar pelo marketplace GitHub do Codex
+
+O repositório contém o marketplace Codex em `.agents/plugins/marketplace.json`. Depois que o repositório estiver publicado, importe em **Workspace settings > Plugins > Add > Import marketplace**:
+
+```text
+Source: https://github.com/gabfaus/frontend-toolkit
+Path:   (vazio; o manifest está na raiz do repositório)
+```
+
+O entry usa o schema oficial `source: "local"` e o caminho relativo `./plugin/frontend-toolkit`. Para fixar uma release, informe a tag ou o commit exato. O import não concede acesso a apps, autenticação ou política de instalação; sincronização diária e **Sync now** são controladas pelo workspace.
+
 ## Codex, Claude Code e ChatGPT Web
 
 O Codex usa o manifest `.codex-plugin/plugin.json`, a marketplace local gerada pelo builder e as seis Skills descobertas no host: `frontend-orchestrator`, `figma-design-to-code`, `impeccable`, `img2threejs`, `frontend-accessibility` e `playwright-cli`. O payload FTK distribui as quatro Skills FTK-owned; as duas ultimas sao condicionais do host/projeto.
 
 O Claude usa `.claude-plugin/plugin.json`, `claude/mcp.json`, as facades locais e exatamente quatro Skills: `frontend-orchestrator`, `figma-design-to-code`, `impeccable` e `img2threejs`. Accessibility e Playwright nao sao adicionados ao Claude apenas para simetria.
 
-O artifact atual nao e uma distribuicao ChatGPT Web. Ele depende de paths locais, PowerShell, Node, runners locais e, no caso do 21st, interpolacao de ambiente para credencial externa. O texto de policy pode ser lido em um host Web compativel, mas nenhuma capability de runtime e prometida. Um profile WEB-SAFE derivado do mesmo repo depende da confirmacao do contrato do host no FTK-09M.
+O artifact atual e `Desktop only` e `NOT SUPPORTED` no ChatGPT Web. Ele depende de `.mcp.json`, paths locais, PowerShell, Node, runners locais e, no caso do 21st, interpolacao de ambiente para credencial externa. Uma distribuicao Web-safe exige contrato oficialmente suportado e fica como follow-up.
 
-A marketplace GitHub Codex/remota tambem permanece pendente de confirmacao do schema e lifecycle oficiais. Nao use `.claude-plugin/marketplace.json` como schema Codex.
+O marketplace GitHub Codex usa `.agents/plugins/marketplace.json` com `source: "local"` e caminho relativo `./plugin/frontend-toolkit`; `.claude-plugin/marketplace.json` continua sendo a superficie Claude.
+## FTK-09M current publication disposition
+
+**CHATGPT WEB v1.2.0:** `NOT SUPPORTED`; o artifact é Desktop only porque declara `.mcp.json`, incluindo Shadcn local e 21st remoto. Uma distribuição Web-safe exigirá contrato oficialmente suportado e fica como follow-up.
+
+**PLAYWRIGHT FINAL RELEASE ACCEPTANCE:** `ACCEPT_WITH_RESTRICTIONS`
+- exact version: `@playwright/cli@0.1.19`.
+- integrity: CLI `sha512-eGXIsYa5D+dC6wHGf+9uEislhPGip1djK+yiNAD7BVsXN3WzzR1J4ClFAhYhyu7wSEFqhcPrqXAYeBJF1dKJ7A==`; effective `playwright` and `playwright-core` integrities are recorded in `integrations/browser-qa.lock.json`.
+- provenance limitation: npm metadata omits trusted publisher, `gitHead` and Sigstore/SLSA attestations; tarball integrity and the official CLI tag were independently verified.
+- alpha dependencies: `playwright@1.63.0-alpha-2026-08-31` and `playwright-core@1.63.0-alpha-2026-08-31`.
+- no vendored npm tarball; no automatic package installation or browser download.
+- replacement/version drift fails closed and requires a new review; do not silently substitute a version.
+- upstream issue: `microsoft/playwright#42500` remains open; no tampering evidence was observed.
+
+**FIGMA:** integration remains link-only; no upstream Figma Skill material is redistributed. The pinned source is governed by the current Figma Developer Terms (effective May 5, 2026), and `FIGMA_WRITE` remains authorization-required/manual-only.
+
+The Codex GitHub import depends on a workspace/account that exposes **Workspace settings > Plugins** and the appropriate installation policy; import does not grant app access or authentication.
+
 
 ## Verificacao minima sem servico externo real
 

@@ -20,9 +20,17 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/.codex-plugin/plugin.json') | ConvertFrom-Json
 $releaseLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release.lock.json') | ConvertFrom-Json
 $readme = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'README.md')
+$codexMarketplace = Get-Content -Raw -LiteralPath (Join-Path $repoRoot '.agents/plugins/marketplace.json') | ConvertFrom-Json
 
 if ($manifest.version -ne $releaseLock.candidateVersion -or $manifest.version -notmatch '^\d+\.\d+\.\d+$') { throw 'Public candidate version drifted.' }
 if ($manifest.license -ne 'Apache-2.0') { throw 'Public plugin license drifted.' }
+if ($codexMarketplace.name -ne 'frontend-toolkit' -or
+    $codexMarketplace.plugins.Count -ne 1 -or
+    $codexMarketplace.plugins[0].name -ne 'frontend-toolkit' -or
+    $codexMarketplace.plugins[0].source.source -ne 'local' -or
+    $codexMarketplace.plugins[0].source.path -ne './plugin/frontend-toolkit') {
+    throw 'Codex GitHub marketplace manifest is missing or has an unsupported source path.'
+}
 if ($releaseLock.sourceSnapshots -ne 'ephemeral-only' -or $releaseLock.artifactSnapshots -ne 'generated-from-pinned-upstreams') { throw 'Snapshot publication strategy drifted.' }
 if ($releaseLock.sourceComposition -ne 'git-head-explicit-file-allowlist' -or
     $releaseLock.artifactInventory -ne 'all-files-force; manifest-self-listed-unhashed') {

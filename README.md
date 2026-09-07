@@ -4,6 +4,22 @@ Frontend Toolkit é um plugin open source para Codex e Claude Code que reúne wo
 
 O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.2.0` está em preparação como release candidate multi-host; não há tag `v1.2.0`, GitHub Release ou publicação de marketplace neste gate. A tag histórica `v1.0.0` permanece imutável.
 
+## Importação pelo marketplace GitHub do Codex
+
+Após a publicação do repositório, um administrador pode importar o marketplace Codex em **Workspace settings > Plugins > Add > Import marketplace**:
+
+```text
+Source: https://github.com/gabfaus/frontend-toolkit
+Path:   (vazio; o manifest está em .agents/plugins/marketplace.json)
+```
+
+O manifest usa o schema oficial `source: "local"` com o caminho relativo `./plugin/frontend-toolkit`. Para uma release reproduzível, selecione a tag ou o commit exato; sincronização diária e **Sync now** são controladas pelo workspace. A importação não concede autenticação, permissões de apps nem política de instalação.
+
+## ChatGPT Web e Desktop
+
+O artefato v1.2.0 é **Desktop only** e **NOT SUPPORTED** no ChatGPT Web. O plugin declara `.mcp.json`, incluindo Shadcn local e 21st remoto; plugins importados com MCP recebem a restrição Desktop only. Um profile Web-safe exigirá contrato oficial e trabalho futuro separado.
+
+
 ## O que o plugin oferece
 
 ```text

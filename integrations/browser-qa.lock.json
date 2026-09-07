@@ -37,19 +37,19 @@
         "url": "https://github.com/microsoft/playwright/issues/42500",
         "statusAtValidation": "OPEN",
         "tamperingEvidence": "none observed or reported",
-        "releaseAcceptance": "explicit convergence/release decision required"
+        "releaseAcceptance": "ACCEPT_WITH_RESTRICTIONS"
       },
       "releaseDecisionRequired": true,
       "supplyChainException": {
         "id": "playwright-cli-public-provenance-caveat",
         "classification": "supply-chain-exception",
         "sourceIntegration": "ACCEPT_WITH_RESTRICTIONS",
-        "releaseAcceptance": "PENDING_FINAL_RELEASE_REVIEW",
+        "releaseAcceptance": "ACCEPT_WITH_RESTRICTIONS",
         "trustedPublisher": "ABSENT",
         "sigstoreSlsa": "ABSENT",
         "issue": "microsoft/playwright#42500",
         "issueStatusAtValidation": "OPEN",
-        "condition": "Do not vendor the npm tarball, auto-install, or silently replace version; final release must re-check provenance, issue status, integrity, and effective alpha dependencies."
+        "condition": "Do not vendor the npm tarball, auto-install, or silently replace version; re-review provenance, issue status, integrity, and effective alpha dependencies on replacement or version drift."
       }
     },
     "effectiveCliRuntime": [
