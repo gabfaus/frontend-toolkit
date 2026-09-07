@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Immutable audit record for prior FTK candidate identities; never replace current release locks.",
+  "releases": [
+    {
+      "version": "1.1.0",
+      "validatedAt": "2026-09-05",
+      "lifecycle": "historical-pre-freeze",
+      "persistentPluginTreeSha256": "146268d1574a1f94928ebbeb196c9b03a2647eda1574d13da3ecac1e7866379f",
+      "persistentArtifactTreeSha256": "f1dce1e8a6fe2b23aa8ae882d6ab9ac738007f34a2d0e74db264abb6c8e9919f",
+      "preFinalCandidatePluginTreeSha256": "647d1a6ffa9aa7b54a6b060b048666430f864de906971e424eaa027cffd6a33b",
+      "preFinalCandidateArtifactTreeSha256": "4be9161e56bba31541d889fbdb1974e69a2aa672f7f8202f3b9588f001bc95be",
+      "preFinalCandidateZipSha256": "4567b39f72df88f2114779f938228406ad5cf342ad4a7f35d5075b4ce1930ba4",
+      "publicationStatus": "not-published",
+      "tagStatus": "not-created",
+      "releaseStatus": "not-created"
+    }
+  ]
+}

@@ -69,9 +69,9 @@ try {
         -not $evidence.manifestsEqual -or -not $evidence.zipInventoriesEqual -or -not $evidence.inventoryValidated) {
         throw 'Independent committed-HEAD evidence did not agree.'
     }
-    $expectedPlugin = '647d1a6ffa9aa7b54a6b060b048666430f864de906971e424eaa027cffd6a33b'
-    $expectedArtifact = '4be9161e56bba31541d889fbdb1974e69a2aa672f7f8202f3b9588f001bc95be'
-    $expectedZip = '4567b39f72df88f2114779f938228406ad5cf342ad4a7f35d5075b4ce1930ba4'
+    $expectedPlugin = 'fdc314fb6f5cfdae63d34de9bc7576e8866b6696e277e541ff3728a950850b5f'
+    $expectedArtifact = '4e863796dd6ca8732752c9ae10f98f8f9817dc9c0fa23941ff72c3adf052d8e5'
+    $expectedZip = 'c71cfdbc6158907ed356e2341f4cabf9a76c4986b6e41232a5fe2607e4da4178'
     if ($evidence.candidatePluginTreeSha256 -cne $expectedPlugin -or
         $evidence.candidateArtifactTreeSha256 -cne $expectedArtifact -or
         $evidence.candidateZipSha256 -cne $expectedZip) {
@@ -82,22 +82,19 @@ try {
         $evidence.candidateZipSha256 -notmatch '^[0-9a-f]{64}$') {
         throw 'Committed-HEAD candidate identity is invalid.'
     }
-    if ($evidence.persistentLocksMatchCandidate -ne $false -or
-        $evidence.lockUpdateRequired -ne $true -or
-        $evidence.lockState -cne 'validated-pending-freeze') {
-        throw 'Coherent previous locks were not reported as VALIDATED_PENDING_FREEZE.'
+    if ($evidence.persistentLocksMatchCandidate -ne $true -or
+        $evidence.lockUpdateRequired -ne $false -or
+        $evidence.lockState -cne 'locked-current-candidate') {
+        throw 'Frozen locks were not reported as LOCKED_CURRENT_CANDIDATE.'
     }
-    if ($evidence.persistentPluginTreeSha256 -eq $evidence.candidatePluginTreeSha256 -or
-        $evidence.persistentArtifactTreeSha256 -eq $evidence.candidateArtifactTreeSha256) {
-        throw 'Persistent locks unexpectedly contain candidate identities.'
-    }
-
     $fixtureLocks = Join-Path $fixture 'locks'
     New-Item -ItemType Directory -Path $fixtureLocks -Force | Out-Null
     $fixtureDistributionPath = Join-Path $fixtureLocks 'distribution.lock.json'
     $fixtureReleasePath = Join-Path $fixtureLocks 'release.lock.json'
     Copy-Item -LiteralPath $distributionPath -Destination $fixtureDistributionPath
     Copy-Item -LiteralPath $releasePath -Destination $fixtureReleasePath
+    $history = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release-history.json') | ConvertFrom-Json
+    $historical = @($history.releases | Where-Object version -CEQ '1.1.0')[0]
 
     function Write-FixtureJson {
         param([Parameter(Mandatory)][string]$Path,[Parameter(Mandatory)]$Document)
@@ -106,8 +103,8 @@ try {
 
     $tornDistribution = Get-Content -Raw -LiteralPath $fixtureDistributionPath | ConvertFrom-Json
     $tornRelease = Get-Content -Raw -LiteralPath $fixtureReleasePath | ConvertFrom-Json
-    $tornDistribution.observedSnapshotTreeSha256 = $expectedPlugin
-    $tornRelease.observedArtifactTreeSha256 = $expectedArtifact
+    $tornDistribution.observedSnapshotTreeSha256 = $historical.persistentPluginTreeSha256
+    $tornRelease.observedArtifactTreeSha256 = $historical.persistentArtifactTreeSha256
     Write-FixtureJson -Path $fixtureDistributionPath -Document $tornDistribution
     Write-FixtureJson -Path $fixtureReleasePath -Document $tornRelease
     $tornRejected = $false
@@ -145,6 +142,19 @@ try {
     }
     if (-not $mixedVersionRejected) { throw 'Synthetic mixed version/identity state was accepted.' }
 
+    $pendingDistribution = Get-Content -Raw -LiteralPath $distributionPath | ConvertFrom-Json
+    $pendingRelease = Get-Content -Raw -LiteralPath $releasePath | ConvertFrom-Json
+    $pendingDistribution.observedSnapshotTreeSha256 = $historical.persistentPluginTreeSha256
+    $pendingRelease.observedPluginTreeSha256 = $historical.persistentPluginTreeSha256
+    $pendingRelease.observedArtifactTreeSha256 = $historical.persistentArtifactTreeSha256
+    Write-FixtureJson -Path $fixtureDistributionPath -Document $pendingDistribution
+    Write-FixtureJson -Path $fixtureReleasePath -Document $pendingRelease
+    $pendingEvidence = & $reconciler -SourceMode CommittedHead -ExpectedCommit $head -DistributionLockPath $fixtureDistributionPath -ReleaseLockPath $fixtureReleasePath
+    if ($pendingEvidence.lockState -cne 'validated-pending-freeze' -or
+        $pendingEvidence.persistentLocksMatchCandidate -ne $false -or
+        $pendingEvidence.lockUpdateRequired -ne $true) {
+        throw 'Coherent historical fixture was not reported as VALIDATED_PENDING_FREEZE.'
+    }
     $lockedDistribution = Get-Content -Raw -LiteralPath $distributionPath | ConvertFrom-Json
     $lockedRelease = Get-Content -Raw -LiteralPath $releasePath | ConvertFrom-Json
     $lockedDistribution.observedSnapshotTreeSha256 = $expectedPlugin
@@ -163,7 +173,7 @@ try {
     Write-Output "PASS: DevelopmentWorkingTree produced diagnostic candidate $diagnosticHash without persistent lock writes."
     Write-Output 'PASS: DevelopmentWorkingTree lock persistence failed closed and left both locks unchanged.'
     Write-Output "PASS: two committed-HEAD builds agreed at plugin $($evidence.candidatePluginTreeSha256), artifact $($evidence.candidateArtifactTreeSha256) and ZIP $($evidence.candidateZipSha256)."
-    Write-Output 'PASS: coherent previous locks remained unchanged and reported VALIDATED_PENDING_FREEZE.'
+    Write-Output 'PASS: frozen locks report LOCKED_CURRENT_CANDIDATE; historical fixture reports VALIDATED_PENDING_FREEZE.'
     Write-Output 'PASS: torn and malformed lock fixtures failed closed; explicit LOCKED_CURRENT_CANDIDATE was accepted only when fully aligned.'
 } finally {
     if (Test-Path -LiteralPath $fixture) {

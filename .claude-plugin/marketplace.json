@@ -1,6 +1,6 @@
 {
   "name": "frontend-toolkit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Frontend Toolkit plugins for Codex and Claude Code.",
   "owner": {
     "name": "Gabriel"
@@ -9,7 +9,7 @@
     {
       "name": "frontend-toolkit",
       "displayName": "Frontend Toolkit",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "description": "Route frontend, UX, component and image-to-3D work across three Skills and guarded Shadcn and 21st MCP integrations.",
       "author": {
         "name": "Gabriel"
@@ -18,8 +18,8 @@
       "license": "Apache-2.0",
       "source": {
         "source": "archive",
-        "url": "https://github.com/gabfaus/frontend-toolkit/releases/download/v1.1.0/frontend-toolkit-claude-v1.1.0.zip",
-        "sha256": "8f675e5d964532efde733be8f4ce38b7b14a6c0f6d3427748ea98921c889cd7f"
+        "url": "https://github.com/gabfaus/frontend-toolkit/releases/download/v1.2.0/frontend-toolkit-claude-v1.2.0.zip",
+        "sha256": "676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089"
       }
     }
   ]

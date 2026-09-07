@@ -6,7 +6,7 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "146268d1574a1f94928ebbeb196c9b03a2647eda1574d13da3ecac1e7866379f",
+  "observedSnapshotTreeSha256": "fdc314fb6f5cfdae63d34de9bc7576e8866b6696e277e541ff3728a950850b5f",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",
@@ -47,5 +47,5 @@
     "pluginCreator": "source-and-distribution-pass",
     "skillCreator": "all three discovered Skills are FTK-owned adapters; upstream snapshots are non-discoverable reference payloads"
   },
-  "notes": "Observed v1.1.0 RC tree hash covers the three FTK-owned Skills, the security boundary, the project Apache-2.0 LICENSE and non-discoverable byte-equivalent upstream snapshots. Regenerate and update this observation whenever packaging content changes."
+  "notes": "Observed v1.2.0 frozen RC tree hash covers the four Codex-distributed FTK-owned Skills, the security boundary, the project Apache-2.0 LICENSE and non-discoverable byte-equivalent upstream snapshots. Regenerate and update this observation whenever packaging content changes."
 }

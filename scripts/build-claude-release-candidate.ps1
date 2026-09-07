@@ -56,7 +56,7 @@ function Assert-ClaudeMetadata {
         $ClaudeManifest.repository -cne $Metadata.repository) { throw 'Repository metadata is invalid or drifted.' }
     if ($ClaudeManifest.mcpServers -cne './.mcp.json') { throw 'Claude manifest must reference the local MCP file.' }
     if ($ClaudeManifest.defaultEnabled -ne $false) { throw 'Claude plugin must default to disabled.' }
-    if ($Metadata.version -cne '1.1.0' -or $CodexManifest.version -cne '1.1.0' -or $ClaudeManifest.version -cne '1.1.0') { throw 'Claude release version must be 1.1.0 across metadata and host manifests.' }
+    if ($Metadata.version -notmatch '^\d+\.\d+\.\d+$' -or $Metadata.version -cne $CodexManifest.version -or $Metadata.version -cne $ClaudeManifest.version) { throw 'Claude release version must be a shared strict SemVer across metadata and host manifests.' }
 }
 
 function Assert-ClaudeMcp {
@@ -142,7 +142,7 @@ function Assert-ClaudeRuntimeMetadata {
     Assert-ExactStringSet -Name 'Claude runtime package fields' -Actual @($package.Keys) -Expected @('name', 'version', 'private', 'type', 'engines', 'dependencies')
     Assert-ExactStringSet -Name 'Claude runtime lock fields' -Actual @($lock.Keys) -Expected @('name', 'version', 'lockfileVersion', 'requires', 'packages')
     Assert-ExactStringSet -Name 'Claude runtime provenance fields' -Actual @($provenance.Keys) -Expected @('schemaVersion', 'generatedAt', 'purpose', 'registry', 'resolution', 'nodeModulesTreeSha256', 'packages')
-    if ($package['name'] -cne 'frontend-toolkit-claude-mcp-runtime' -or $package['version'] -cne '1.1.0' -or
+    if ($package['name'] -cne 'frontend-toolkit-claude-mcp-runtime' -or $package['version'] -notmatch '^\d+\.\d+\.\d+$' -or
         $package['private'] -ne $true -or $package['type'] -cne 'module' -or $package['engines']['node'] -cne '>=20') {
         throw 'Claude runtime package identity or engine is invalid.'
     }
@@ -152,7 +152,7 @@ function Assert-ClaudeRuntimeMetadata {
         throw 'Claude direct MCP SDK dependencies must be pinned to 2.0.0.'
     }
     $lockRoot = $lock['packages']['']
-    if ($lock['version'] -cne '1.1.0' -or $lockRoot['version'] -cne '1.1.0' -or $lock['lockfileVersion'] -ne 3 -or $lock['requires'] -ne $true -or
+    if ($lock['version'] -cne $package['version'] -or $lockRoot['version'] -cne $package['version'] -or $lock['lockfileVersion'] -ne 3 -or $lock['requires'] -ne $true -or
         $lockRoot['dependencies']['@modelcontextprotocol/client'] -cne '2.0.0' -or
         $lockRoot['dependencies']['@modelcontextprotocol/server'] -cne '2.0.0') {
         throw 'Claude runtime lock root is invalid.'
@@ -498,6 +498,7 @@ try {
     $commonStage = Join-Path $stageRoot 'common'
     $claudeStage = Join-Path $stageRoot 'claude'
     $sourceRoot = Copy-ClaudeSources -RepositoryRoot $repoRoot -StageRoot $stageRoot -AllowWorkingTree:$DevelopmentWorkingTree
+    $metadata = Assert-ClaudeJsonFile -Path (Join-Path $sourceRoot 'integrations/plugin-metadata.json')
 
     $commonArguments = @{ Destination = $commonStage }
     if ($DevelopmentWorkingTree) { $commonArguments.DevelopmentWorkingTree = $true }
@@ -526,6 +527,9 @@ try {
         Copy-Item -LiteralPath (Join-Path $runtimeSource $runtimeFile) -Destination (Join-Path $claudeRuntimeDestination $runtimeFile)
     }
     $runtimeMetadata = Assert-ClaudeRuntimeMetadata -RuntimeRoot $runtimeSource
+    if ($runtimeMetadata.Package.version -cne $metadata.version) {
+        throw 'Claude runtime version must match the common release metadata.'
+    }
     $runtimeTreeHash = Invoke-ClaudeRuntimeInstall -RuntimeRoot $claudeRuntimeDestination -StageRoot $stageRoot
     $claudeOnlyPaths = @(
         'security/claude/21st-facade.mjs'
@@ -541,7 +545,7 @@ try {
     )
     Assert-ClaudeRuntimeMaterialized -RuntimeRoot $claudeRuntimeDestination -Metadata $runtimeMetadata | Out-Null
 
-    $metadata = Assert-ClaudeJsonFile -Path (Join-Path $sourceRoot 'integrations/plugin-metadata.json')
+
     $codexManifest = Assert-ClaudeJsonFile -Path (Join-Path $commonStage '.codex-plugin/plugin.json')
     $claudeManifest = Assert-ClaudeJsonFile -Path $claudeManifestDestination
     $claudeMcp = Assert-ClaudeJsonFile -Path $claudeMcpDestination

@@ -2,7 +2,7 @@
 
 Frontend Toolkit é um plugin open source para Codex e Claude Code que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.1.0` está em preparação como release candidate multi-host; não há tag `v1.1.0`, GitHub Release ou publicação de marketplace neste gate. A tag histórica `v1.0.0` permanece imutável.
+O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.2.0` está em preparação como release candidate multi-host; não há tag `v1.2.0`, GitHub Release ou publicação de marketplace neste gate. A tag histórica `v1.0.0` permanece imutável.
 
 ## O que o plugin oferece
 
@@ -49,16 +49,16 @@ As versões e hashes validados estão em `integrations/toolchain.lock.json`, `in
 
 ## Instalação a partir do source
 
-A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.1.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
+A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.2.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
 
 Depois de clonar este repositório:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-codex
-codex plugin marketplace add "$PWD\release-artifacts\v1.1.0-codex"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-codex
+codex plugin marketplace add "$PWD\release-artifacts\v1.2.0-codex"
 codex plugin add frontend-toolkit@frontend-toolkit-local
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-claude
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-claude
 ```
 
 O primeiro comando baixa somente os refs pinados para `external/`. O segundo cria a marketplace Codex com o plugin completo e os snapshots; o último cria o artefato Claude com a facade local e seu runtime privado. `release-artifacts/` é ignorado pelo Git. O source continua sem snapshots nem dependências materializadas.
@@ -121,4 +121,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.1.0` está em preparação como release candidate multi-host; os artefatos Codex e Claude são separados, a tag `v1.1.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.2.0` está em preparação como release candidate multi-host; os artefatos Codex e Claude são separados, a tag `v1.2.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada.

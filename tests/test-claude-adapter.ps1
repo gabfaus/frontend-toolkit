@@ -108,9 +108,9 @@ $launcherSource = Get-Content -Raw -LiteralPath $launcherSourcePath
 $facadeSource = Get-Content -Raw -LiteralPath $facadeSourcePath
 $facadeLauncherSource = Get-Content -Raw -LiteralPath $facadeLauncherSourcePath
 
-Assert-Equal $codexManifest.version '1.1.0' 'Codex public version'
-Assert-Equal $metadata.version '1.1.0' 'Common public version'
-Assert-Equal $claudeManifest.version '1.1.0' 'Claude public version'
+Assert-Equal $codexManifest.version '1.2.0' 'Codex public version'
+Assert-Equal $metadata.version '1.2.0' 'Common public version'
+Assert-Equal $claudeManifest.version '1.2.0' 'Claude public version'
 Assert-PropertySet -Object $metadata -Expected @('name', 'version', 'displayName', 'description', 'author', 'repository', 'license', 'keywords') -Label 'Common metadata fields'
 Assert-PropertySet -Object $claudeManifest -Expected @('name', 'version', 'displayName', 'description', 'author', 'repository', 'license', 'keywords', 'mcpServers', 'defaultEnabled') -Label 'Claude manifest fields'
 if ($claudeManifest.PSObject.Properties.Name -contains 'skills') { throw 'Claude manifest contains a forbidden optional field.' }

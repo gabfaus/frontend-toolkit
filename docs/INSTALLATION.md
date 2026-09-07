@@ -7,7 +7,7 @@ A release pública deverá entregar artefatos separados para Codex e Claude Code
 O artefato contém:
 
 ```text
-frontend-toolkit-v1.1.0-codex/
+frontend-toolkit-v1.2.0-codex/
 ├── .agents/plugins/marketplace.json
 ├── plugins/frontend-toolkit/
 │   ├── .codex-plugin/plugin.json
@@ -41,8 +41,8 @@ Na raiz de um clone limpo:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-codex
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.1.0-claude
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-codex
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-claude
 ```
 
 A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licenças. O builder falha se o destino existir, sobrepuser o source ou se qualquer checkout divergir do lock.
@@ -50,7 +50,7 @@ A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licen�
 ## Instalar em uma ação
 
 ```powershell
-codex plugin marketplace add "$PWD\release-artifacts\v1.0.0"
+codex plugin marketplace add "$PWD\release-artifacts\v1.2.0-codex"
 codex plugin add frontend-toolkit@frontend-toolkit-local
 ```
 
@@ -71,7 +71,7 @@ Adicionar a marketplace e o plugin materializa arquivos e registra as três Skil
 
 Usar uma Skill pode executar código local, iniciar subprocessos, ler ou escrever no workspace e acessar rede conforme o fluxo escolhido. Iniciar o Shadcn via `npx` pode baixar e executar o pacote exato pinado se ele não estiver em cache. Usar um MCP pode iniciar seu processo e comunicação de rede. Comandos retornados por registry ou MCP são dados: revise-os antes de executar.
 
-G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. Este gate prepara o RC `1.1.0`, mas não cria tag, GitHub Release ou marketplace público. Para uso por terceiros, aguarde os assets oficiais e valide seus SHA-256 contra o manifest externo da futura release.
+G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. Este gate prepara o RC `1.2.0`, mas não cria tag, GitHub Release ou marketplace público. Para uso por terceiros, aguarde os assets oficiais e valide seus SHA-256 contra o manifest externo da futura release.
 
 Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
 
@@ -104,8 +104,26 @@ claude plugin marketplace add gabfaus/frontend-toolkit
 claude plugin install frontend-toolkit@frontend-toolkit
 ~~~
 
-O marketplace usa o asset Claude Code `frontend-toolkit-claude-v1.1.0.zip`, fixado pelo SHA-256 `8f675e5d964532efde733be8f4ce38b7b14a6c0f6d3427748ea98921c889cd7f`.
+O marketplace usa o asset Claude Code frontend-toolkit-claude-v1.2.0.zip, SHA-256 676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089. Esse apontamento registra a identidade congelada; a URL so deve ser usada apos a auditoria/publicacao do FTK-09M.
 
+## Codex, Claude Code e ChatGPT Web
+
+O Codex usa o manifest `.codex-plugin/plugin.json`, a marketplace local gerada pelo builder e as seis Skills descobertas no host: `frontend-orchestrator`, `figma-design-to-code`, `impeccable`, `img2threejs`, `frontend-accessibility` e `playwright-cli`. O payload FTK distribui as quatro Skills FTK-owned; as duas ultimas sao condicionais do host/projeto.
+
+O Claude usa `.claude-plugin/plugin.json`, `claude/mcp.json`, as facades locais e exatamente quatro Skills: `frontend-orchestrator`, `figma-design-to-code`, `impeccable` e `img2threejs`. Accessibility e Playwright nao sao adicionados ao Claude apenas para simetria.
+
+O artifact atual nao e uma distribuicao ChatGPT Web. Ele depende de paths locais, PowerShell, Node, runners locais e, no caso do 21st, interpolacao de ambiente para credencial externa. O texto de policy pode ser lido em um host Web compativel, mas nenhuma capability de runtime e prometida. Um profile WEB-SAFE derivado do mesmo repo depende da confirmacao do contrato do host no FTK-09M.
+
+A marketplace GitHub Codex/remota tambem permanece pendente de confirmacao do schema e lifecycle oficiais. Nao use `.claude-plugin/marketplace.json` como schema Codex.
+
+## Verificacao minima sem servico externo real
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\test-orchestrator-coverage.ps1
+node .\tests\test-context7-facade.mjs
+```
+
+O primeiro comando prova o routing e o fail-closed sem MCP. O segundo usa a facade com transporte sintetico local; ele nao requer Context7 real. Para discovery real, use um `CODEX_HOME` temporario e nao copie autenticacao, cookies, tokens ou config global.
 ## Desinstalar
 
 ```powershell

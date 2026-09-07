@@ -4,6 +4,21 @@ Este projeto segue [Semantic Versioning 2.0.0](https://semver.org/) e mantém mu
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-07
+
+Release candidate congelada para auditoria de publicacao no FTK-09M. Tag, GitHub
+Release, marketplace publico e push permanecem pendentes de autorizacao humana.
+
+### Added
+
+- Matriz machine-readable de cobertura do frontend-orchestrator para capabilities, hosts, efeitos e comportamento fail-closed.
+- Readiness documentado para Codex, Claude Code e ChatGPT Web.
+
+### Changed
+
+- Locks, manifests e runtime Claude alinhados a candidata 1.2.0.
+- @playwright/cli@0.1.19 preservado com aceitacao de source restrita e revisao final de release pendente.
+
 - Preparação pública, documentação de instalação, segurança, contribuição, versionamento e release.
 
 ## [1.1.0] - 2026-09-05

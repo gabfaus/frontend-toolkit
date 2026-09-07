@@ -124,9 +124,13 @@ try {
 
     $releaseLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release.lock.json') | ConvertFrom-Json
     $distributionLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/distribution.lock.json') | ConvertFrom-Json
-    $historicalIdentity = '146268d1574a1f94928ebbeb196c9b03a2647eda1574d13da3ecac1e7866379f'
-    if ($releaseLock.candidateVersion -cne '1.1.0' -or $releaseLock.observedPluginTreeSha256 -cne $historicalIdentity -or $distributionLock.observedSnapshotTreeSha256 -cne $historicalIdentity) {
-        throw 'Historical v1.1 adapter identity was changed or misclassified.'
+    $history = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release-history.json') | ConvertFrom-Json
+    $historical = @($history.releases | Where-Object version -CEQ '1.1.0')[0]
+    if ($releaseLock.candidateVersion -cne '1.2.0' -or
+        $releaseLock.observedPluginTreeSha256 -ceq $historical.persistentPluginTreeSha256 -or
+        $distributionLock.observedSnapshotTreeSha256 -ceq $historical.persistentPluginTreeSha256 -or
+        $releaseLock.observedArtifactTreeSha256 -ceq $historical.persistentArtifactTreeSha256) {
+        throw 'Current v1.2 locks overwrote history or remain on the historical v1.1 identities.'
     }
 
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot -DevelopmentWorkingTree | Out-Null
@@ -137,7 +141,7 @@ try {
 
     Write-Output 'PASS: clean CRLF clone exports canonical committed LF bytes for adapters, state guard and structural validator.'
     Write-Output 'PASS: committed adapter changes and stale expected hashes fail closed.'
-    Write-Output "PASS: historical v1.1 identity remains immutable at $historicalIdentity."
+    Write-Output "PASS: historical v1.1 identities remain immutable in integrations/release-history.json."
     Write-Output "PASS: current v1.2 candidate tree validates at $candidateTreeHash; this is pre-final evidence only."
 } finally {
     if (Test-Path -LiteralPath $fixture) {
