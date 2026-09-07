@@ -69,9 +69,9 @@ try {
         -not $evidence.manifestsEqual -or -not $evidence.zipInventoriesEqual -or -not $evidence.inventoryValidated) {
         throw 'Independent committed-HEAD evidence did not agree.'
     }
-    $expectedPlugin = 'fdc314fb6f5cfdae63d34de9bc7576e8866b6696e277e541ff3728a950850b5f'
-    $expectedArtifact = '4e863796dd6ca8732752c9ae10f98f8f9817dc9c0fa23941ff72c3adf052d8e5'
-    $expectedZip = 'c71cfdbc6158907ed356e2341f4cabf9a76c4986b6e41232a5fe2607e4da4178'
+    $expectedPlugin = '23c74faed4153944732e900195a62e09fc9240366fb5bfca2285d985df4c78bc'
+    $expectedArtifact = 'f81fec8cb9875cf6f14170211420bbea8963e1fb91093a001bf54777b9170f1f'
+    $expectedZip = 'eeccc19f6965578104626ab0c685335470a6446fa888dd0a5e1495ee7d5b24de'
     if ($evidence.candidatePluginTreeSha256 -cne $expectedPlugin -or
         $evidence.candidateArtifactTreeSha256 -cne $expectedArtifact -or
         $evidence.candidateZipSha256 -cne $expectedZip) {

@@ -24,6 +24,7 @@ Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Force | Where-Object { $_.F
 if ($secretHits.Count) { throw "Potential secret material found: $($secretHits -join ', ')" }
 
 & (Join-Path $repoRoot 'tests/test-release-safety.ps1')
+& (Join-Path $repoRoot 'tests/test-cross-worktree-determinism.ps1')
 & (Join-Path $repoRoot 'tests/test-plugin-packaging.ps1')
 & (Join-Path $repoRoot 'tests/test-impeccable-detector-capability.ps1')
 & (Join-Path $repoRoot 'tests/test-impeccable-integrated-boundary.ps1')

@@ -63,10 +63,6 @@ function Get-StaticHtmlTreeHash([string]$Root) {
     try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($canonical -join [char]10))))).Replace('-', '').ToLowerInvariant() }
     finally { $sha.Dispose() }
 }$staticHtmlLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
-$staticHtmlSourceRoot = (Resolve-Path (Join-Path $repoRoot $staticHtmlLock.snapshot.path)).Path
-$staticHtmlSourceEntries = @(Get-ArtifactFileEntries -Root $staticHtmlSourceRoot)
-$staticHtmlSourceBytes = Get-StaticHtmlCanonicalByteCount -Root $staticHtmlSourceRoot
-if ($staticHtmlSourceEntries.Count -ne [int]$staticHtmlLock.snapshot.fileCount -or $staticHtmlSourceBytes -ne [long]$staticHtmlLock.snapshot.bytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot) -cne $staticHtmlLock.snapshot.treeSha256) { throw 'Canonical static-HTML source snapshot identity mismatch.' }
 $staticHtmlExpectedPackages = @($staticHtmlLock.packages | ForEach-Object { "$($_.name)@$($_.version)" } | Sort-Object)
 if ($staticHtmlExpectedPackages.Count -ne [int]$staticHtmlLock.snapshot.packageCount) { throw 'Canonical static-HTML package count mismatch.' }
 $destinationPath = [IO.Path]::GetFullPath($Destination)
@@ -95,7 +91,23 @@ try {
     $approvedSourceRoot = Join-Path $stageRoot 'approved-source'
     New-Item -ItemType Directory -Path $approvedSourceRoot, $destinationPath -Force | Out-Null
     if ($DevelopmentWorkingTree) {
+        $staticHtmlSourceRoot = (Resolve-Path (Join-Path $repoRoot $staticHtmlLock.snapshot.path)).Path
+    } else {
+        $staticHtmlArchive = Join-Path $stageRoot 'static-html-source.tar'
+        Assert-SafeGitArchiveTree -Repository $repoRoot -Commit 'HEAD' -Context 'canonical static-HTML source' -Paths @([string]$staticHtmlLock.snapshot.path)
+        Export-CanonicalGitFiles -Repository $repoRoot -Commit 'HEAD' -DestinationArchive $staticHtmlArchive -Paths @([string]$staticHtmlLock.snapshot.path)
+        $staticHtmlExtract = Join-Path $stageRoot 'static-html-source'
+        New-Item -ItemType Directory -Path $staticHtmlExtract -Force | Out-Null
+        & tar -xf $staticHtmlArchive -C $staticHtmlExtract
+        Assert-NativeSuccess 'Canonical static-HTML source extraction'
+        $staticHtmlSourceRoot = Join-Path $staticHtmlExtract $staticHtmlLock.snapshot.path
+    }
+    $staticHtmlSourceEntries = @(Get-ArtifactFileEntries -Root $staticHtmlSourceRoot)
+    $staticHtmlSourceBytes = Get-StaticHtmlCanonicalByteCount -Root $staticHtmlSourceRoot
+    if ($staticHtmlSourceEntries.Count -ne [int]$staticHtmlLock.snapshot.fileCount -or $staticHtmlSourceBytes -ne [long]$staticHtmlLock.snapshot.bytes -or (Get-StaticHtmlTreeHash -Root $staticHtmlSourceRoot) -cne $staticHtmlLock.snapshot.treeSha256) { throw 'Canonical static-HTML source snapshot identity mismatch.' }
+    if ($DevelopmentWorkingTree) {
         New-Item -ItemType Directory -Path (Join-Path $approvedSourceRoot 'plugin/frontend-toolkit') -Force | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $approvedSourceRoot 'integrations') -Force | Out-Null
         foreach ($relativePath in $sourceFileAllowlist) {
             $sourcePath = Join-Path $pluginSource $relativePath
             $approvedPath = Join-Path $approvedSourceRoot ('plugin/frontend-toolkit/' + $relativePath)
@@ -103,9 +115,10 @@ try {
             Copy-Item -LiteralPath $sourcePath -Destination $approvedPath
         }
         Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $approvedSourceRoot 'LICENSE')
+        Copy-Item -LiteralPath (Join-Path $repoRoot 'integrations/toolchain.lock.json') -Destination (Join-Path $approvedSourceRoot 'integrations/toolchain.lock.json')
     } else {
         $approvedSourceTar = Join-Path $stageRoot 'approved-source.tar'
-        $approvedRepoPaths = @('LICENSE') + @($sourceFileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
+        $approvedRepoPaths = @('LICENSE', 'integrations/toolchain.lock.json') + @($sourceFileAllowlist | ForEach-Object { 'plugin/frontend-toolkit/' + $_ })
         Assert-SafeGitArchiveTree -Repository $repoRoot -Commit 'HEAD' -Context 'approved source' -Paths $approvedRepoPaths
         Export-CanonicalGitFiles -Repository $repoRoot -Commit 'HEAD' -DestinationArchive $approvedSourceTar -Paths $approvedRepoPaths
         & tar -xf $approvedSourceTar -C $approvedSourceRoot
@@ -121,7 +134,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $approvedSourceRoot 'LICENSE') -Destination (Join-Path $destinationPath 'LICENSE')
     $toolchainArtifact = Join-Path $destinationPath 'integrations/toolchain.lock.json'
     New-Item -ItemType Directory -Path (Split-Path $toolchainArtifact) -Force | Out-Null
-    Copy-Item -LiteralPath (Join-Path $repoRoot 'integrations/toolchain.lock.json') -Destination $toolchainArtifact
+    Copy-Item -LiteralPath (Join-Path $approvedSourceRoot 'integrations/toolchain.lock.json') -Destination $toolchainArtifact
     $staticHtmlArtifactRoot = Join-Path $destinationPath 'third_party/static-html-dependencies'
     $staticHtmlArtifactModuleRoot = Join-Path $staticHtmlArtifactRoot 'node_modules'
     New-Item -ItemType Directory -Path $staticHtmlArtifactModuleRoot -Force | Out-Null
