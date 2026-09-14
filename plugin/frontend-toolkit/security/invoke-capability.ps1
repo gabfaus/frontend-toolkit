@@ -32,11 +32,31 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $script:Img2ThreejsLauncherBoundParameters = @{} + $PSBoundParameters
 
+$executionContractPath = Join-Path $PSScriptRoot 'execution-contract.ps1'
+if (-not (Test-Path -LiteralPath $executionContractPath -PathType Leaf)) { throw 'FTK execution contract is missing.' }
+. $executionContractPath
+
 function Assert-AllowedImg2ThreejsParameters {
     param([Parameter(Mandatory)][string[]]$Allowed)
     $common = @([Management.Automation.Cmdlet]::CommonParameters) + @([Management.Automation.Cmdlet]::OptionalCommonParameters)
     $unexpected = @($script:Img2ThreejsLauncherBoundParameters.Keys | Where-Object { $_ -notin $Allowed -and $_ -notin $common })
     if ($unexpected.Count) { throw ('Operation received unregistered inputs: ' + ($unexpected -join ', ')) }
+}
+
+function Throw-FtkPolicyRejection {
+    param(
+        [Parameter(Mandatory)][string]$Operation,
+        [Parameter(Mandatory)]$Definition,
+        [Parameter(Mandatory)][string]$AuthorizationDecision,
+        [Parameter(Mandatory)][string]$Message
+    )
+
+    $capability = if ($Definition.skill) { [string]$Definition.skill } else { 'unknown' }
+    $envelope = New-FtkPolicyRejectionEnvelope -Capability $capability -Operation $Operation `
+        -AuthorizationDecision $AuthorizationDecision -Reason $Message
+    $exception = [InvalidOperationException]::new($Message)
+    $exception.Data['ftkExecutionEnvelope'] = $envelope
+    throw $exception
 }
 
 $policyPath = Join-Path $PSScriptRoot 'effect-policy.json'
@@ -63,11 +83,17 @@ if ($definition.skill -ceq 'impeccable' -and $definition.status -cne 'enabled') 
         if ([string]::IsNullOrWhiteSpace($ProjectRoot) -or [string]::IsNullOrWhiteSpace($InputPath) -or
             [IO.Path]::IsPathRooted($InputPath) -or $InputPath -match '(^|[\\/])\.\.([\\/]|$)' -or
             [IO.Path]::GetExtension($InputPath).ToLowerInvariant() -notin @('.html','.htm')) {
-            throw 'Browser-file detector requires one relative contained HTML InputPath and ProjectRoot.'
+            Throw-FtkInvalidInput -Capability $definition.skill -Operation $Operation `
+                -Reason 'Browser-file detector requires one relative contained HTML InputPath and ProjectRoot.'
         }
-        if ($DetectorOptionsJson -and $DetectorOptionsJson.Length -gt 65536) { throw 'DetectorOptionsJson exceeds the 64 KiB limit.' }
+        if ($DetectorOptionsJson -and $DetectorOptionsJson.Length -gt 65536) {
+            Throw-FtkInvalidInput -Capability $definition.skill -Operation $Operation -Reason 'DetectorOptionsJson exceeds the 64 KiB limit.'
+        }
     }
-    Assert-AllowedImg2ThreejsParameters $allowed
+    if ($definition.skill -ceq 'impeccable') {
+        try { Assert-AllowedImg2ThreejsParameters $allowed }
+        catch { Throw-FtkInvalidInput -Capability $definition.skill -Operation $Operation -Reason $_.Exception.Message }
+    } else { Assert-AllowedImg2ThreejsParameters $allowed }
     $decision = if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) {
         'authorization-required'
     } elseif ($definition.status.StartsWith('explicitly-denied', [StringComparison]::Ordinal)) {
@@ -85,16 +111,22 @@ if ($definition.skill -ceq 'impeccable' -and $definition.status -cne 'enabled') 
             authorizationRequirement = $definition.authorizationRequirement
             handler = $definition.handler
             handlerInvoked = $false
+            execution = New-FtkCapabilityExecutionEnvelope -Capability $definition.skill -Operation $definition.id `
+                -PolicyStatus POLICY_REJECTION -AuthorizationDecision $decision
         } | ConvertTo-Json -Depth 8
         return
     }
     if ($decision -ceq 'authorization-required') {
-        throw ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
+        Throw-FtkPolicyRejection -Operation $Operation -Definition $definition `
+            -AuthorizationDecision AUTHORIZATION_REQUIRED `
+            -Message ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
     }
-    throw ('Operation is not enabled: ' + $Operation)
+    Throw-FtkPolicyRejection -Operation $Operation -Definition $definition `
+        -AuthorizationDecision DENIED -Message ('Operation is not enabled: ' + $Operation)
 }
 if ($definition.status -ne 'enabled') {
     if ($PlanOnly) {
+        $planDecision = if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) { 'AUTHORIZATION_REQUIRED' } else { 'DENIED' }
         [pscustomobject][ordered]@{
             schemaVersion = $policy.schemaVersion
             operation = $definition.id
@@ -107,13 +139,18 @@ if ($definition.status -ne 'enabled') {
             handler = $definition.handler
             handlerInvoked = $false
             externalCall = $false
+            execution = New-FtkCapabilityExecutionEnvelope -Capability $definition.skill -Operation $definition.id `
+                -PolicyStatus POLICY_REJECTION -AuthorizationDecision $planDecision
         } | ConvertTo-Json -Depth 12
         return
     }
     if ($definition.status.StartsWith('authorization-required', [StringComparison]::Ordinal)) {
-        throw ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
+        Throw-FtkPolicyRejection -Operation $Operation -Definition $definition `
+            -AuthorizationDecision AUTHORIZATION_REQUIRED `
+            -Message ('AUTHORIZATION_REQUIRED: no non-forgeable host grant is available for operation ' + $Operation + '.')
     }
-    throw ('Operation is not enabled: ' + $Operation)
+    Throw-FtkPolicyRejection -Operation $Operation -Definition $definition `
+        -AuthorizationDecision DENIED -Message ('Operation is not enabled: ' + $Operation)
 }
 
 if ($definition.handler -eq 'builtin.capability-summary') {
@@ -144,7 +181,8 @@ switch ($definition.handler) {
         if ($Operation -in @('impeccable.hooks.status','impeccable.doctor.report')) { $allowed += 'ProjectRoot' }
         if ($Operation -ceq 'impeccable.live.event-mediate') { $allowed += 'EventJson' }
         if ($Operation -ceq 'impeccable.concept.local-fallback') { $allowed += @('Scope','Key','Mode') }
-        Assert-AllowedImg2ThreejsParameters $allowed
+        try { Assert-AllowedImg2ThreejsParameters $allowed }
+        catch { Throw-FtkInvalidInput -Capability 'impeccable' -Operation $Operation -Reason $_.Exception.Message }
         $arguments = @{ Operation = $Operation; PlanOnly = $PlanOnly }
         if ($Operation -ceq 'impeccable.context.local') { $arguments.ProjectRoot = $ProjectRoot; $arguments.Capability = $Capability }
         if ($Operation -in @('impeccable.detector.local','impeccable.detector.project')) { $arguments.ProjectRoot = $ProjectRoot; $arguments.InputPath = $InputPath; $arguments.DetectorOptionsJson = $DetectorOptionsJson }
@@ -199,5 +237,27 @@ switch ($definition.handler) {
         return
     }
     default { throw ('Unrecognized handler is denied for operation: ' + $Operation) }
+}
+$dedicated = Get-FtkPropertyValue $result 'dedicatedExecution'
+$failureType = Get-FtkPropertyValue $dedicated 'failureType'
+if (-not [string]::IsNullOrWhiteSpace([string]$failureType)) {
+    $diagnostics = Get-FtkPropertyValue $dedicated 'diagnostics'
+    $detail = $null
+    foreach ($candidate in @(
+        (Get-FtkPropertyValue $diagnostics 'message')
+        (Get-FtkPropertyValue (Get-FtkPropertyValue $diagnostics 'outputContract') 'message')
+        (Get-FtkPropertyValue (Get-FtkPropertyValue $diagnostics 'structuredStderr') 'error')
+        ((@((Get-FtkPropertyValue $diagnostics 'stderr')) | Select-Object -First 1))
+        (Get-FtkPropertyValue $diagnostics 'failureMessage')
+    )) {
+        if (-not [string]::IsNullOrWhiteSpace([string]$candidate)) { $detail = [string]$candidate; break }
+    }
+    $message = 'DEDICATED_EXECUTION_FAILURE: ' + [string]$failureType
+    if ($detail) { $message += ': ' + (ConvertTo-FtkBoundedDiagnostic -Value $detail -MaximumCharacters 2048) }
+    $envelope = New-FtkCapabilityExecutionEnvelope -Capability $definition.skill -Operation $Operation `
+        -PolicyStatus ALLOWED -AuthorizationDecision 'common-dispatcher-allowed' -DedicatedExecution $dedicated
+    $exception = [InvalidOperationException]::new($message)
+    $exception.Data['ftkExecutionEnvelope'] = $envelope
+    throw $exception
 }
 $result | ConvertTo-Json -Depth 20

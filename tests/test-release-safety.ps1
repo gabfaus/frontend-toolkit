@@ -15,6 +15,7 @@ $fileAllowlist = @(Get-FrontendToolkitSourceFileAllowlist)
 $directoryAllowlist = @(Get-FrontendToolkitSourceDirectoryAllowlist)
 $requiredSecurityFiles = @(
     'security/effect-policy.json'
+    'security/execution-contract.ps1'
 'security/context7-operation-policy.json'
     'security/figma-capability-mediator.mjs'
     'security/figma-operation-policy.json'

@@ -181,6 +181,7 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'skills/impeccable/SKILL.md'
         'skills/img2threejs/SKILL.md'
         'security/effect-policy.json'
+        'security/execution-contract.ps1'
         'security/img2threejs-codec-mediator.mjs'
         'security/img2threejs-foundation.ps1'
         'security/img2threejs-runner.ps1'
@@ -425,6 +426,7 @@ function Get-ArtifactEntriesHash {
 function Get-FrontendToolkitSecurityModuleAllowlist {
     return @(
         'effect-policy.json'
+        'execution-contract.ps1'
         'img2threejs-codec-mediator.mjs'
         'img2threejs-foundation.ps1'
         'img2threejs-runner.ps1'

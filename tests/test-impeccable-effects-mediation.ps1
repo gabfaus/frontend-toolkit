@@ -88,7 +88,9 @@ try {
     $loopbackPlan = Invoke-ImpeccableOperation -Operation 'impeccable.live.loopback' -ProjectRoot $project -PlanOnly
     Assert-True ($loopbackPlan.endpointRequirements -match '127\.0\.0\.1' -and $loopbackPlan.effects -ccontains 'LOOPBACK_EPHEMERAL') 'Live loopback contract drifted.'
     Assert-True ($loopbackPlan.effects -ccontains 'PROJECT_CODE_EXECUTION' -and $loopbackPlan.effects -cnotcontains 'NETWORK_PASSIVE') 'PROJECT_CODE_EXECUTION implied external network.'
-    Assert-Throws { Invoke-ImpeccableOperation -Operation 'impeccable.live.loopback' -ProjectRoot $project -TargetUrl 'http://0.0.0.0:8400' -PlanOnly | Out-Null } 'unregistered inputs' 'external live bind'
+    $externalLiveInput = Invoke-ImpeccableOperation -Operation 'impeccable.live.loopback' -ProjectRoot $project -TargetUrl 'http://0.0.0.0:8400' -PlanOnly
+    Assert-True ($externalLiveInput.dedicatedExecution.failureType -ceq 'INVALID_INPUT' -and -not $externalLiveInput.attempted -and
+        -not $externalLiveInput.childStarted -and $externalLiveInput.dedicatedExecution.dedicatedExecutionResult -ceq 'NOT_ATTEMPTED') 'External live bind did not return a typed INVALID_INPUT envelope.'
     $externalLive = Invoke-ImpeccableOperation -Operation 'impeccable.live.external' -PlanOnly
     Assert-True ($externalLive.defaultState -ceq 'explicitly-denied') 'External live is not explicitly denied.'
 
@@ -165,11 +167,13 @@ console.log(JSON.stringify({ calls, sent }));
         -Prompt 'Synthetic routing proof only' -OutputPath 'routing-proof.png' -Size '1024x1024'
     $parentAfter = [Environment]::GetEnvironmentVariable($secretName, 'Process')
     Assert-True ($parentBefore -ceq $parentAfter) 'Fake generation changed the parent environment.'
-    Assert-True ($fake.fake -and -not $fake.paid -and -not $fake.networkAttempted -and $fake.childStarted) 'Fake generation did not prove the zero-cost route.'
+    Assert-True ($fake.fake -and -not $fake.paid -and -not $fake.networkAttempted -and $fake.childStarted -and $fake.dedicatedExecution.succeeded) 'Fake generation did not prove the zero-cost route.'
     Assert-True (Test-Path -LiteralPath $fake.outputPath -PathType Leaf) 'Fake generation did not create its contained output.'
     Assert-True (@($fake.child.environmentNames) -cnotcontains $secretName -and @($fake.child.environmentNames) -cnotcontains 'OPENAI_API_KEY') 'Parent or paid secret crossed into fake child.'
     Assert-True (-not (($fake | ConvertTo-Json -Depth 10).Contains($secretValue))) 'Runner diagnostics leaked the synthetic secret.'
-    Assert-Throws { Invoke-ImpeccableOperation -Operation 'impeccable.paid-generation.fake' -ProjectRoot $project -Prompt ok -OutputPath '../escape.png' | Out-Null } 'relative contained filename' 'escaping output'
+    $escapingOutput = Invoke-ImpeccableOperation -Operation 'impeccable.paid-generation.fake' -ProjectRoot $project -Prompt ok -OutputPath '../escape.png'
+    Assert-True ($escapingOutput.dedicatedExecution.failureType -ceq 'INVALID_INPUT' -and -not $escapingOutput.attempted -and
+        -not $escapingOutput.childStarted -and $escapingOutput.dedicatedExecution.dedicatedExecutionResult -ceq 'NOT_ATTEMPTED') 'Escaping output did not return a typed INVALID_INPUT envelope.'
 
     $beforePaid = @(Get-ChildItem -Recurse -File $project | Select-Object -ExpandProperty FullName)
     Assert-Throws { Invoke-ImpeccableOperation -Operation 'impeccable.paid-generation.upstream' -ProjectRoot $project | Out-Null } 'host spend grant' 'paid generation without authorization'

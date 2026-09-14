@@ -249,9 +249,9 @@ rounded:
     Assert-True ($csp.analysis.shape -ceq 'middleware' -and @($csp.analysis.signals) -ccontains 'middleware.ts') 'Pinned CSP detection semantics were not restored.'
     Assert-True ((@($csp.report.extensionContract) -join ',') -ceq '.astro,.cjs,.cts,.html,.js,.jsx,.mjs,.mts,.svelte,.ts,.tsx,.vue') 'CSP execution extension contract diverges from its governed walker.'
 
-    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath '..\escape.css' | Out-Null } 'relative path|escapes' 'Traversal containment'
-    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath (Join-Path $outside 'escape.css') | Out-Null } 'relative path|absolute|escapes' 'Absolute outside-root containment'
-    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath ('..\' + (Split-Path -Leaf $outside) + '\escape.css') | Out-Null } 'relative path|escapes' 'Sibling-prefix containment'
+    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath '..\escape.css' | Out-Null } 'relative.*path|escapes|INVALID_INPUT' 'Traversal containment'
+    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath (Join-Path $outside 'escape.css') | Out-Null } 'relative.*path|absolute|escapes|INVALID_INPUT' 'Absolute outside-root containment'
+    Assert-Throws { & $launcher -Operation impeccable.detector.local -ProjectRoot $fixture -InputPath ('..\' + (Split-Path -Leaf $outside) + '\escape.css') | Out-Null } 'relative.*path|escapes|INVALID_INPUT' 'Sibling-prefix containment'
     Assert-Throws { & $launcher -Operation impeccable.detector.payload -Content ('x' * 1048577) -ContentType css | Out-Null } 'limit|exceeds' 'Payload resource limit'
     Assert-Throws { & $launcher -Operation impeccable.detector.payload -Content '.x{}' -ContentType css -DetectorOptionsJson '{"unknown":true}' | Out-Null } 'exit code|unknown' 'Unknown option'
 

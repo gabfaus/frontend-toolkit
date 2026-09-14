@@ -131,9 +131,10 @@ foreach ($case in @($golden.cases)) {
         if ($features -contains "important") { Assert-True ($caseSource -match "!important") "Important declaration is not present: $($case.id)" }
         if ($features -contains "malformed-recoverable-html") { Assert-True ($caseSource -match "<p[^>]*>[^<]+</main>" -and $caseSource -notmatch "</p>") "Malformed recoverable HTML is not present: $($case.id)" }
 
-        $oracleProcess = Invoke-ImpeccableChildProcess -Executable $node -ArgumentList @($oracleHelper,$runtimeModule,$skillRoot,$entry) -WorkingDirectory $repoRoot -Environment $oracleEnvironment -StandardInputText ""
+        $oracleProcess = Invoke-ImpeccableChildProcess -Executable $node -ArgumentList @($oracleHelper,$runtimeModule,$skillRoot,$entry) -WorkingDirectory $repoRoot -Environment $oracleEnvironment -StandardInputText "" -ReturnResult
         Assert-True ($oracleProcess.exitCode -eq 0) ("Oracle failed for " + $case.id + ": " + ($oracleProcess.stderr -join ([Environment]::NewLine)))
-        $oracle = (($oracleProcess.stdout -join ([Environment]::NewLine)) | ConvertFrom-Json)
+        $oracleJson = if ($oracleProcess.PSObject.Properties.Name -contains 'contractStdout') { [string]$oracleProcess.contractStdout } else { $oracleProcess.stdout -join ([Environment]::NewLine) }
+        $oracle = ($oracleJson | ConvertFrom-Json)
         Assert-True ($oracle.schemaVersion -eq 1) "Oracle response schema invalid: $($case.id)"
         Assert-True ((@($oracle.runtime.loadedPackages | Sort-Object) -join "|") -ceq ($expectedPackages -join "|")) "Oracle did not load canonical 13 packages: $($case.id)"
         Assert-True (-not $oracle.runtime.quickSortLoaded) "Oracle reached quick-sort: $($case.id)"
