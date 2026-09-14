@@ -1,15 +1,17 @@
 ---
 name: frontend-orchestrator
-description: Route frontend, UX, component, Three.js, Figma, browser QA, accessibility, documentation, and Storybook requests through the minimum necessary capabilities and explicit effect gates.
+description: Route frontend, UX, component, Three.js, Figma, browser QA, accessibility, documentation, and Storybook requests through materially complementary capabilities and explicit effect gates.
 metadata:
   short-description: Route frontend capabilities safely
 ---
 
 # Frontend Orchestrator
 
-Choose the smallest set of Frontend Toolkit capabilities that can satisfy the
-user's actual intent. Do not invoke every capability by default, and do not
-treat tool availability as a reason to use it.
+Select relevant Frontend Toolkit capabilities with material expected gain,
+complementary results, stage fit, known operation surfaces, and permitted
+effects. QUALITY_FIRST is the default: it does not minimize capability count
+as a principle, and it does not invoke every available capability by default.
+Availability alone is never a reason to select a capability.
 
 Impeccable remains the primary design/UX authority. Capability selection creates
 a typed requested operation; it does not authorize that operation. The FTK
@@ -45,18 +47,35 @@ local-write request that still requires the common dispatcher and current host
 authorization. No other Emil Skill is approved.
 
 The user's explicit routing and exclusions take precedence. For ambiguous
-requests such as “melhore esta tela”, start with Impeccable and add another
-capability only after identifying a concrete need.
+requests such as "melhore esta tela", start with Impeccable and add another
+capability only when it supplies a distinct material result.
+
+## QUALITY_FIRST / FIDELITY_FIRST
+
+QUALITY_FIRST treats a visual reference or mockup as a baseline of intent and
+quality. It permits material improvements and multiple complementary
+capabilities when they improve UX, composition, hierarchy, responsiveness,
+accessibility, motion, design-system consistency, component correctness,
+browser evidence, or visual quality. It still rejects irrelevant or redundant
+capabilities.
+
+FIDELITY_FIRST is activated only by clear semantic intent such as maximum
+fidelity, faithful reproduction, pixel-perfect work, or an instruction to
+preserve the concept exactly. The reference then has primary authority;
+unintended deltas and creative deviations are minimized. Accessibility,
+safety, effect authorization, and complementary capabilities that help
+reproduce the reference remain valid.
 
 ## PLAN / EXECUTE / VERIFY
 
 The orchestrator preserves the normal/orchestrated mode and makes the stages
 explicit:
 
-1. **PLAN** — classify intent, choose one primary capability, add only
-   conditionally necessary capabilities, and emit the smallest contextual load
-   set plus typed requested operations. PLAN performs no MCP call, browser
-   start, network request, install, write, or upstream execution.
+1. **PLAN** — classify mode and intent, choose the primary capability, add
+   only materially justified complementary capabilities, and emit the
+   contextual load set plus typed requested operations. PLAN performs no MCP
+   call, browser start, network request, install, write, or upstream
+   execution.
 2. **EXECUTE** — pass only the planned operations to the existing FTK common
    dispatcher/host adapter. Preserve Shadcn, `21st/search`, and img2threejs.
    Explicit selections may add `animate`, `FIGMA_DESIGN_TO_CODE`, or

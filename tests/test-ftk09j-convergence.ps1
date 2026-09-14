@@ -35,6 +35,7 @@ $pluginRouting = Get-Content -Raw -LiteralPath $pluginRoutingPath | ConvertFrom-
 $effectPolicy = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/security/effect-policy.json') | ConvertFrom-Json
 $dispatcher = Join-Path $repoRoot 'plugin/frontend-toolkit/security/invoke-capability.ps1'
 $browserLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/browser-qa.lock.json') | ConvertFrom-Json
+$convergenceLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/ftk-09j-convergence.lock.json') | ConvertFrom-Json
 $figmaPolicy = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/security/figma-operation-policy.json') | ConvertFrom-Json
 $contextPolicy = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/frontend-toolkit/security/context7-operation-policy.json') | ConvertFrom-Json
 $storybookLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/storybook.lock.json') | ConvertFrom-Json
@@ -43,7 +44,20 @@ $normalMcpText = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'plugin/fron
 $normalMcp = $normalMcpText | ConvertFrom-Json
 $claudeMcp = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'claude/mcp.json') | ConvertFrom-Json
 
-Assert-True ($routing.schemaVersion -eq 2 -and ($routing.stageModel -join ',') -eq 'PLAN,EXECUTE,VERIFY') 'PLAN/EXECUTE/VERIFY contract is missing.'
+Assert-True ($routing.schemaVersion -eq 3 -and ($routing.stageModel -join ',') -eq 'PLAN,EXECUTE,VERIFY') 'Routing V3 PLAN/EXECUTE/VERIFY contract is missing.'
+Assert-True ($routing.principle -eq 'material-complementary-selection' -and $routing.defaultMode -eq 'QUALITY_FIRST') 'Material selection/default mode contract is missing.'
+Assert-True (($routing.modes.PSObject.Properties.Name | Sort-Object) -join ',' -eq 'FIDELITY_FIRST,QUALITY_FIRST') 'Routing modes are incomplete.'
+Assert-True ($routing.modes.QUALITY_FIRST.useAllAvailable -eq $false -and $routing.modes.QUALITY_FIRST.allowsMaterialImprovements -eq $true) 'QUALITY_FIRST is incorrectly defined.'
+Assert-True ($routing.modes.FIDELITY_FIRST.activation.requiresSemanticIntent -eq $true -and $routing.modes.FIDELITY_FIRST.activation.matcher -eq 'semantic-intent-not-literal-only') 'FIDELITY_FIRST activation is not semantic.'
+Assert-True ($routing.availability.coreDoesNotMeanDefaultLoaded -eq $true -and @($routing.availability.defaultLoaded).Count -eq 0) 'CORE/default loading separation is missing.'
+Assert-ExactSet @($routing.availability.classes) @('CORE','OPTIONAL') 'Availability classes'
+Assert-ExactSet @($routing.routing.classes) @('AUTO_ELIGIBLE','INTENT_TRIGGERED','SOURCE_TRIGGERED','EXPLICIT_ONLY') 'Routing classes'
+Assert-ExactSet @($routing.operationSurface.states) @('EXECUTABLE','REQUEST_ONLY','REGISTERED_NO_HANDLER','UNAVAILABLE') 'Static operation surface states'
+Assert-True ($routing.operationSurface.sourceOfTruth -eq 'plugin/frontend-toolkit/security/effect-policy.json' -and $routing.operationSurface.unknownOperation.policy -eq 'fail-closed') 'Operation surface fail-closed boundary is missing.'
+Assert-ExactSet @($routing.workflowResolution.outcomes) @('CAPABILITY_SURFACE_BLOCKED') 'Contextual workflow outcomes'
+Assert-True ($routing.workflowResolution.routingFailure -eq $false -and $routing.workflowResolution.effectClass -eq $false -and $routing.workflowResolution.capabilityGlobalAvailabilityUnaffected -eq $true) 'Contextual CAPABILITY_SURFACE_BLOCKED semantics are invalid.'
+Assert-True ($routing.effectRequirement.sourceOfTruth -eq 'plugin/frontend-toolkit/security/effect-policy.json' -and $routing.effectRequirement.selectionDoesNotAuthorize -eq $true) 'Effect selection/authorization separation is missing.'
+Assert-True ($routing.selectionContract.materialJustification.atLeastOneRequired -eq $true -and $routing.selectionContract.singleNumericScore -eq 'not-sufficient-for-decision') 'Material selection contract is incomplete.'
 Assert-True ($routing.normalMode.preserved -eq $true) 'Normal/orchestrated mode was not preserved.'
 Assert-True ($routing.discovery.defaultLoaded.Count -eq 0 -and $routing.discovery.additionalSkillRoots.Count -eq 0) 'Default discovery is not selective.'
 Assert-True ($routing.discovery.simultaneousLoadPolicy -match 'distinct-required-result') 'Simultaneous load policy is missing.'
@@ -111,7 +125,7 @@ Assert-True ($storybookAdapter -notmatch 'npm install|npx .*storybook|chromatic 
 Assert-ExactSet @($normalMcp.mcpServers.PSObject.Properties.Name) @('21st','shadcn') 'Normal Codex MCP inventory'
 Assert-ExactSet @($claudeMcp.mcpServers.PSObject.Properties.Name) @('21st','shadcn') 'Normal Claude MCP inventory'
 Assert-True ($normalMcpText -notmatch '(?i)playwright|chrome-devtools|context7|storybook|figma') 'Normal Codex MCP silently activated conditional transports.'
-Assert-True ($browserLock.playwright.cli.version -eq '0.1.19' -and $browserLock.playwright.cli.supplyChainException.sourceIntegration -eq 'ACCEPT_WITH_RESTRICTIONS' -and $browserLock.playwright.cli.supplyChainException.releaseAcceptance -eq 'PENDING_FINAL_RELEASE_REVIEW') 'Playwright supply-chain exception state is missing.'
+Assert-True ($browserLock.playwright.cli.version -eq '0.1.19' -and $browserLock.playwright.cli.supplyChainException.sourceIntegration -eq 'ACCEPT_WITH_RESTRICTIONS' -and $convergenceLock.playwrightSupplyChain.releaseAcceptance -eq 'PENDING_FINAL_RELEASE_REVIEW') 'Playwright supply-chain exception state is missing.'
 Assert-True ($browserLock.playwright.cli.supplyChainException.issueStatusAtValidation -eq 'OPEN' -and $browserLock.playwright.cli.dependencies.playwright -eq '1.63.0-alpha-2026-08-31' -and $browserLock.playwright.cli.dependencies.'playwright-core' -eq '1.63.0-alpha-2026-08-31') 'Playwright alpha dependency disclosure drifted.'
 
 . (Join-Path $repoRoot 'scripts/release-safety.ps1')

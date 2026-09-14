@@ -1,7 +1,319 @@
 {
-    "schemaVersion":  2,
+    "schemaVersion":  3,
     "skill":  "frontend-orchestrator",
-    "principle":  "minimum-necessary-capabilities",
+    "principle":  "material-complementary-selection",
+    "defaultMode":  "QUALITY_FIRST",
+    "modes":  {
+                  "QUALITY_FIRST":  {
+                                         "activation":  "default",
+                                         "referenceRole":  "baseline-of-intent-and-quality",
+                                         "allowsMaterialImprovements":  true,
+                                         "allowsComplementaryCapabilities":  true,
+                                         "useAllAvailable":  false,
+                                         "selectionRule":  "select-relevant-capabilities-with-material-gain-and-no-redundant-result",
+                                         "materialGainDimensions":  [
+                                                                          "UX",
+                                                                          "composition",
+                                                                          "hierarchy",
+                                                                          "responsiveness",
+                                                                          "accessibility",
+                                                                          "motion",
+                                                                          "design-system-consistency",
+                                                                          "component-correctness",
+                                                                          "browser-evidence",
+                                                                          "visual-quality"
+                                                                      ],
+                                         "creativeImprovement":  "allowed-when-material-and-intent-preserved"
+                                     },
+                  "FIDELITY_FIRST":  {
+                                          "activation":  {
+                                                             "requiresSemanticIntent":  true,
+                                                             "matcher":  "semantic-intent-not-literal-only",
+                                                             "triggers":  [
+                                                                              "máxima fidelidade",
+                                                                              "maxima fidelidade",
+                                                                              "reprodução fiel",
+                                                                              "reproducao fiel",
+                                                                              "pixel-perfect",
+                                                                              "pixel perfect",
+                                                                              "preserve exatamente",
+                                                                              "preserve exactly",
+                                                                              "não altere o conceito",
+                                                                              "nao altere o conceito",
+                                                                              "do not alter the concept"
+                                                                          ],
+                                                             "futureExtension":  "multilingual-semantic-trigger-set"
+                                                         },
+                                          "referenceRole":  "primary-authority",
+                                          "allowsMaterialImprovements":  false,
+                                          "allowsComplementaryCapabilities":  true,
+                                          "creativeImprovement":  "not-permitted-when-it-alters-composition-or-intent",
+                                          "preserves":  [
+                                                            "accessibility",
+                                                            "safety",
+                                                            "effect-authorization",
+                                                            "complementary-capabilities-that-help-reproduce-reference"
+                                                        ]
+                                      }
+              },
+    "availability":  {
+                          "classes":  [
+                                         "CORE",
+                                         "OPTIONAL"
+                                     ],
+                          "coreMeaning":  "first-class-available-and-supported-by-architecture",
+                          "coreDoesNotMeanDefaultLoaded":  true,
+                          "defaultLoaded":  [],
+                          "capabilities":  {
+                                               "impeccable":  "CORE",
+                                               "shadcn":  "CORE",
+                                               "img2threejs":  "CORE",
+                                               "FIGMA_READ":  "CORE",
+                                               "playwright-cli":  "CORE",
+                                               "ACCESSIBILITY_VERIFY":  "CORE",
+                                               "21st":  "OPTIONAL",
+                                               "taste-v2":  "OPTIONAL",
+                                               "review-animations":  "OPTIONAL",
+                                               "improve-animations":  "OPTIONAL",
+                                               "animate":  "OPTIONAL",
+                                               "FIGMA_DESIGN_TO_CODE":  "OPTIONAL",
+                                               "FIGMA_WRITE":  "OPTIONAL",
+                                               "ACCESSIBILITY_IMPLEMENT":  "OPTIONAL",
+                                               "axe":  "OPTIONAL",
+                                               "chrome-devtools":  "OPTIONAL",
+                                               "context7":  "OPTIONAL",
+                                               "storybook":  "OPTIONAL"
+                                           }
+                      },
+    "routing":  {
+                    "classes":  [
+                                   "AUTO_ELIGIBLE",
+                                   "INTENT_TRIGGERED",
+                                   "SOURCE_TRIGGERED",
+                                   "EXPLICIT_ONLY"
+                               ],
+                    "defaultMode":  "QUALITY_FIRST",
+                    "capabilities":  {
+                                         "impeccable":  { "class": "AUTO_ELIGIBLE", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "relevant-design-or-UX-quality-need" },
+                                         "shadcn":  { "class": "AUTO_ELIGIBLE", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "concrete-official-component-need" },
+                                         "img2threejs":  { "class": "INTENT_TRIGGERED", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "explicit-or-clearly-implied-3d-or-reconstruction-requirement" },
+                                         "FIGMA_READ":  { "class": "SOURCE_TRIGGERED", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "Figma-source-present" },
+                                         "playwright-cli":  { "class": "AUTO_ELIGIBLE", "stages": ["EXECUTE", "VERIFY"], "condition": "browser-evidence-materially-relevant" },
+                                         "ACCESSIBILITY_VERIFY":  { "class": "AUTO_ELIGIBLE", "stages": ["EXECUTE", "VERIFY"], "condition": "accessibility-evidence-materially-relevant" },
+                                         "review-animations":  { "class": "AUTO_ELIGIBLE", "stages": ["VERIFY"], "condition": "existing-motion-is-relevant" },
+                                         "improve-animations":  { "class": "AUTO_ELIGIBLE", "stages": ["PLAN", "VERIFY"], "condition": "concrete-motion-finding-indicates-material-gain" },
+                                         "animate":  { "class": "INTENT_TRIGGERED", "stages": ["EXECUTE"], "condition": "local-motion-implementation-is-covered-by-intent-and-authorized" },
+                                         "21st":  { "class": "INTENT_TRIGGERED", "stages": ["PLAN", "EXECUTE"], "condition": "inspiration-or-alternative-search-adds-material-value" },
+                                         "taste-v2":  { "class": "EXPLICIT_ONLY", "stages": ["PLAN"], "condition": "explicit-Taste-selection" },
+                                         "FIGMA_DESIGN_TO_CODE":  { "class": "EXPLICIT_ONLY", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "explicit-design-to-code-selection" },
+                                         "FIGMA_WRITE":  { "class": "EXPLICIT_ONLY", "stages": ["EXECUTE"], "condition": "explicit-remote-write-request-and-authorization" },
+                                         "ACCESSIBILITY_IMPLEMENT":  { "class": "EXPLICIT_ONLY", "stages": ["EXECUTE"], "condition": "explicit-accessibility-write-request-after-verification" },
+                                         "axe":  { "class": "SOURCE_TRIGGERED", "stages": ["VERIFY"], "condition": "exact-already-installed-axe-dependency-and-relevant-evidence" },
+                                         "chrome-devtools":  { "class": "EXPLICIT_ONLY", "stages": ["VERIFY"], "condition": "explicit-advanced-diagnostics-request" },
+                                         "context7":  { "class": "INTENT_TRIGGERED", "stages": ["PLAN", "VERIFY"], "condition": "current-documentation-grounding-is-needed" },
+                                         "storybook":  { "class": "SOURCE_TRIGGERED", "stages": ["PLAN", "EXECUTE", "VERIFY"], "condition": "existing-compatible-eligible-project-is-present" }
+                                     }
+                },
+    "operationSurface":  {
+                             "sourceOfTruth":  "plugin/frontend-toolkit/security/effect-policy.json",
+                             "runtimeSources":  [
+                                                   "effect-policy.operations",
+                                                   "governed-host-MCP-allowlists",
+                                                   "registered-capability-adapters"
+                                               ],
+                             "states":  [
+                                          "EXECUTABLE",
+                                          "REQUEST_ONLY",
+                                          "REGISTERED_NO_HANDLER",
+                                          "UNAVAILABLE"
+                                      ],
+                             "unknownOperation":  {
+                                                     "state":  "UNAVAILABLE",
+                                                     "policy":  "fail-closed",
+                                                     "handlerPolicy":  "never-invented-by-routing"
+                                                 },
+                             "capabilities":  {
+                                                  "impeccable":  {
+                                                                    "EXECUTABLE": ["impeccable.capability-summary", "impeccable.context.local", "impeccable.live.event-mediate", "impeccable.concept.local-fallback", "impeccable.detector.local", "impeccable.detector.project", "impeccable.detector.payload", "impeccable.detector.csp", "impeccable.hooks.status", "impeccable.doctor.report"],
+                                                                    "REQUEST_ONLY": [],
+                                                                    "REGISTERED_NO_HANDLER": ["impeccable.update-check", "impeccable.concept.remote-roll", "impeccable.concept.card-fetch", "impeccable.telemetry.choice", "impeccable.paid-generation.fake", "impeccable.paid-generation.upstream", "impeccable.detector.browser-file", "impeccable.detector.loopback", "impeccable.detector.external", "impeccable.live.loopback", "impeccable.live.external", "impeccable.hooks.enable", "impeccable.hooks.disable", "impeccable.hooks.ignore", "impeccable.hooks.reset", "impeccable.project.write", "impeccable.self-update"],
+                                                                    "UNAVAILABLE": []
+                                                                },
+                                                  "shadcn":  {
+                                                               "source": "governed-host-MCP-allowlist",
+                                                               "EXECUTABLE": [],
+                                                               "REQUEST_ONLY": ["shadcn/search_items_in_registries"],
+                                                               "REGISTERED_NO_HANDLER": [],
+                                                               "UNAVAILABLE": []
+                                                           },
+                                                  "21st":  {
+                                                             "source": "governed-host-MCP-allowlist",
+                                                             "EXECUTABLE": [],
+                                                             "REQUEST_ONLY": ["21st/search"],
+                                                             "REGISTERED_NO_HANDLER": [],
+                                                             "UNAVAILABLE": []
+                                                         },
+                                                  "img2threejs":  {
+                                                                      "EXECUTABLE": ["img2threejs.capability-summary", "img2threejs.glb-pipeline", "img2threejs.codec-verify", "img2threejs.typescript-build", "img2threejs.vite-build", "img2threejs.state.init", "img2threejs.state.status", "img2threejs.state.mark", "img2threejs.state.next", "img2threejs.state.create", "img2threejs.state.read", "img2threejs.state.write", "img2threejs.state.update"],
+                                                                      "REQUEST_ONLY": [],
+                                                                      "REGISTERED_NO_HANDLER": ["img2threejs.network-helper"],
+                                                                      "UNAVAILABLE": []
+                                                                  },
+                                                  "FIGMA_READ":  { "EXECUTABLE": [], "REQUEST_ONLY": ["figma.read"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "FIGMA_DESIGN_TO_CODE":  { "EXECUTABLE": [], "REQUEST_ONLY": ["figma.design-to-code"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "FIGMA_WRITE":  { "EXECUTABLE": [], "REQUEST_ONLY": [], "REGISTERED_NO_HANDLER": ["figma.write"], "UNAVAILABLE": [] },
+                                                  "playwright-cli":  { "EXECUTABLE": [], "REQUEST_ONLY": ["browser-qa.playwright"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "ACCESSIBILITY_VERIFY":  { "EXECUTABLE": [], "REQUEST_ONLY": ["accessibility.verify"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "ACCESSIBILITY_IMPLEMENT":  { "EXECUTABLE": [], "REQUEST_ONLY": [], "REGISTERED_NO_HANDLER": ["accessibility.implement"], "UNAVAILABLE": [] },
+                                                  "axe":  { "EXECUTABLE": [], "REQUEST_ONLY": ["accessibility.axe"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "chrome-devtools":  { "EXECUTABLE": [], "REQUEST_ONLY": ["browser-qa.chrome-devtools"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "context7":  { "EXECUTABLE": [], "REQUEST_ONLY": ["context7.resolve-library-id", "context7.query-docs"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "storybook":  { "EXECUTABLE": [], "REQUEST_ONLY": ["storybook.detect", "storybook.docs", "storybook.preview", "storybook.testing"], "REGISTERED_NO_HANDLER": ["storybook.remote-review", "storybook.publication"], "UNAVAILABLE": [] },
+                                                  "taste-v2":  { "EXECUTABLE": [], "REQUEST_ONLY": ["design-motion.taste-v2"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "review-animations":  { "EXECUTABLE": [], "REQUEST_ONLY": ["design-motion.review-animations"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "improve-animations":  { "EXECUTABLE": [], "REQUEST_ONLY": ["design-motion.improve-animations"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
+                                                  "animate":  { "EXECUTABLE": [], "REQUEST_ONLY": [], "REGISTERED_NO_HANDLER": ["design-motion.animate"], "UNAVAILABLE": [] }
+                                              }
+                         },
+    "workflowResolution":  {
+                              "outcomes":  [
+                                             "CAPABILITY_SURFACE_BLOCKED"
+                                         ],
+                              "resolutionOrder":  [
+                                                    "routing-selects-capability",
+                                                    "workflow-requires-concrete-operation",
+                                                    "lookup-required-operation-in-governed-operation-surface",
+                                                    "emit-contextual-outcome-when-operation-is-absent-or-inadequate"
+                                                ],
+                              "capabilityGlobalAvailabilityUnaffected":  true,
+                              "routingFailure":  false,
+                              "effectClass":  false,
+                              "cases":  {
+                                         "img2threejs-reference-image-reconstruction":  {
+                                                                                           "routing":  "PASS",
+                                                                                           "selectedCapability":  "img2threejs",
+                                                                                           "requiredOperation":  {
+                                                                                                                 "lookup":  "effect-policy.operations",
+                                                                                                                 "operationId":  null,
+                                                                                                                 "present":  false,
+                                                                                                                 "usable":  false
+                                                                                                             },
+                                                                                           "outcome":  "CAPABILITY_SURFACE_BLOCKED",
+                                                                                           "not":  [
+                                                                                                  "global-capability-unavailable",
+                                                                                                  "routing-failure",
+                                                                                                  "effect-class"
+                                                                                              ]
+                                                                                       }
+                                     }
+                          },
+    "surfaceTaxonomy":  {
+                           "img2threejs-reference-image-reconstruction":  {
+                                                                              "routing":  "PASS",
+                                                                              "state":  "CAPABILITY_SURFACE_BLOCKED",
+                                                                              "cause":  "required-operation-absent",
+                                                                              "operationLookup":  "effect-policy.operations",
+                                                                              "operationId":  null,
+                                                                              "fallbackEquivalence":  "SVG-or-2D-is-not-semantic-equivalence",
+                                                                              "upstreamResearch":  "out-of-scope"
+                                                                          },
+                           "playwright-accessibility":  {
+                                                           "routing":  "PASS",
+                                                           "state":  "FIRST-CLASS VERIFY SURFACE PARTIAL",
+                                                           "dedicatedSurface":  "unavailable",
+                                                           "fallback":  "governed-equivalent-read-only-fallback",
+                                                           "dedicatedExecutionClaim":  "forbidden-without-execution"
+                                                       },
+                           "impeccable":  {
+                                             "routing":  "PASS",
+                                             "state":  "EXECUTION SURFACE ROBUSTNESS GAP",
+                                             "condition":  "pinned-child-process-exit-code-1",
+                                             "fallback":  "manual-dom-playwright-ax",
+                                             "dedicatedSuccessClaim":  "forbidden-when-child-process-failed"
+                                         }
+                       },
+    "effectRequirement":  {
+                              "sourceOfTruth":  "plugin/frontend-toolkit/security/effect-policy.json",
+                              "selectionDoesNotAuthorize":  true,
+                              "unknownEffectPolicy":  "fail-closed",
+                              "capabilities":  {
+                                                   "impeccable":  { "operationSurfaceRef": "operationSurface.capabilities.impeccable", "authorization": "common-dispatcher-and-current-host-policy" },
+                                                   "shadcn":  { "operationSurfaceRef": "operationSurface.capabilities.shadcn", "authorization": "governed-MCP-request; project-mutation-separate" },
+                                                   "21st":  { "operationSurfaceRef": "operationSurface.capabilities.21st", "authorization": "search-only-by-default; metered-quota-generation-mutation-publish-account-unknown-gated" },
+                                                   "img2threejs":  { "operationSurfaceRef": "operationSurface.capabilities.img2threejs", "authorization": "host-and-FTK-safe-runner; project-code-execution-separate" },
+                                                   "FIGMA_READ":  { "operationSurfaceRef": "operationSurface.capabilities.FIGMA_READ", "authorization": "one-selected-host-transport" },
+                                                   "FIGMA_DESIGN_TO_CODE":  { "operationSurfaceRef": "operationSurface.capabilities.FIGMA_DESIGN_TO_CODE", "authorization": "explicit-selection-plus-common-local-write-boundary" },
+                                                   "FIGMA_WRITE":  { "operationSurfaceRef": "operationSurface.capabilities.FIGMA_WRITE", "authorization": "explicit-current-user-remote-write-authorization" },
+                                                   "playwright-cli":  { "operationSurfaceRef": "operationSurface.capabilities.playwright-cli", "authorization": "typed-FTK-wrapper-and-current-host-policy" },
+                                                   "ACCESSIBILITY_VERIFY":  { "operationSurfaceRef": "operationSurface.capabilities.ACCESSIBILITY_VERIFY", "authorization": "read-only-evidence" },
+                                                   "ACCESSIBILITY_IMPLEMENT":  { "operationSurfaceRef": "operationSurface.capabilities.ACCESSIBILITY_IMPLEMENT", "authorization": "explicit-current-user-project-write-after-verification" },
+                                                   "axe":  { "operationSurfaceRef": "operationSurface.capabilities.axe", "authorization": "exact-already-installed-dependency-only" },
+                                                   "chrome-devtools":  { "operationSurfaceRef": "operationSurface.capabilities.chrome-devtools", "authorization": "explicit-selection-and-host-availability" },
+                                                   "context7":  { "operationSurfaceRef": "operationSurface.capabilities.context7", "authorization": "FTK-facade-only-read" },
+                                                   "storybook":  { "operationSurfaceRef": "operationSurface.capabilities.storybook", "authorization": "existing-eligible-project; publication-separate" },
+                                                   "taste-v2":  { "operationSurfaceRef": "operationSurface.capabilities.taste-v2", "authorization": "explicit-selection; generation-and-installation-never-implied" },
+                                                   "review-animations":  { "operationSurfaceRef": "operationSurface.capabilities.review-animations", "authorization": "read-only-VERIFY" },
+                                                   "improve-animations":  { "operationSurfaceRef": "operationSurface.capabilities.improve-animations", "authorization": "diagnosis-and-plan; no-write-by-default" },
+                                                   "animate":  { "operationSurfaceRef": "operationSurface.capabilities.animate", "authorization": "explicit-local-write-intent-plus-common-dispatcher-and-host-grant" }
+                                               }
+                          },
+    "selectionContract":  {
+                              "attributes":  [
+                                               "relevance",
+                                               "expectedMaterialGain",
+                                               "complementarity",
+                                               "redundancy",
+                                               "sourceRequirement",
+                                               "stageFit",
+                                               "availability",
+                                               "operationAvailability",
+                                               "effectRequirement",
+                                               "explicitInclusion",
+                                               "explicitExclusion"
+                                           ],
+                              "materialJustification":  {
+                                                          "selectWhenAny":  [
+                                                                              "explicit-requirement",
+                                                                              "distinct-output",
+                                                                              "material-delta-reduction",
+                                                                              "required-evidence",
+                                                                              "mandatory-source",
+                                                                              "relevant-complementary-verification"
+                                                                          ],
+                                                          "atLeastOneRequired":  true
+                                                      },
+                              "doNotSelectWhen":  [
+                                                    "duplicates-result",
+                                                    "only-potentially-interesting",
+                                                    "available-but-irrelevant",
+                                                    "required-source-missing",
+                                                    "required-operation-missing",
+                                                    "required-effect-not-permitted",
+                                                    "explicitly-excluded"
+                                                ],
+                              "singleNumericScore":  "not-sufficient-for-decision",
+                              "explicitExclusionPrecedence":  "honor-unless-higher-authority-security",
+                              "capabilities":  {
+                                                   "impeccable":  { "relevance": ["design", "UX", "visual-quality"], "expectedMaterialGain": ["hierarchy", "responsiveness", "accessibility", "motion", "design-system-consistency", "visual-quality"], "complementarity": ["playwright-cli", "ACCESSIBILITY_VERIFY", "shadcn"], "redundancy": ["taste-v2", "21st"], "sourceRequirement": "interface-or-visual-intent", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.impeccable", "operationAvailability": "operationSurface.capabilities.impeccable", "effectRequirement": "effectRequirement.capabilities.impeccable", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "shadcn":  { "relevance": ["official-components", "component-correctness"], "expectedMaterialGain": ["component-correctness", "design-system-consistency"], "complementarity": ["impeccable", "ACCESSIBILITY_VERIFY"], "redundancy": ["21st"], "sourceRequirement": "official-component-need", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.shadcn", "operationAvailability": "operationSurface.capabilities.shadcn", "effectRequirement": "effectRequirement.capabilities.shadcn", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "21st":  { "relevance": ["inspiration", "alternatives"], "expectedMaterialGain": ["composition", "visual-quality"], "complementarity": ["impeccable", "shadcn"], "redundancy": ["shadcn", "context7"], "sourceRequirement": "inspiration-or-alternative-intent", "stageFit": ["PLAN", "EXECUTE"], "availability": "availability.capabilities.21st", "operationAvailability": "operationSurface.capabilities.21st", "effectRequirement": "effectRequirement.capabilities.21st", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "img2threejs":  { "relevance": ["3D", "Three.js", "image-reconstruction"], "expectedMaterialGain": ["composition", "visual-quality", "component-correctness"], "complementarity": ["impeccable", "shadcn", "ACCESSIBILITY_VERIFY"], "redundancy": ["2D-fallback-for-non-equivalent-output"], "sourceRequirement": "3D-or-reference-image-requirement", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.img2threejs", "operationAvailability": "operationSurface.capabilities.img2threejs", "effectRequirement": "effectRequirement.capabilities.img2threejs", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "FIGMA_READ":  { "relevance": ["design-source"], "expectedMaterialGain": ["component-correctness", "visual-quality", "hierarchy"], "complementarity": ["FIGMA_DESIGN_TO_CODE", "impeccable"], "redundancy": ["absent-Figma-source"], "sourceRequirement": "Figma-source", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.FIGMA_READ", "operationAvailability": "operationSurface.capabilities.FIGMA_READ", "effectRequirement": "effectRequirement.capabilities.FIGMA_READ", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "playwright-cli":  { "relevance": ["browser-QA", "browser-evidence"], "expectedMaterialGain": ["browser-evidence", "responsiveness", "component-correctness"], "complementarity": ["impeccable", "ACCESSIBILITY_VERIFY"], "redundancy": ["unsupported-browser-surface"], "sourceRequirement": "browser-evidence-need", "stageFit": ["EXECUTE", "VERIFY"], "availability": "availability.capabilities.playwright-cli", "operationAvailability": "operationSurface.capabilities.playwright-cli", "effectRequirement": "effectRequirement.capabilities.playwright-cli", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "ACCESSIBILITY_VERIFY":  { "relevance": ["accessibility", "verification"], "expectedMaterialGain": ["accessibility", "browser-evidence"], "complementarity": ["playwright-cli", "impeccable"], "redundancy": ["none-when-dedicated-surface-available"], "sourceRequirement": "accessibility-evidence-need", "stageFit": ["EXECUTE", "VERIFY"], "availability": "availability.capabilities.ACCESSIBILITY_VERIFY", "operationAvailability": "operationSurface.capabilities.ACCESSIBILITY_VERIFY", "effectRequirement": "effectRequirement.capabilities.ACCESSIBILITY_VERIFY", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "review-animations":  { "relevance": ["existing-motion"], "expectedMaterialGain": ["motion", "UX"], "complementarity": ["impeccable", "improve-animations"], "redundancy": ["none-when-motion-absent"], "sourceRequirement": "relevant-existing-motion", "stageFit": ["VERIFY"], "availability": "availability.capabilities.review-animations", "operationAvailability": "operationSurface.capabilities.review-animations", "effectRequirement": "effectRequirement.capabilities.review-animations", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "improve-animations":  { "relevance": ["concrete-motion-finding"], "expectedMaterialGain": ["motion", "UX", "responsiveness"], "complementarity": ["review-animations", "animate"], "redundancy": ["no-concrete-finding"], "sourceRequirement": "concrete-motion-finding", "stageFit": ["PLAN", "VERIFY"], "availability": "availability.capabilities.improve-animations", "operationAvailability": "operationSurface.capabilities.improve-animations", "effectRequirement": "effectRequirement.capabilities.improve-animations", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "animate":  { "relevance": ["motion-implementation"], "expectedMaterialGain": ["motion", "UX"], "complementarity": ["review-animations", "improve-animations"], "redundancy": ["no-motion-intent"], "sourceRequirement": "covered-local-motion-intent", "stageFit": ["EXECUTE"], "availability": "availability.capabilities.animate", "operationAvailability": "operationSurface.capabilities.animate", "effectRequirement": "effectRequirement.capabilities.animate", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "taste-v2":  { "relevance": ["explicit-design-alternative"], "expectedMaterialGain": ["visual-quality"], "complementarity": ["impeccable"], "redundancy": ["impeccable", "21st"], "sourceRequirement": "explicit-Taste-intent", "stageFit": ["PLAN"], "availability": "availability.capabilities.taste-v2", "operationAvailability": "operationSurface.capabilities.taste-v2", "effectRequirement": "effectRequirement.capabilities.taste-v2", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "FIGMA_DESIGN_TO_CODE":  { "relevance": ["explicit-design-to-code"], "expectedMaterialGain": ["component-correctness", "visual-quality"], "complementarity": ["FIGMA_READ", "impeccable"], "redundancy": ["no-explicit-design-to-code-intent"], "sourceRequirement": "Figma-source-and-explicit-intent", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.FIGMA_DESIGN_TO_CODE", "operationAvailability": "operationSurface.capabilities.FIGMA_DESIGN_TO_CODE", "effectRequirement": "effectRequirement.capabilities.FIGMA_DESIGN_TO_CODE", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "FIGMA_WRITE":  { "relevance": ["remote-Figma-write"], "expectedMaterialGain": ["design-system-consistency"], "complementarity": ["FIGMA_READ"], "redundancy": ["local-only-task"], "sourceRequirement": "explicit-remote-write-intent", "stageFit": ["EXECUTE"], "availability": "availability.capabilities.FIGMA_WRITE", "operationAvailability": "operationSurface.capabilities.FIGMA_WRITE", "effectRequirement": "effectRequirement.capabilities.FIGMA_WRITE", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "ACCESSIBILITY_IMPLEMENT":  { "relevance": ["accessibility-fix"], "expectedMaterialGain": ["accessibility", "component-correctness"], "complementarity": ["ACCESSIBILITY_VERIFY"], "redundancy": ["no-verified-finding"], "sourceRequirement": "verified-accessibility-finding-and-explicit-write-intent", "stageFit": ["EXECUTE"], "availability": "availability.capabilities.ACCESSIBILITY_IMPLEMENT", "operationAvailability": "operationSurface.capabilities.ACCESSIBILITY_IMPLEMENT", "effectRequirement": "effectRequirement.capabilities.ACCESSIBILITY_IMPLEMENT", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "axe":  { "relevance": ["supplementary-accessibility-evidence"], "expectedMaterialGain": ["accessibility", "browser-evidence"], "complementarity": ["ACCESSIBILITY_VERIFY", "playwright-cli"], "redundancy": ["missing-exact-installed-dependency"], "sourceRequirement": "already-installed-exact-axe-dependency", "stageFit": ["VERIFY"], "availability": "availability.capabilities.axe", "operationAvailability": "operationSurface.capabilities.axe", "effectRequirement": "effectRequirement.capabilities.axe", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "chrome-devtools":  { "relevance": ["advanced-browser-diagnostics"], "expectedMaterialGain": ["browser-evidence", "responsiveness"], "complementarity": ["playwright-cli"], "redundancy": ["ordinary-QA-sufficient"], "sourceRequirement": "explicit-advanced-diagnostics-intent", "stageFit": ["VERIFY"], "availability": "availability.capabilities.chrome-devtools", "operationAvailability": "operationSurface.capabilities.chrome-devtools", "effectRequirement": "effectRequirement.capabilities.chrome-devtools", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "context7":  { "relevance": ["current-documentation"], "expectedMaterialGain": ["component-correctness", "design-system-consistency"], "complementarity": ["impeccable", "shadcn"], "redundancy": ["stable-known-documentation"], "sourceRequirement": "current-docs-grounding-intent", "stageFit": ["PLAN", "VERIFY"], "availability": "availability.capabilities.context7", "operationAvailability": "operationSurface.capabilities.context7", "effectRequirement": "effectRequirement.capabilities.context7", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" },
+                                                   "storybook":  { "relevance": ["existing-component-workflow"], "expectedMaterialGain": ["component-correctness", "browser-evidence"], "complementarity": ["impeccable", "ACCESSIBILITY_VERIFY"], "redundancy": ["project-ineligible-or-absent"], "sourceRequirement": "existing-compatible-eligible-Storybook-project", "stageFit": ["PLAN", "EXECUTE", "VERIFY"], "availability": "availability.capabilities.storybook", "operationAvailability": "operationSurface.capabilities.storybook", "effectRequirement": "effectRequirement.capabilities.storybook", "explicitInclusion": "honor", "explicitExclusion": "honor-unless-higher-authority-security" }
+                                               }
+                          },
     "stageModel":  [
                        "PLAN",
                        "EXECUTE",

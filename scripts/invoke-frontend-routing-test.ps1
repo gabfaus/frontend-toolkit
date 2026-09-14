@@ -41,8 +41,8 @@ $mcpLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/mcp.
 $shadcn = $mcpLock.servers | Where-Object id -eq 'shadcn'
 $twentyFirst = $mcpLock.servers | Where-Object id -eq '21st'
 
-if ($toolchain.StableCodexVersion -ne '0.150.1') { throw 'FTK-04B requires Codex CLI 0.150.1.' }
-if ($policy.principle -ne 'minimum-necessary-capabilities' -or $matrix.schemaVersion -ne 2 -or @($matrix.scenarios).Count -ne 17) { throw 'Versioned routing contract is invalid.' }
+if ($toolchain.StableCodexVersion -ne '0.150.1') { throw 'Routing V3 harness requires Codex CLI 0.150.1.' }
+if ($policy.schemaVersion -ne 3 -or $policy.principle -ne 'material-complementary-selection' -or $policy.defaultMode -ne 'QUALITY_FIRST' -or $matrix.schemaVersion -ne 3 -or @($matrix.scenarios).Count -ne 28) { throw 'Versioned routing V3 contract is invalid.' }
 if (@($ScenarioId | Sort-Object -Unique).Count -ne @($ScenarioId).Count) { throw 'Scenario identifiers must be unique.' }
 if (@($policy.capabilities.'21st'.defaultAllowedTools) -ne 'search') { throw '21st default allowlist is not search-only.' }
 if ($shadcn.version -ne '4.19.0' -or $twentyFirst.authentication.envVar -ne 'API_KEY_21ST') { throw 'MCP locks do not match the approved baseline.' }
@@ -66,7 +66,7 @@ if ($ValidateOnly) {
     }
     return
 }
-if ($Real21st -and -not $credentialAvailable) { throw 'FTK-04B real E2E mode requires API_KEY_21ST supplied externally.' }
+if ($Real21st -and -not $credentialAvailable) { throw 'Routing V3 real E2E mode requires API_KEY_21ST supplied externally.' }
 
 if (-not $Real21st) {
     # Hermetic routing consumes only the versioned local policy/matrix. It does
@@ -342,9 +342,9 @@ trust_level = "trusted"
     }
 }
 
-if ((Get-FileHashOrAbsent $configPath) -ne $configHashBefore) { throw 'Codex user config changed during FTK-04B.' }
-if ([Environment]::GetEnvironmentVariable('Path','User') -ne $userPathBefore) { throw 'Persistent user PATH changed during FTK-04B.' }
-if ([Environment]::GetEnvironmentVariable('Path','Machine') -ne $machinePathBefore) { throw 'Persistent machine PATH changed during FTK-04B.' }
+if ((Get-FileHashOrAbsent $configPath) -ne $configHashBefore) { throw 'Codex user config changed during routing V3.' }
+if ([Environment]::GetEnvironmentVariable('Path','User') -ne $userPathBefore) { throw 'Persistent user PATH changed during routing V3.' }
+if ([Environment]::GetEnvironmentVariable('Path','Machine') -ne $machinePathBefore) { throw 'Persistent machine PATH changed during routing V3.' }
 
 [pscustomobject]@{
     Mode = 'executed'
