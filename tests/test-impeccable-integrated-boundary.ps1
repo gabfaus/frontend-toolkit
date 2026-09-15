@@ -21,6 +21,8 @@ function Assert-ExactSet {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $securityRoot = Join-Path $repoRoot 'plugin/frontend-toolkit/security'
 $launcher = Join-Path $securityRoot 'invoke-capability.ps1'
 $effectPolicy = Get-Content -Raw -LiteralPath (Join-Path $securityRoot 'effect-policy.json') | ConvertFrom-Json

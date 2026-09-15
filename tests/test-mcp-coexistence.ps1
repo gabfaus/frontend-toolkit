@@ -19,6 +19,8 @@ function Get-FileHashOrAbsent {
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $repoSafe = $repoRoot.Replace('\', '/')
 $harnessPath = Join-Path $repoRoot 'scripts/invoke-combined-codex-test.ps1'

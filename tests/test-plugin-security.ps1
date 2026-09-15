@@ -50,6 +50,8 @@ function Get-SyntheticPolicyDecision {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $stateScript = Join-Path $repoRoot 'external/img2threejs/forge/state.py'
 $workflowStatePath = Join-Path $repoRoot 'external/img2threejs/forge/_shared/workflow_state.py'
 $shellPipeline = Join-Path $repoRoot 'external/img2threejs/integrations/glb_character_pipeline/build-character.sh'

@@ -2,6 +2,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $securityRoot = Join-Path $repoRoot 'plugin/frontend-toolkit/security'
 $launcher = Join-Path $securityRoot 'invoke-capability.ps1'
 $operationPolicyPath = Join-Path $securityRoot 'impeccable-operation-policy.json'

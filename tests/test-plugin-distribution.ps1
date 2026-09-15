@@ -44,6 +44,9 @@ if ($ValidateOnly) {
     return
 }
 
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
+
 $toolchain = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/toolchain.lock.json') | ConvertFrom-Json
 $script:CodexPath = [Environment]::ExpandEnvironmentVariables(($toolchain.runtimes | Where-Object id -eq 'codex-cli').portableResolution)
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('ftk05b-' + [guid]::NewGuid().ToString('N').Substring(0, 8))

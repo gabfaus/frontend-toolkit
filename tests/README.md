@@ -52,6 +52,37 @@ classificação `PROJECT_CODE_EXECUTION`, separação de rede e `init/status/mar
 temporárias. Código de projeto não é executado nesse teste; codec/TypeScript/Vite são validados como
 rotas funcionais defensivas sob o boundary do host.
 
+## Contrato da suite externa
+
+Os testes sao classificados pelo efeito necessario para executa-los:
+
+- **HERMETIC:** usa somente codigo, fixtures ou mocks locais e nao precisa de `external/`.
+- **SELF_MATERIALIZING:** cria e remove seu proprio checkout temporario para testar ausencia, materializacao governada e cleanup. `test-impeccable-execution-robustness.ps1` pertence a esta classe e nao passa pelo preflight externo.
+- **PREPARED_INTEGRATION:** le ou executa upstream real a partir de `external/impeccable` e/ou `external/img2threejs`; exige os pins do lock, checkout limpo e adapters FTK validos.
+- **VALIDATE_ONLY:** valida locks, composicao e contratos sem exigir materializacao fisica dos upstreams; `test-plugin-distribution.ps1 -ValidateOnly` e o caminho canonico dessa classe.
+
+O preflight comum e `tests/helpers/external-prerequisite.ps1`. Ele reutiliza `scripts/sync-external-skills.ps1 -ValidateOnly`, nao clona e nao inicia rede. Ausencia e reportada como `EXTERNAL_PREREQUISITE_MISSING`; pin, origem, hash, adapter ou worktree invalido como `EXTERNAL_PREREQUISITE_INVALID`. Ambos orientam o comando de reparo e nao sao contabilizados como PASS do teste.
+
+### Preparacao governada
+
+Em um checkout novo, a preparacao explicita pode usar:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
+```
+
+Para preparacao e suite final em uma unica entrada:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-test-suite.ps1 -PrepareExternal
+```
+
+Sem `-PrepareExternal`, o runner somente valida o prerequisite e falha cedo se os upstreams nao estiverem prontos; nenhum teste individual inicia network. Um ambiente fresh pode exigir network durante a preparacao. Depois de `external/` correto e limpo, `run-test-suite.ps1` sem switch reutiliza o estado local e nao reclona.
+
+O runner oficial executa os 15 testes do gate final, preserva stdout/stderr e exit codes, executa todos os casos mesmo apos uma falha, e emite resumo sem transformar dependency failure ou `NOT_RUN` em PASS. A preparacao continua pertencendo exclusivamente ao sincronizador governado.
+
+`test-plugin-hardening.ps1` executa o mesmo preflight antes de iniciar seus agregados. Invocado sem upstream, ele falha no preflight comum; preparado, segue normalmente para o agregado. A robustez E-011 continua podendo iniciar sem `external/` para provar seu contrato de ausencia-upstream.
+
 Tipos de evidência:
 
 - **static checks:** pins, locks, instruções, entrypoints, inventários e política machine-readable;

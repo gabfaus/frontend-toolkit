@@ -11,6 +11,8 @@ function Get-CanonicalTextHash {
 
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $discoveryRoot = Join-Path $repoRoot '.agents/skills'
 $pluginSkills = Join-Path $repoRoot 'plugin/frontend-toolkit/skills'
 $lock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json

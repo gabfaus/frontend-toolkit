@@ -43,6 +43,8 @@ function Normalize-Finding($Finding, [string]$Root, [string]$Source) {
 }
 
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $sourceRoot = Join-Path ([IO.Path]::GetTempPath()) ("ftk-golden-committed-source-" + [guid]::NewGuid().ToString("N"))
 $sourceTar = Join-Path ([IO.Path]::GetTempPath()) ("ftk-golden-committed-source-" + [guid]::NewGuid().ToString("N") + ".tar")
 try {

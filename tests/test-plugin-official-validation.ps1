@@ -18,6 +18,9 @@ if (-not $Execute) {
     return
 }
 
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
+
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('frontend-toolkit-validator-' + [guid]::NewGuid().ToString('N').Substring(0, 8))
 $venv = Join-Path $fixture 'venv'
 $snapshot = Join-Path $fixture 'snapshot/frontend-toolkit'

@@ -12,6 +12,8 @@ function Get-CanonicalTextHash {
 . (Join-Path $PSScriptRoot '..\scripts\release-safety.ps1')
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $pluginRoot = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot '.codex-plugin/plugin.json') | ConvertFrom-Json
 $mcp = Get-Content -Raw -LiteralPath (Join-Path $pluginRoot '.mcp.json') | ConvertFrom-Json

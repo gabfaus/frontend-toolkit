@@ -16,11 +16,13 @@ O tag do Impeccable é anotado: o SHA do objeto da tag difere do commit final. A
 ```text
 external/impeccable/                         # checkout ignorado
 external/img2threejs/                        # checkout ignorado
-.agents/skills/impeccable -> junction para external/impeccable/plugin/skills/impeccable
-.agents/skills/img2threejs -> junction para external/img2threejs
+.agents/skills/impeccable/                   # adapter fisico FTK-owned rastreado
+.agents/skills/img2threejs/                  # adapter fisico FTK-owned rastreado
 ```
 
-Symlink foi testado e recusado pelo Windows por exigir privilégio administrativo. Junction de diretório funcionou sem mudança global e foi adotada. Os links são artefatos locais ignorados; `scripts/sync-external-skills.ps1` os recria e valida contra `integrations/external.lock.json`.
+A descrição histórica de symlink/junction não é operacional: a arquitetura atual usa adapters físicos FTK-owned rastreados, e `scripts/sync-external-skills.ps1` valida e rejeita reparse points.
+Atualizacao R12: a descricao de junction acima e historica. A arquitetura atual exige adapters fisicos proprios do FTK; o sincronizador valida e rejeita reparse points e nao copia SKILL.md upstream para a raiz de discovery.
+
 
 Esse mecanismo mantém uma fonte única para cada Skill. Nenhum arquivo upstream é copiado para `.agents/skills`.
 
@@ -65,6 +67,7 @@ Runtimes privados do Codex Desktop não são dependências do toolkit e não for
 ## Resultados dos testes
 
 - Sincronizador em modo normal: passou e criou as duas junctions.
+- Estado atual: os adapters sao diretorios fisicos FTK-owned; junctions nao fazem parte do preflight vigente.
 - Sincronizador `-ValidateOnly`: passou para origem, SHA, worktree externo limpo, hash do `SKILL.md` e targets.
 - Teste estrutural: passou para metadata, versões, referências/scripts, coexistência e ausência de `.codex/hooks.json`.
 - Descoberta determinística com `codex debug prompt-input`: passou para `impeccable:impeccable` e `img2threejs`, ambos apontando para `.agents/skills/.../SKILL.md`.

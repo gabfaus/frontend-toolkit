@@ -68,6 +68,9 @@ if ($ValidateOnly) {
 }
 if ($Real21st -and -not $credentialAvailable) { throw 'Routing V3 real E2E mode requires API_KEY_21ST supplied externally.' }
 
+. (Join-Path $repoRoot 'tests/helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
+
 if (-not $Real21st) {
     # Hermetic routing consumes only the versioned local policy/matrix. It does
     # not start Codex exec, an MCP transport, or a remote 21st request.

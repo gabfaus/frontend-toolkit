@@ -12,6 +12,8 @@ function Get-StringHash {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $resolver = Join-Path $repoRoot 'scripts/resolve-toolchain.ps1'
 $harness = Join-Path $repoRoot 'scripts/invoke-codex-test.ps1'
 $userPathBefore = [Environment]::GetEnvironmentVariable('Path', 'User')

@@ -2,6 +2,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $securityRoot = Join-Path $repoRoot 'plugin/frontend-toolkit/security'
 . (Join-Path $securityRoot 'img2threejs-runner.ps1')
 

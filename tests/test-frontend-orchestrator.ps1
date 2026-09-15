@@ -19,6 +19,8 @@ function Assert-ExactSet {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+. (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+Assert-FtkExternalPrerequisite
 $skillRoot = Join-Path $repoRoot '.agents/skills/frontend-orchestrator'
 $skillPath = Join-Path $skillRoot 'SKILL.md'
 $routingPath = Join-Path $skillRoot 'references/routing.md'
