@@ -183,8 +183,11 @@ function Assert-ImpeccableIntegratedPolicyIdentity {
         @($authority.upstream.contractFiles | Where-Object { $_.sha256 -cnotmatch '^[0-9a-f]{64}$' }).Count) {
         throw 'Impeccable authority fingerprint is malformed or incomplete.'
     }
-    $upstreamRoot = Resolve-ImpeccablePinnedUpstreamRoot
-    if (Test-Path -LiteralPath (Join-Path $upstreamRoot '.git')) {
+    # FTK-owned context/identity mediation is committed and does not execute
+    # the optional development checkout. Upstream execution resolves the
+    # required checkout separately through Resolve-ImpeccablePinnedScript.
+    $upstreamRoot = Resolve-ImpeccablePinnedUpstreamRoot -AllowUnavailable
+    if ($null -ne $upstreamRoot -and (Test-Path -LiteralPath (Join-Path $upstreamRoot '.git'))) {
         $safeRoot = $upstreamRoot.Replace('\', '/')
         $head = (& git -c "safe.directory=$safeRoot" -C $upstreamRoot rev-parse HEAD).Trim()
         if ($LASTEXITCODE -ne 0 -or $head -cne $authority.upstream.commitSha) {
@@ -294,13 +297,17 @@ function Resolve-ImpeccableStaticHtmlModuleRoot {
     return $resolved
 }
 function Resolve-ImpeccablePinnedUpstreamRoot {
+    param([switch]$AllowUnavailable)
     $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..'))
     $snapshot = Join-Path (Split-Path $PSScriptRoot -Parent) 'third_party/upstreams/impeccable'
     if (Test-Path -LiteralPath $snapshot -PathType Container) { return (Resolve-Path -LiteralPath $snapshot).Path }
 
     # DevelopmentWorkingTree fallback: diagnostic/test input only, never release evidence.
     $checkout = Join-Path $repoRoot 'external/impeccable'
-    if (-not (Test-Path -LiteralPath $checkout -PathType Container)) { throw 'Pinned Impeccable upstream is unavailable.' }
+    if (-not (Test-Path -LiteralPath $checkout -PathType Container)) {
+        if ($AllowUnavailable) { return $null }
+        throw 'Pinned Impeccable upstream is unavailable.'
+    }
     $lock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
     $entry = @($lock.dependencies | Where-Object id -CEQ 'impeccable')
     if ($entry.Count -ne 1 -or $entry[0].commitSha -cne '63b04e2530f5c7b41ea83c133daab24f34912456') {

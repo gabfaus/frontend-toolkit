@@ -309,6 +309,10 @@ environment=synthetic-explicit-environment-value
     Assert-True (-not $malformed.succeeded -and $malformed.failureType -ceq 'OUTPUT_CONTRACT_FAILURE' -and $malformed.exitCode -eq 0) 'Malformed output was not classified separately from process failure.'
 
     $validContext = Invoke-ImpeccableContextExtractor -Mode context -ProjectRoot $fixture -Capability critique
+    Assert-True ($validContext.dedicatedExecution.succeeded -and
+        $validContext.dedicatedExecution.dedicatedExecutionResult -ceq 'SUCCEEDED' -and
+        $validContext.PSObject.Properties.Name -contains 'sourceFingerprint') `
+        'Valid context extraction did not return the typed success envelope.'
     $contextPayload = [ordered]@{}
     foreach ($name in @('schemaVersion','sourceFingerprint','data','advisory','requestedOperations','events')) { $contextPayload[$name] = $validContext.$name }
     $validContextJson = $contextPayload | ConvertTo-Json -Depth 30 -Compress
