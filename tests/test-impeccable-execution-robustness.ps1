@@ -11,6 +11,43 @@ function Assert-Equal {
     if ($Actual -cne $Expected) { throw "$Message Actual=[$Actual] Expected=[$Expected]" }
 }
 
+function Invoke-TestGit {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string[]]$Arguments
+    )
+
+    $output = @(& git -C $Repository @Arguments 2>&1)
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+        throw "git -C $Repository $($Arguments -join ' ') failed: $($output -join [Environment]::NewLine)"
+    }
+    return $output
+}
+
+function New-TestWorktree {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$Commit
+    )
+
+    if (Test-Path -LiteralPath $Path) { throw "Test worktree path already exists: $Path" }
+    Invoke-TestGit -Repository $Repository -Arguments @('worktree', 'add', '--detach', '--quiet', $Path, $Commit) | Out-Null
+    return $Path
+}
+
+function Remove-TestWorktree {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string]$Path
+    )
+
+    if (-not (Test-Path -LiteralPath $Path)) { return }
+    Invoke-TestGit -Repository $Repository -Arguments @('worktree', 'remove', '--force', $Path) | Out-Null
+    if (Test-Path -LiteralPath $Path) { throw "Test worktree teardown failed: $Path" }
+}
+
 function Invoke-SyntheticChild {
     param(
         [Parameter(Mandatory)][string]$ScriptPath,
@@ -40,6 +77,13 @@ $securityRoot = Join-Path $repoRoot 'plugin/frontend-toolkit/security'
 . (Join-Path $securityRoot 'impeccable-runner.ps1')
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('ftk-impeccable-execution-' + [guid]::NewGuid().ToString('N'))
 $originalSecret = [Environment]::GetEnvironmentVariable('FTK_SYNTHETIC_PARENT_SECRET', 'Process')
+$sourceCommit = ((& git -C $repoRoot rev-parse HEAD) | Out-String).Trim()
+if ($sourceCommit -notmatch '^[0-9a-f]{40}$') { throw 'Source committed HEAD could not be resolved for E-011 fixtures.' }
+$phaseAWorktree = Join-Path $fixture 'e011-absent-worktree'
+$phaseBWorktree = Join-Path $fixture 'e011-execution-worktree'
+$phaseAWorktreeCreated = $false
+$phaseBWorktreeCreated = $false
+$cleanupErrors = @()
 
 try {
     [IO.Directory]::CreateDirectory($fixture) | Out-Null
@@ -108,6 +152,48 @@ Start-Sleep -Seconds 30
     [IO.File]::WriteAllText($environmentScript, @'
 Get-ChildItem Env: | ForEach-Object { [Console]::Out.WriteLine($_.Name) }
 '@, [Text.UTF8Encoding]::new($false))
+
+    # Phase A runs from a fresh detached worktree so it cannot observe ignored
+    # upstream state from the caller's development worktree.
+    $phaseAWorktree = New-TestWorktree -Repository $repoRoot -Path $phaseAWorktree -Commit $sourceCommit
+    $phaseAWorktreeCreated = $true
+    $phaseAProject = Join-Path $fixture 'e011-absent-project'
+    [IO.Directory]::CreateDirectory($phaseAProject) | Out-Null
+    [IO.File]::WriteAllText((Join-Path $phaseAProject 'ui.css'), '.cta { color: red; }', [Text.UTF8Encoding]::new($false))
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $phaseAWorktree 'external'))) 'Absent-upstream phase inherited an external directory.'
+    $phaseALauncher = Join-Path $phaseAWorktree 'plugin/frontend-toolkit/security/invoke-capability.ps1'
+    $phaseAContext = ((& $phaseALauncher -Operation 'impeccable.context.local' -ProjectRoot $phaseAProject -Capability critique) | Out-String) | ConvertFrom-Json
+    Assert-True ($phaseAContext.dedicatedExecution.succeeded -and
+        $phaseAContext.dedicatedExecution.dedicatedExecutionResult -ceq 'SUCCEEDED' -and
+        $phaseAContext.PSObject.Properties.Name -contains 'sourceFingerprint') 'Absent-upstream FTK-owned context did not succeed with sourceFingerprint.'
+    $phaseADetectorException = $null
+    try {
+        & $phaseALauncher -Operation 'impeccable.detector.local' -ProjectRoot $phaseAProject -InputPath 'ui.css' | Out-Null
+    } catch { $phaseADetectorException = $_.Exception }
+    Assert-True ($null -ne $phaseADetectorException) 'Absent-upstream detector unexpectedly succeeded.'
+    $phaseADetectorEnvelope = $phaseADetectorException.Data['ftkExecutionEnvelope']
+    Assert-True ($null -ne $phaseADetectorEnvelope) 'Absent-upstream detector did not return the dispatcher failure envelope.'
+    $phaseADedicated = $phaseADetectorEnvelope.dedicatedExecution
+    Assert-True ($phaseADedicated.materialized -eq $false -and $phaseADedicated.attempted -eq $false -and
+        $phaseADedicated.childStarted -eq $false -and $phaseADedicated.dedicatedExecutionResult -ceq 'NOT_ATTEMPTED' -and
+        $phaseADedicated.failureType -ceq 'DEPENDENCY_OR_RUNTIME_FAILURE') 'Absent-upstream execution contract drifted.'
+    Write-Output 'PASS: E-011 Phase A preserves FTK-owned context success and absent-upstream NOT_ATTEMPTED execution.'
+    Remove-TestWorktree -Repository $repoRoot -Path $phaseAWorktree
+    $phaseAWorktreeCreated = $false
+
+    # Phase B uses the governed sync script in a separate fresh worktree. It
+    # never reuses or copies the caller's ignored external checkout.
+    $phaseBWorktree = New-TestWorktree -Repository $repoRoot -Path $phaseBWorktree -Commit $sourceCommit
+    $phaseBWorktreeCreated = $true
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $phaseBWorktree 'external'))) 'E-011 execution phase started with inherited external state.'
+    $syncScript = Join-Path $phaseBWorktree 'scripts/sync-external-skills.ps1'
+    try { & $syncScript } catch { throw "E-011 pinned prerequisite materialization failed: $($_.Exception.Message)" }
+    if ($LASTEXITCODE -ne 0) { throw 'E-011 pinned prerequisite materialization returned a non-zero exit code.' }
+    $phaseBUpstream = Join-Path $phaseBWorktree 'external/impeccable'
+    $phaseBHead = ((Invoke-TestGit -Repository $phaseBUpstream -Arguments @('rev-parse', 'HEAD') | Select-Object -First 1) | Out-String).Trim()
+    $phaseBChanges = Invoke-TestGit -Repository $phaseBUpstream -Arguments @('status', '--porcelain')
+    Assert-True ($phaseBHead -ceq '63b04e2530f5c7b41ea83c133daab24f34912456' -and
+        [string]::IsNullOrWhiteSpace(($phaseBChanges -join [Environment]::NewLine))) 'E-011 prerequisite was not a clean pinned checkout.'
 
     $taxonomy = @(Get-FtkDedicatedExecutionFailureTypes)
     Assert-Equal ($taxonomy -join '|') 'INVALID_INPUT|DEPENDENCY_OR_RUNTIME_FAILURE|UPSTREAM_EXECUTION_FAILURE|OUTPUT_CONTRACT_FAILURE|TIMEOUT|UNKNOWN_FAILURE' 'Dedicated failure taxonomy drifted.'
@@ -386,9 +472,10 @@ environment=synthetic-explicit-environment-value
     [IO.Directory]::CreateDirectory((Join-Path $e011Project '.impeccable')) | Out-Null
     [IO.File]::WriteAllText((Join-Path $e011Project 'ui.css'), '.cta { color: red; }', [Text.UTF8Encoding]::new($false))
     [IO.File]::WriteAllText((Join-Path $e011Project '.impeccable/config.json'), '{ invalid-json', [Text.UTF8Encoding]::new($false))
+    $e011Launcher = Join-Path $phaseBWorktree 'plugin/frontend-toolkit/security/invoke-capability.ps1'
     $e011Exception = $null
     try {
-        & (Join-Path $securityRoot 'invoke-capability.ps1') -Operation 'impeccable.detector.local' `
+        & $e011Launcher -Operation 'impeccable.detector.local' `
             -ProjectRoot $e011Project -InputPath 'ui.css' | Out-Null
     } catch { $e011Exception = $_.Exception }
     $e011DispatcherEnvelope = if ($null -ne $e011Exception) { $e011Exception.Data['ftkExecutionEnvelope'] } else { $null }
@@ -405,6 +492,9 @@ environment=synthetic-explicit-environment-value
     Assert-True ($e011.routing.status -ceq 'PASS' -and $e011.dedicatedExecution.attempted -and $e011.dedicatedExecution.exitCode -eq 1 -and
         -not $e011.dedicatedExecution.succeeded -and $e011.fallback.status -ceq 'SUCCEEDED' -and
         $e011.fallback.dedicatedFailureRetained -and $e011.finalWorkflowResult -ceq 'PASS' -and -not $e011.succeeded) 'E-011 did not preserve routing, dedicated execution, fallback and final workflow as separate states.'
+    Write-Output 'PASS: E-011 Phase B uses the real dispatcher/runner/child failure with exitCode=1 and preserves fallback separately.'
+    Remove-TestWorktree -Repository $repoRoot -Path $phaseBWorktree
+    $phaseBWorktreeCreated = $false
 
     $dispatcherInvalid = $null
     try { & (Join-Path $securityRoot 'invoke-capability.ps1') -Operation 'impeccable.context.local' -Capability critique | Out-Null }
@@ -431,8 +521,17 @@ environment=synthetic-explicit-environment-value
     Write-Output 'PASS: concurrent bounded stdout/stderr capture, structured/malformed diagnostics and deterministic timeout cleanup are covered.'
     Write-Output 'PASS: dependency, invalid-input, policy-rejection and UNKNOWN states fail closed without false dedicated success.'
     Write-Output 'PASS: E-011 preserves routing PASS, dedicated failure, honest fallback and final workflow PASS as separate evidence.'
-    Write-Output 'DYNAMIC TEST EXECUTED  SYNTHETIC LOCAL CHILDREN ONLY  NO UPSTREAM, NETWORK, CREDENTIAL OR PAID OPERATION'
+    Write-Output 'DYNAMIC TEST EXECUTED  ABSENT-UPSTREAM AND EXPLICIT PINNED-UPSTREAM PHASES  NO CREDENTIAL OR PAID OPERATION'
 } finally {
     [Environment]::SetEnvironmentVariable('FTK_SYNTHETIC_PARENT_SECRET', $originalSecret, 'Process')
-    if (Test-Path -LiteralPath $fixture) { [IO.Directory]::Delete($fixture, $true) }
+    if ($phaseBWorktreeCreated) {
+        try { Remove-TestWorktree -Repository $repoRoot -Path $phaseBWorktree; $phaseBWorktreeCreated = $false } catch { $cleanupErrors += $_.Exception.Message }
+    }
+    if ($phaseAWorktreeCreated) {
+        try { Remove-TestWorktree -Repository $repoRoot -Path $phaseAWorktree; $phaseAWorktreeCreated = $false } catch { $cleanupErrors += $_.Exception.Message }
+    }
+    if (Test-Path -LiteralPath $fixture) {
+        try { [IO.Directory]::Delete('\\?\' + [IO.Path]::GetFullPath($fixture), $true) } catch { $cleanupErrors += $_.Exception.Message }
+    }
+    if ($cleanupErrors.Count) { throw ('E-011 fixture cleanup failed: ' + ($cleanupErrors -join ' | ')) }
 }
