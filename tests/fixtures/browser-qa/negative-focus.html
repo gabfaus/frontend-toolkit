@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Broken focus order</title>
+    <style>:focus-visible { outline: none; }</style>
+  </head>
+  <body>
+    <main>
+      <h1>Broken focus order</h1>
+      <button tabindex="3">Third visually</button>
+      <a href="#end" tabindex="1">First in keyboard order</a>
+      <input tabindex="2" name="query">
+      <div id="end" tabindex="0">Focus does not return to the trigger.</div>
+    </main>
+  </body>
+</html>

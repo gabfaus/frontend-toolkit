@@ -10,11 +10,13 @@ This FTK-owned Skill separates evidence collection from code changes.
 ## ACCESSIBILITY_VERIFY — CORE
 
 Use `integrations/browser-qa/accessibility-verify.mjs` in read-only mode. It
-accepts a bounded observation JSON and emits one of `PASS`, `FAIL`,
-`INCOMPLETE`, or `UNKNOWN` without changing source code or writing a report.
-Missing evidence is `INCOMPLETE`; contradictory or malformed evidence fails
-closed. Non-deterministic checks remain `UNKNOWN` until a manual or LLM review
-records its decision.
+accepts a bounded `BrowserEvidenceBundle` (or the local execution envelope)
+from the same Browser QA session and emits one of `PASS`, `FAIL`, `INCOMPLETE`,
+or `UNKNOWN` without changing source code. Missing evidence is `INCOMPLETE`;
+contradictory or malformed evidence fails closed. A caller-supplied
+`status=PASS`, `checks[*].status`, or global `manualReview.reviewed` is never
+authority. Non-deterministic checks remain `UNKNOWN` until a matching manual
+review entry is linked to that check.
 
 The evidence contract covers:
 
@@ -28,9 +30,18 @@ The evidence contract covers:
 - `prefers-reduced-motion` and motion accessibility; and
 - screen-reader reasoning and meaningful content.
 
+The local check contract is granular: semantic structure, landmarks, headings,
+form labels, form relationships, ARIA consistency, keyboard order, focus
+visibility, focus behavior, AX naming/state, reduced motion, and reflow. Every
+check returns `id`, `status`, `required`, `evidenceRefs`, `limitations`, and
+`manualReviewRequired`. Automated failures cannot be overridden by manual
+review. The verifier may use per-check manual evidence only when the check is
+marked manual-review-capable.
+
 An axe result is supplementary evidence only. The conditional adapter checks
 for an already-installed `@axe-core/playwright@4.13.0` and compatible
-Playwright; it never installs, executes a scan, or modifies the project.
+Playwright; it never installs or executes a scan in this gate, and always
+reports `scanExecuted=false`.
 
 ## ACCESSIBILITY_IMPLEMENT — CONDITIONAL
 

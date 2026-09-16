@@ -57,8 +57,8 @@ try {
     status = 'UNKNOWN';
     reason = `Installed axe version is not the frozen target ${targetAxeVersion}.`;
   } else if (axe && compatibleRunner && /^1\./.test(String(compatibleRunner.version))) {
-    status = 'PASS';
-    reason = 'Conditional dependency is available; no scan was executed by this adapter.';
+    status = 'SUPPLEMENTARY_AVAILABLE';
+    reason = 'Conditional dependency is available; no scan was executed or authorized by this adapter.';
   }
   process.stdout.write(JSON.stringify({
     status,

@@ -133,6 +133,18 @@
     "noAutomaticInstallation": true,
     "complements": ["semantic-review", "keyboard-flow", "focus-management", "screen-reader-reasoning", "content", "reflow", "motion"]
   },
+  "browserMaterialization": {
+    "classification": "CONTROLLED_RUNTIME_MATERIALIZATION",
+    "revisionPinTracked": true,
+    "revision": "1243",
+    "browserVersion": "153.0.8010.12",
+    "browserFamily": "chromium",
+    "platform": "win64",
+    "executableRelationship": "playwright-core browsers.json -> chromium revision directory -> Chrome for Testing executable",
+    "executableHashPolicy": "observed-per-materialization; not a source-tree artifact",
+    "provenance": "revision and browserVersion read from the exact materialized playwright-core browsers.json; executable and installation markers verified in the controlled TEMP cache",
+    "limitation": "The browser executable hash is environment-specific and must be retained in real evidence, not treated as a portable source-tree pin."
+  },
   "chromeDevtools": {
     "id": "chrome-devtools-mcp",
     "version": "1.8.0",

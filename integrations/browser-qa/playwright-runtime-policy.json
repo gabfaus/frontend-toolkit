@@ -3,6 +3,25 @@
   "capability": "browser-qa.playwright",
   "classification": "CORE",
   "cli": "@playwright/cli@0.1.19",
+  "provider": "integrations/browser-qa/browser-session-provider.ps1",
+  "providerContract": "browser-qa.transaction -> BrowserEvidenceBundle",
+  "failureTaxonomy": [
+    "INVALID_INPUT",
+    "DEPENDENCY_OR_RUNTIME_FAILURE",
+    "UPSTREAM_EXECUTION_FAILURE",
+    "OUTPUT_CONTRACT_FAILURE",
+    "TIMEOUT",
+    "UNKNOWN_FAILURE"
+  ],
+  "executionStates": [
+    "preflight",
+    "childStarted",
+    "browserReady",
+    "sessionReady",
+    "evidenceCaptured",
+    "sessionClosed",
+    "cleanup"
+  ],
   "officialSkill": "playwright-cli",
   "defaults": {
     "headless": true,
@@ -20,6 +39,15 @@
     "externalTraffic": false
   },
   "allowedActions": [
+    "session.open",
+    "navigate",
+    "viewport.resize",
+    "capture.dom",
+    "capture.ax",
+    "capture.screenshot",
+    "capture.requests",
+    "interaction",
+    "session.close",
     "open",
     "goto",
     "snapshot",
@@ -98,6 +126,12 @@
     "ComSpec",
     "TEMP",
     "TMP",
+    "FTK_BROWSER_QA_HOST_TEMP",
+    "PLAYWRIGHT_BROWSERS_PATH",
+    "PWTEST_DAEMON_SESSION_DIR",
+    "PWTEST_SERVER_REGISTRY",
+    "PWTEST_CLI_GLOBAL_CONFIG",
+    "PLAYWRIGHT_MCP_SANDBOX",
     "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD",
     "PLAYWRIGHT_HTML_OPEN",
     "NO_COLOR",
@@ -109,7 +143,37 @@
     "NO_COLOR": "1",
     "NO_UPDATE_NOTIFIER": "1"
   },
+  "limits": {
+    "transactionOperations": 64,
+    "actionTimeoutMilliseconds": 30000,
+    "defaultTimeoutMilliseconds": 120000,
+    "maximumTimeoutMilliseconds": 600000,
+    "stdoutCharacters": 262144,
+    "stderrCharacters": 262144,
+    "domNodes": 300,
+    "axNodes": 300,
+    "requestItems": 300,
+    "screenshotArtifacts": 8,
+    "screenshotBytes": 20971520
+  },
+  "headlessContract": {
+    "required": true,
+    "flag": "--no-headed",
+    "verification": "provider output must report headless=true and headlessControl=explicit-cli-flag"
+  },
   "outputBoundary": "%TEMP%/ftk-playwright/<session-id>",
   "pageScripts": "target-page execution only; no injected scripts",
-  "networkBoundary": "loopback allowlist is defense-in-depth, not the sole security boundary"
+  "networkBoundary": {
+    "initialUrl": "loopback-only",
+    "externalSubrequests": "deny-or-fail-closed",
+    "interception": "not exposed by pinned CLI; capture.requests observes and fails closed on external origins",
+    "redirects": "external redirect is a verification failure"
+  },
+  "browserIdentity": {
+    "revisionPinTracked": true,
+    "revision": "1243",
+    "browserVersion": "153.0.8010.12",
+    "status": "RUNTIME_DESCRIPTOR_AND_TEMP_INSTALLATION_VERIFIED",
+    "limitation": "The browser executable hash is environment-specific and belongs in real evidence rather than the source tree."
+  }
 }

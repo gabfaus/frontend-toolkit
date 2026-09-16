@@ -6,10 +6,29 @@ The normal plugin MCP configuration is unchanged and therefore contains no
 Playwright MCP or Chrome DevTools MCP.
 
 The Playwright route is the default CORE capability. Its PowerShell launcher
-accepts a typed action set, runs a resolved `playwright-cli` executable through
-`ProcessStartInfo`, clears the child environment, restricts URLs to loopback,
-uses an OS-temporary session root, and refuses automatic package/browser
-installation. `-PlanOnly` is the safe way to inspect the command boundary.
+accepts a typed action set, and `browser-session-provider.ps1` accepts a typed
+transaction for one shared session. Both routes run a resolved
+`playwright-cli` package-owned entry through `ProcessStartInfo`, clear the
+child environment, apply the exact CLI's explicit `--no-headed` headless
+control, restrict URLs to loopback,
+use an OS-temporary session root, bound process output/time, and refuse
+automatic package/browser installation. `-PlanOnly` is the safe way to inspect
+the command boundary.
+
+The transaction sequence is bounded to:
+`session.open`, `navigate`, `viewport.resize`, `capture.dom`, `capture.ax`,
+`capture.screenshot`, `capture.requests`, typed `interaction`, and
+`session.close`. It returns a `BrowserEvidenceBundle` with bounded structured
+DOM/AX snapshots, artifact hashes, request summaries, and keyboard/focus
+observations. The accessibility verifier consumes this same bundle; it does
+not run a second browser session.
+
+The process runner reuses the canonical 03D execution envelope and taxonomy:
+`INVALID_INPUT`, `DEPENDENCY_OR_RUNTIME_FAILURE`, `UPSTREAM_EXECUTION_FAILURE`,
+`OUTPUT_CONTRACT_FAILURE`, `TIMEOUT`, and `UNKNOWN_FAILURE`. `childStarted` is
+the process state; `browserReady` and `sessionReady` are separate evidence
+states. Job Object cleanup is reported truthfully as bounded cleanup with a
+start/assignment race limitation, never as an absolute guarantee.
 
 `frontend-accessibility` provides a read-only evidence verifier. It does not
 pretend that an axe scan proves keyboard flow, focus, semantics, content,
@@ -35,3 +54,8 @@ The Chrome DevTools adapter is optional configuration plus a tool/origin
 allowlist. It does not start Chrome, attach to an existing browser, or register
 an MCP. The exact package metadata and update procedure are in
 `integrations/browser-qa.lock.json`.
+
+The lock records the Chromium revision and browser build exposed by the exact
+Playwright runtime. Prepared real-browser evidence still records the
+environment-specific executable hash; that hash is not a portable source-tree
+artifact.

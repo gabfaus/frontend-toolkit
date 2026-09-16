@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><title>Contradictory ARIA</title></head>
+  <body>
+    <main>
+      <h1>Contradictory ARIA</h1>
+      <div role="button" aria-expanded="maybe" aria-checked="true">Not a toggle</div>
+      <button aria-pressed="maybe">Invalid pressed state</button>
+      <input aria-labelledby="missing-label">
+    </main>
+  </body>
+</html>
