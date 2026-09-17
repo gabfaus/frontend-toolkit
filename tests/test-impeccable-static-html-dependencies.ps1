@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 . (Join-Path $PSScriptRoot 'helpers/external-prerequisite.ps1')
+. (Join-Path $repoRoot 'scripts/release-safety.ps1')
 Assert-FtkExternalPrerequisite
 $lock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/impeccable-static-html-dependencies.lock.json') | ConvertFrom-Json
 $externalLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
@@ -154,8 +155,8 @@ Assert-True ($auditRoot.StartsWith([IO.Path]::GetFullPath([IO.Path]::GetTempPath
 $archivePath = Join-Path $auditRoot 'impeccable.tar'; $extractPath = Join-Path $auditRoot 'snapshot'
 try {
     New-Item -ItemType Directory -Path $extractPath -Force | Out-Null
-    & git -C $upstreamRoot archive --format=tar --output=$archivePath $impeccable.commitSha -- LICENSE NOTICE.md plugin/skills/impeccable
-    if ($LASTEXITCODE -ne 0) { throw 'Unable to materialize pinned Impeccable audit tree.' }
+    Assert-SafeGitArchiveTree -Repository $upstreamRoot -Commit $impeccable.commitSha -Context 'pinned Impeccable audit tree' -Paths @('LICENSE', 'NOTICE.md', 'plugin/skills/impeccable')
+    Export-CanonicalGitFiles -Repository $upstreamRoot -Commit $impeccable.commitSha -DestinationArchive $archivePath -CoreAutocrlf 'true' -Paths @('LICENSE', 'NOTICE.md', 'plugin/skills/impeccable')
     & tar -xf $archivePath -C $extractPath
     if ($LASTEXITCODE -ne 0) { throw 'Unable to extract pinned Impeccable audit tree.' }
     Assert-True ((Get-TreeHash $extractPath) -ceq $impeccable.snapshotTreeSha256) 'Upstream Impeccable snapshot bytes drifted.'

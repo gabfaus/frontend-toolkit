@@ -189,9 +189,10 @@ try {
         'scripts/character_audit.sh'
     )
     Assert-SafeGitArchiveTree -Repository $img2threejsCheckout -Commit $img2threejs.commitSha -Context 'img2threejs snapshot' -AllowedExecutablePaths $img2threejsExecutables
-    & git -c "safe.directory=$($impeccableCheckout.Replace('\','/'))" -C $impeccableCheckout archive --format=tar --output=$impeccableTar $impeccable.commitSha -- LICENSE NOTICE.md plugin/skills/impeccable
+    # Preserve the existing governed external snapshot byte contract explicitly; LOCK-07C owns any future LF migration.
+    Export-CanonicalGitFiles -Repository $impeccableCheckout -Commit $impeccable.commitSha -DestinationArchive $impeccableTar -CoreAutocrlf 'true' -Paths @('LICENSE', 'NOTICE.md', 'plugin/skills/impeccable')
     Assert-NativeSuccess 'Impeccable archive'
-    & git -c "safe.directory=$($img2threejsCheckout.Replace('\','/'))" -C $img2threejsCheckout archive --format=tar --output=$img2threejsTar --prefix=img2threejs/ $img2threejs.commitSha
+    Export-CanonicalGitFiles -Repository $img2threejsCheckout -Commit $img2threejs.commitSha -DestinationArchive $img2threejsTar -CoreAutocrlf 'true' -Prefix 'img2threejs/' -Paths @('.')
     Assert-NativeSuccess 'img2threejs archive'
 
     $impeccableExtract = Join-Path $stageRoot 'impeccable'

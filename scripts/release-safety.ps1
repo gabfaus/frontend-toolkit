@@ -92,16 +92,22 @@ function Export-CanonicalGitFiles {
         [Parameter(Mandatory)][string]$Repository,
         [Parameter(Mandatory)][string]$Commit,
         [Parameter(Mandatory)][string]$DestinationArchive,
-        [Parameter(Mandatory)][string[]]$Paths
+        [Parameter(Mandatory)][string[]]$Paths,
+        [ValidateSet('true', 'false')][string]$CoreAutocrlf = 'false',
+        [ValidatePattern('^(?:[A-Za-z0-9._-]+/)*$')][string]$Prefix = ''
     )
 
     $safeRepository = [IO.Path]::GetFullPath($Repository).Replace([char]92, [char]47)
+    $autocrlfSetting = 'core.autocrlf=false'
+    if ($CoreAutocrlf -eq 'true') { $autocrlfSetting = 'core.autocrlf=true' }
     $arguments = @(
         '-c', "safe.directory=$safeRepository",
         '-C', $Repository,
-        '-c', 'core.autocrlf=false',
-        'archive', '--format=tar', "--output=$DestinationArchive", $Commit, '--'
-    ) + $Paths
+        '-c', $autocrlfSetting,
+        'archive', '--format=tar', "--output=$DestinationArchive"
+    )
+    if ($Prefix) { $arguments += "--prefix=$Prefix" }
+    $arguments += @($Commit, '--') + $Paths
     & git @arguments
     Assert-ReleaseNativeSuccess 'Canonical Git archive'
 }
