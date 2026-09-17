@@ -5,7 +5,8 @@ intentionally outside the global plugin packaging allowlist for this gate.
 The normal plugin MCP configuration is unchanged and therefore contains no
 Playwright MCP or Chrome DevTools MCP.
 
-The Playwright route is the default CORE capability. Its PowerShell launcher
+The Playwright route is a CORE capability for selected browser-verification
+workflows, not a default-loaded surface. Its PowerShell launcher
 accepts a typed action set, and `browser-session-provider.ps1` accepts a typed
 transaction for one shared session. Both routes run a resolved
 `playwright-cli` package-owned entry through `ProcessStartInfo`, clear the
@@ -56,6 +57,6 @@ an MCP. The exact package metadata and update procedure are in
 `integrations/browser-qa.lock.json`.
 
 The lock records the Chromium revision and browser build exposed by the exact
-Playwright runtime. Prepared real-browser evidence still records the
-environment-specific executable hash; that hash is not a portable source-tree
-artifact.
+Playwright runtime. Secure dedicated real-browser evidence remains
+`PENDING_ENVIRONMENT`; when prepared, it records the environment-specific
+executable hash, which is not a portable source-tree artifact.

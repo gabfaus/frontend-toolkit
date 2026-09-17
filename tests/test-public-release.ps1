@@ -102,7 +102,7 @@ try {
     }
 
     Add-Type -AssemblyName System.IO.Compression.FileSystem
-    $zipPath = Join-Path $fixture 'frontend-toolkit-v1.2.0.zip'
+    $zipPath = Join-Path $fixture 'frontend-toolkit-v1.3.0.zip'
     [IO.Compression.ZipFile]::CreateFromDirectory($one, $zipPath)
     $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
     try {

@@ -126,15 +126,15 @@ try {
     $distributionLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/distribution.lock.json') | ConvertFrom-Json
     $history = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/release-history.json') | ConvertFrom-Json
     $historical = @($history.releases | Where-Object version -CEQ '1.1.0')[0]
-    if ($releaseLock.candidateVersion -cne '1.2.0' -or
+    if ($releaseLock.candidateVersion -cne '1.3.0' -or
         $releaseLock.observedPluginTreeSha256 -ceq $historical.persistentPluginTreeSha256 -or
         $distributionLock.observedSnapshotTreeSha256 -ceq $historical.persistentPluginTreeSha256 -or
         $releaseLock.observedArtifactTreeSha256 -ceq $historical.persistentArtifactTreeSha256) {
-        throw 'Current v1.2 locks overwrote history or remain on the historical v1.1 identities.'
+        throw 'Current v1.3 locks overwrote history or remain on the historical v1.1 identities.'
     }
 
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot 'scripts/build-plugin-snapshot.ps1') -Destination $snapshot -DevelopmentWorkingTree | Out-Null
-    Assert-NativeSuccess 'Current v1.2 candidate plugin snapshot build'
+    Assert-NativeSuccess 'Current v1.3 candidate plugin snapshot build'
     $realLock = Get-Content -Raw -LiteralPath (Join-Path $repoRoot 'integrations/external.lock.json') | ConvertFrom-Json
     Assert-AdapterEntryIntegrity -Root $snapshot -Dependencies @($realLock.dependencies)
     $candidateTreeHash = Get-ArtifactEntriesHash -Entries @(Get-ArtifactFileEntries -Root $snapshot)
@@ -142,7 +142,7 @@ try {
     Write-Output 'PASS: clean CRLF clone exports canonical committed LF bytes for adapters, state guard and structural validator.'
     Write-Output 'PASS: committed adapter changes and stale expected hashes fail closed.'
     Write-Output "PASS: historical v1.1 identities remain immutable in integrations/release-history.json."
-    Write-Output "PASS: current v1.2 candidate tree validates at $candidateTreeHash; this is pre-final evidence only."
+    Write-Output "PASS: current v1.3 candidate tree validates at $candidateTreeHash; this is pre-final evidence only."
 } finally {
     if (Test-Path -LiteralPath $fixture) {
         Get-ChildItem -LiteralPath $fixture -Recurse -Force | ForEach-Object {

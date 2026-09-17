@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "candidateVersion": "1.3.0",
+  "sourceOfTruth": "skills/frontend-orchestrator/references/routing-policy.json",
+  "result": "NO ORPHAN CAPABILITIES",
+  "capabilityIds": [
+    "21st", "ACCESSIBILITY_IMPLEMENT", "ACCESSIBILITY_VERIFY", "FIGMA_DESIGN_TO_CODE", "FIGMA_READ", "FIGMA_WRITE", "animate", "axe", "chrome-devtools", "context7", "impeccable", "improve-animations", "img2threejs", "playwright-cli", "review-animations", "shadcn", "storybook", "taste-v2"
+  ],
+  "capabilities": [
+    {
+      "id": "impeccable",
+      "domain": "DESIGN_UX",
+      "stageRoles": {"PLAN": "primary-design-ux-authority", "EXECUTE": "common-dispatcher-requested-operation", "VERIFY": "visual-and-ux-review-when-selected"},
+      "availability": "default",
+      "effect": "read-or-local-write-through-dispatcher",
+      "authorization": "selection does not authorize; current host and common dispatcher gates apply",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> impeccable adapter -> common dispatcher",
+      "failClosed": "unknown operation, upstream instruction, or missing dispatcher is denied"
+    },
+    {
+      "id": "taste-v2",
+      "domain": "DESIGN_UX",
+      "stageRoles": {"PLAN": "optional-explicit-alternative", "EXECUTE": "not-a-default-route", "VERIFY": "not-applicable"},
+      "availability": "optional",
+      "effect": "read-only planning; generation never automatic",
+      "authorization": "explicit selection; installation and image generation never implied",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> explicit taste-v2 selection -> FTK policy",
+      "failClosed": "unavailable, unclassified, or effectful operation is denied"
+    },
+    {
+      "id": "review-animations",
+      "domain": "DESIGN_UX",
+      "stageRoles": {"PLAN": "conditional-selection", "EXECUTE": "not-applicable", "VERIFY": "read-only-motion-review"},
+      "availability": "optional",
+      "effect": "read-only",
+      "authorization": "no write authorization; selection is not an effect grant",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> review-animations -> VERIFY",
+      "failClosed": "missing review capability produces disclosed unavailable evidence"
+    },
+    {
+      "id": "improve-animations",
+      "domain": "DESIGN_UX",
+      "stageRoles": {"PLAN": "diagnosis-and-plan", "EXECUTE": "no write by default", "VERIFY": "read-only-diagnosis-evidence"},
+      "availability": "optional",
+      "effect": "read-only planning",
+      "authorization": "explicit selection; planning never grants project write",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> improve-animations -> PLAN/VERIFY",
+      "failClosed": "write-like or unknown operation is denied"
+    },
+    {
+      "id": "animate",
+      "domain": "DESIGN_UX",
+      "stageRoles": {"PLAN": "explicit-selection", "EXECUTE": "project-write-through-dispatcher", "VERIFY": "read-only-verification-when-selected"},
+      "availability": "optional",
+      "effect": "local project write",
+      "authorization": "explicit current-user project-write authorization plus common dispatcher",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> animate -> common dispatcher -> host write gate",
+      "failClosed": "absent host grant, unknown path, or unknown operation is denied"
+    },
+    {
+      "id": "shadcn",
+      "domain": "COMPONENTS",
+      "stageRoles": {"PLAN": "official-component-first-selection", "EXECUTE": "read-only-registry-query-or-explicit-project-use", "VERIFY": "read-only-evidence"},
+      "availability": "default-when-component-need-exists",
+      "effect": "read-only by default; project mutation is separate",
+      "authorization": "read-only query is governed; mutation requires explicit project authorization",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> Shadcn MCP -> FTK wrapper",
+      "failClosed": "missing MCP, custom unapproved registry, or mutation request is denied"
+    },
+    {
+      "id": "21st",
+      "domain": "COMPONENTS_INSPIRATION",
+      "stageRoles": {"PLAN": "conditional-inspiration-selection", "EXECUTE": "search-only-by-default", "VERIFY": "not-applicable"},
+      "availability": "optional",
+      "effect": "read-only search by default",
+      "authorization": "search is the only automatic tool; all metered, quota, generation, mutation, publish, account, and uncertain paths require explicit authorization",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> 21st facade/remote -> search",
+      "failClosed": "unknown tool or effect is AUTHORIZATION_REQUIRED and never executed"
+    },
+    {
+      "id": "img2threejs",
+      "domain": "3D",
+      "stageRoles": {"PLAN": "explicit-or-clearly-implied-3d-selection", "EXECUTE": "FTK-owned-safe-runner", "VERIFY": "fixture-and-state-boundary-evidence"},
+      "availability": "conditional",
+      "effect": "local project/state writes only through containment guards",
+      "authorization": "host and FTK runner policy; project code execution remains separately gated",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> img2threejs adapter -> state/runner guards",
+      "failClosed": "outside-state path, reparse escape, unknown argv, or missing guard is denied"
+    },
+    {
+      "id": "FIGMA_READ",
+      "domain": "FIGMA",
+      "stageRoles": {"PLAN": "default-when-Figma-source-present", "EXECUTE": "read-through-one-selected-transport", "VERIFY": "read-only-design-evidence"},
+      "availability": "conditional",
+      "effect": "passive network read",
+      "authorization": "host transport must be available; remote write is not implied",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> FIGMA_READ -> exactly one Figma/Figma Desktop transport",
+      "failClosed": "unavailable or dual transport is denied"
+    },
+    {
+      "id": "FIGMA_DESIGN_TO_CODE",
+      "domain": "FIGMA",
+      "stageRoles": {"PLAN": "explicit-design-to-code-selection", "EXECUTE": "get_design_context-then-local-write-gate", "VERIFY": "implementation-evidence"},
+      "availability": "optional",
+      "effect": "passive read plus gated local project write",
+      "authorization": "explicit selection; host and FTK write gate required",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> figma-design-to-code -> FIGMA_READ -> common write boundary",
+      "failClosed": "missing source, transport, or write grant stops without fallback mutation"
+    },
+    {
+      "id": "FIGMA_WRITE",
+      "domain": "FIGMA",
+      "stageRoles": {"PLAN": "explicit-request-only", "EXECUTE": "authorization-required-remote-write", "VERIFY": "read-only-result-review"},
+      "availability": "optional",
+      "effect": "remote write",
+      "authorization": "explicit current-user authorization; never inferred from FIGMA_READ or design-to-code",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> FIGMA_WRITE -> host authorization boundary",
+      "failClosed": "no handler or no non-forgeable authorization means no remote write"
+    },
+    {
+      "id": "playwright-cli",
+      "domain": "BROWSER_QA",
+      "stageRoles": {"PLAN": "conditional-browser-qa-selection", "EXECUTE": "FTK-playwright-wrapper", "VERIFY": "read-only-browser-evidence"},
+      "availability": "default-for-browser-qa",
+      "effect": "loopback and local read-only by default",
+      "authorization": "typed FTK wrapper; no automatic install or real profile",
+      "supportedHosts": ["Codex"],
+      "supportedRuntimes": ["@playwright/cli@0.1.19", "@playwright/test@1.63.0 project-owned support runtime"],
+      "routingPath": "frontend-orchestrator -> playwright-cli -> browser-qa wrapper",
+      "failClosed": "Playwright MCP, arbitrary JavaScript, automatic install, or unavailable CLI is denied"
+    },
+    {
+      "id": "ACCESSIBILITY_VERIFY",
+      "domain": "ACCESSIBILITY",
+      "stageRoles": {"PLAN": "conditional-accessibility-verification-selection", "EXECUTE": "read-only-evidence", "VERIFY": "WCAG-evidence-contract"},
+      "availability": "default-for-accessibility-verification",
+      "effect": "read-only",
+      "authorization": "no write authorization; evidence only",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> frontend-accessibility -> ACCESSIBILITY_VERIFY",
+      "failClosed": "unavailable verifier is disclosed; no implementation is inferred"
+    },
+    {
+      "id": "ACCESSIBILITY_IMPLEMENT",
+      "domain": "ACCESSIBILITY",
+      "stageRoles": {"PLAN": "explicit-selection-after-verify", "EXECUTE": "project-write", "VERIFY": "post-change-accessibility-evidence"},
+      "availability": "optional",
+      "effect": "local project write",
+      "authorization": "explicit current-user project-write authorization; must follow ACCESSIBILITY_VERIFY",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> frontend-accessibility -> ACCESSIBILITY_VERIFY -> explicit implementation",
+      "failClosed": "without prior evidence or write authorization no project mutation occurs"
+    },
+    {
+      "id": "axe",
+      "domain": "ACCESSIBILITY",
+      "stageRoles": {"PLAN": "conditional-addition", "EXECUTE": "not-applicable", "VERIFY": "supplementary-read-only-evidence"},
+      "availability": "conditional",
+      "effect": "read-only",
+      "authorization": "only when exact project dependency is already installed; never automatic installation",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> frontend-accessibility -> conditional @axe-core/playwright",
+      "failClosed": "missing dependency or version drift skips axe and retains safe evidence fallback"
+    },
+    {
+      "id": "chrome-devtools",
+      "domain": "BROWSER_QA",
+      "stageRoles": {"PLAN": "optional-advanced-diagnostics", "EXECUTE": "dry-run-or-read-only-diagnostics", "VERIFY": "diagnostic-evidence"},
+      "availability": "optional",
+      "effect": "read-only by default",
+      "authorization": "explicit selection and host availability; arbitrary JavaScript remains disabled",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> chrome-devtools-boundary -> VERIFY",
+      "failClosed": "not registered or unsupported operation is unavailable and never substituted silently"
+    },
+    {
+      "id": "context7",
+      "domain": "DOCUMENTATION",
+      "stageRoles": {"PLAN": "conditional-current-docs-selection", "EXECUTE": "facade-only-read", "VERIFY": "source-backed-doc-evidence"},
+      "availability": "conditional",
+      "effect": "read-only",
+      "authorization": "only the FTK facade tools resolve-library-id and query-docs are eligible",
+      "supportedHosts": ["Codex"],
+      "routingPath": "frontend-orchestrator -> Context7 facade -> resolve-library-id/query-docs",
+      "failClosed": "raw Context7 MCP, unknown tool, or unavailable facade is denied"
+    },
+    {
+      "id": "storybook",
+      "domain": "STORYBOOK",
+      "stageRoles": {"PLAN": "conditional-existing-project-eligibility", "EXECUTE": "local preview/docs/testing only", "VERIFY": "read-only component evidence"},
+      "availability": "conditional",
+      "effect": "local read/write only in an already eligible project",
+      "authorization": "never install or start automatically; publication and Chromatic are blocked or gated",
+      "supportedHosts": ["Codex", "Claude"],
+      "routingPath": "frontend-orchestrator -> storybook adapter -> existing project boundary",
+      "failClosed": "absent/incompatible project, remote review, publication, or unknown operation is blocked"
+    }
+  ],
+  "guardedSurfaces": [
+    {
+      "id": "21st-non-search-effects",
+      "covers": ["generation", "mutation", "cost", "quota", "publish", "account"],
+      "default": "never",
+      "authorization": "explicit-current-user-authorization-required",
+      "failClosed": "UNKNOWN -> AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "playwright-test-runtime",
+      "covers": ["@playwright/test"],
+      "default": "project-owned-support-runtime-only",
+      "authorization": "no automatic install; exact dependency must already exist",
+      "failClosed": "missing or drifted dependency is not downloaded"
+    }
+  ],
+  "hostProfiles": {
+    "Codex": {
+      "expectedSkills": ["figma-design-to-code", "frontend-accessibility", "frontend-orchestrator", "img2threejs", "impeccable", "playwright-cli"],
+      "result": "6/6",
+      "payloadSkills": ["figma-design-to-code", "frontend-orchestrator", "img2threejs", "impeccable"],
+      "note": "frontend-accessibility and playwright-cli are host/project Skills; they are not artificially copied into the Claude payload."
+    },
+    "Claude": {
+      "expectedSkills": ["figma-design-to-code", "frontend-orchestrator", "img2threejs", "impeccable"],
+      "result": "4/4",
+      "payloadSkills": ["figma-design-to-code", "frontend-orchestrator", "img2threejs", "impeccable"],
+      "note": "Claude uses its adapter and local facade; accessibility and Playwright are not added for symmetry."
+    },
+    "ChatGPT Web": {
+      "expectedSkills": [],
+      "result": "NOT_SUPPORTED_DESKTOP_ONLY",
+      "payloadSkills": [],
+      "note": "Only policy/documentation text is portable today; no runtime capability is promised by the current Desktop/local artifact."
+    }
+  }
+}

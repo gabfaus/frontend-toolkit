@@ -4,6 +4,40 @@ Este projeto segue [Semantic Versioning 2.0.0](https://semver.org/) e mantém mu
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-17
+
+Candidata corrente de versão minor, com features backward-compatible, preparada
+para fechamento Git controlado. A tag `v1.3.0`, GitHub Release, publicação de
+marketplace e hashes derivados finais ainda não foram criados ou congelados.
+
+### Added
+
+- Fundação design-motion Phase 1: `taste`, `review-animations` e
+  `improve-animations` permanecem `REQUEST_ONLY`; `animate` permanece
+  `REGISTERED_NO_HANDLER`.
+- Fundação de verificação Browser QA e Accessibility, com superfícies
+  `REQUEST_ONLY` e evidência dedicada segura em navegador real
+  `PENDING_ENVIRONMENT`.
+- Fundação img2threejs procedural Phase 1 como `REQUEST_ONLY`, preservando o
+  pipeline GLB existente; Phase 2 permanece `REGISTERED_NO_HANDLER` e preview
+  permanece `UNAVAILABLE`.
+
+### Changed
+
+- Convergência do routing/effect model com `QUALITY_FIRST` como default,
+  `FIDELITY_FIRST` apenas por intenção semântica explícita e separação entre
+  selection, authorization, availability, routing, operation e effect.
+- Canonicalização governada de archives externos no fluxo de release, sem
+  transformar evidência de worktree em identidade persistente.
+- Infraestrutura de testes, cobertura de orchestrator, metadata multi-host e
+  validações de release alinhadas à identidade candidata `1.3.0`.
+
+### Limitations
+
+- `REQUEST_ONLY` não é execução; nenhuma capability request-only é declarada
+  como executável.
+- Nenhuma tag, release ou publicação remota foi realizada para `1.3.0`.
+
 ## [1.2.0] - 2026-09-07
 
 Release candidate congelada para auditoria de publicacao no FTK-09M. Tag, GitHub

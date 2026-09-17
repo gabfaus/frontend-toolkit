@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "candidateVersion": "1.2.0",
+  "candidateVersion": "1.3.0",
   "builder": "scripts/build-release-candidate.ps1",
   "marketplaceName": "frontend-toolkit-local",
   "sourceSnapshots": "ephemeral-only",

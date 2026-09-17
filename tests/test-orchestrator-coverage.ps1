@@ -9,12 +9,12 @@ function Assert-ExactSet {
 }
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$coveragePath = Join-Path $repoRoot 'integrations/orchestrator-coverage.v1.2.json'
+$coveragePath = Join-Path $repoRoot 'integrations/orchestrator-coverage.v1.3.json'
 $policyPath = Join-Path $repoRoot '.agents/skills/frontend-orchestrator/references/routing-policy.json'
 if (-not (Test-Path -LiteralPath $coveragePath -PathType Leaf)) { throw 'Orchestrator coverage matrix is missing.' }
 $coverage = Get-Content -Raw -LiteralPath $coveragePath | ConvertFrom-Json
 $policy = Get-Content -Raw -LiteralPath $policyPath | ConvertFrom-Json
-if ($coverage.schemaVersion -ne 1 -or $coverage.candidateVersion -ne '1.2.0' -or $coverage.result -ne 'NO ORPHAN CAPABILITIES') { throw 'Coverage matrix identity/result is invalid.' }
+if ($coverage.schemaVersion -ne 1 -or $coverage.candidateVersion -ne '1.3.0' -or $coverage.result -ne 'NO ORPHAN CAPABILITIES') { throw 'Coverage matrix identity/result is invalid.' }
 $policyIds = @($policy.capabilities.PSObject.Properties.Name)
 Assert-ExactSet -Actual @($coverage.capabilityIds) -Expected $policyIds -Label 'Policy/matrix capability IDs'
 $rows = @($coverage.capabilities)

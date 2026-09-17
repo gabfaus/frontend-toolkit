@@ -2,7 +2,7 @@
 
 Frontend Toolkit é um plugin open source para Codex e Claude Code que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.2.0` está em preparação como release candidate multi-host; não há tag `v1.2.0`, GitHub Release ou publicação de marketplace neste gate. A tag histórica `v1.0.0` permanece imutável.
+O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.3.0` é a candidata corrente, classificada como MINOR_VERSION / BACKWARD_COMPATIBLE_FEATURES, e está preparada para fechamento Git controlado. A tag futura `v1.3.0` ainda não foi criada. A tag local anotada `v1.2.0` aponta para `6ddc02f4ee806b07d39b055054a9dd76f116e219`; isso comprova existência local, não publicação remota. Não há evidência neste gate de GitHub Release ou publicação de marketplace para `1.3.0`. A tag histórica `v1.0.0` permanece imutável.
 
 ## Importação pelo marketplace GitHub do Codex
 
@@ -17,7 +17,7 @@ O manifest usa o schema oficial `source: "local"` com o caminho relativo `./plug
 
 ## ChatGPT Web e Desktop
 
-O artefato v1.2.0 é **Desktop only** e **NOT SUPPORTED** no ChatGPT Web. O plugin declara `.mcp.json`, incluindo Shadcn local e 21st remoto; plugins importados com MCP recebem a restrição Desktop only. Um profile Web-safe exigirá contrato oficial e trabalho futuro separado.
+A candidata `1.3.0` é **Desktop only** e **NOT SUPPORTED** no ChatGPT Web. O plugin declara `.mcp.json`, incluindo Shadcn local e 21st remoto; plugins importados com MCP recebem a restrição Desktop only. Um profile Web-safe exigirá contrato oficial e trabalho futuro separado.
 
 
 ## O que o plugin oferece
@@ -32,7 +32,7 @@ Frontend Toolkit
 └── Claude Code adapter     empacotamento e lifecycle isolados do host Claude
 ```
 
-- **frontend-orchestrator:** escolhe a menor combinação de capacidades necessária e preserva a intenção explícita do usuário.
+- **frontend-orchestrator:** usa `QUALITY_FIRST` como default, seleciona a capability principal e adiciona somente complementos com ganho material distinto, preservando a intenção explícita do usuário.
 - **Impeccable:** cobre composição, hierarquia, acessibilidade, responsividade e qualidade de interface.
 - **img2threejs:** transforma referências visuais em modelos Three.js construídos em código. G7-SR2D medeia state, GLB, codec, TypeScript e Vite com runtimes/argv/ambiente controlados pelo FTK; os defects preservados no snapshot v1.5.1 não são executados diretamente.
 - **Shadcn MCP:** consulta read-only ao registry oficial usando `shadcn@4.19.0`.
@@ -40,6 +40,17 @@ Frontend Toolkit
 - **Claude Code:** adapter inicial para Windows x64, com manifesto, dois MCPs locais, launchers governados e runtime privado separado do artefato Codex.
 
 Impeccable e img2threejs permanecem projetos upstream independentes. A descoberta usa adapters próprios do FTK; nenhum `SKILL.md` upstream fica em `.agents/skills` ou em `skills/` do artefato. O build gera snapshots imutáveis e byte-verificados dos SHAs pinados somente sob `third_party/upstreams/`, com provenance separada. O build de release continua extraindo o código próprio de `HEAD` por allowlist exata; o modo `-DevelopmentWorkingTree` existe apenas para validar gates ainda não commitados e mantém as mesmas verificações de composição, reparse points e paths sensíveis.
+
+Na candidata `1.3.0`, as fundações entregues permanecem explicitamente limitadas:
+
+- design-motion Phase 1: `taste`, `review-animations` e `improve-animations` são `REQUEST_ONLY`; `animate` é `REGISTERED_NO_HANDLER`;
+- Browser QA e Accessibility são `REQUEST_ONLY`; a evidência dedicada segura em navegador real permanece `PENDING_ENVIRONMENT`;
+- img2threejs procedural Phase 1 é `REQUEST_ONLY`; Phase 2 é `REGISTERED_NO_HANDLER` e preview é `UNAVAILABLE`;
+- o pipeline GLB existente de img2threejs é preservado.
+
+## Modelo de routing e execução
+
+`QUALITY_FIRST` é o default. `FIDELITY_FIRST` só é ativado por intenção semântica explícita. `CORE` não significa `DEFAULT_LOADED`; selection não é authorization; availability não é routing, operation ou effect. As superfícies usam os estados `EXECUTABLE`, `REQUEST_ONLY`, `REGISTERED_NO_HANDLER` e `UNAVAILABLE`, sem chamar request-only de executável.
 
 G7-SR3I integra o Impeccable por uma cadeia fail-closed de autoridade, operação tipada, efeitos independentes e handler fixo. Contexto local passa por extractor e mediator FTK-owned; conteúdo upstream/projeto nunca concede autoridade. Como o plugin atual não recebe evidência host não-forjável, rede, telemetry, paid generation, live efetivo e mutações sensíveis permanecem discoverable, porém retornam `AUTHORIZATION_REQUIRED`. Veja [G7-SR3I](docs/G7-SR3I-IMPECCABLE-INTEGRATED-BOUNDARY.md).
 
@@ -65,16 +76,16 @@ As versões e hashes validados estão em `integrations/toolchain.lock.json`, `in
 
 ## Instalação a partir do source
 
-A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.2.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
+A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.3.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
 
 Depois de clonar este repositório:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-codex
-codex plugin marketplace add "$PWD\release-artifacts\v1.2.0-codex"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.3.0-codex
+codex plugin marketplace add "$PWD\release-artifacts\v1.3.0-codex"
 codex plugin add frontend-toolkit@frontend-toolkit-local
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-claude
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.3.0-claude
 ```
 
 O primeiro comando baixa somente os refs pinados para `external/`. O segundo cria a marketplace Codex com o plugin completo e os snapshots; o último cria o artefato Claude com a facade local e seu runtime privado. `release-artifacts/` é ignorado pelo Git. O source continua sem snapshots nem dependências materializadas.
@@ -137,4 +148,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.2.0` está em preparação como release candidate multi-host; os artefatos Codex e Claude são separados, a tag `v1.2.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.3.0` é a candidata corrente multi-host; os artefatos Codex e Claude são separados, a tag `v1.3.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada para esta candidata. A tag local anotada `v1.2.0` permanece distinta de publicação remota.

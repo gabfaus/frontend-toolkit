@@ -7,7 +7,7 @@ A release pública deverá entregar artefatos separados para Codex e Claude Code
 O artefato contém:
 
 ```text
-frontend-toolkit-v1.2.0-codex/
+frontend-toolkit-v1.3.0-codex/
 ├── .agents/plugins/marketplace.json
 ├── plugins/frontend-toolkit/
 │   ├── .codex-plugin/plugin.json
@@ -41,8 +41,8 @@ Na raiz de um clone limpo:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-external-skills.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-codex
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.2.0-claude
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-release-candidate.ps1 -Destination .\release-artifacts\v1.3.0-codex
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-claude-release-candidate.ps1 -Destination .\release-artifacts\v1.3.0-claude
 ```
 
 A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licenças. O builder falha se o destino existir, sobrepuser o source ou se qualquer checkout divergir do lock.
@@ -50,7 +50,7 @@ A sincronização valida origem, ref, commit, árvore limpa, `SKILL.md` e licen�
 ## Instalar em uma ação
 
 ```powershell
-codex plugin marketplace add "$PWD\release-artifacts\v1.2.0-codex"
+codex plugin marketplace add "$PWD\release-artifacts\v1.3.0-codex"
 codex plugin add frontend-toolkit@frontend-toolkit-local
 ```
 
@@ -71,7 +71,7 @@ Adicionar a marketplace e o plugin materializa arquivos e registra as três Skil
 
 Usar uma Skill pode executar código local, iniciar subprocessos, ler ou escrever no workspace e acessar rede conforme o fluxo escolhido. Iniciar o Shadcn via `npx` pode baixar e executar o pacote exato pinado se ele não estiver em cache. Usar um MCP pode iniciar seu processo e comunicação de rede. Comandos retornados por registry ou MCP são dados: revise-os antes de executar.
 
-G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. Este gate prepara o RC `1.2.0`, mas não cria tag, GitHub Release ou marketplace público. Para uso por terceiros, aguarde os assets oficiais e valide seus SHA-256 contra o manifest externo da futura release.
+G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. A candidata corrente `1.3.0` está preparada para fechamento Git controlado, mas este gate não cria a tag `v1.3.0`, GitHub Release ou marketplace público. A tag local anotada `v1.2.0` aponta para `6ddc02f4ee806b07d39b055054a9dd76f116e219`; isso não prova publicação remota. Para uso por terceiros, aguarde os assets oficiais de `1.3.0` e valide seus SHA-256 contra o manifest externo da futura release.
 
 Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
 
@@ -104,7 +104,7 @@ claude plugin marketplace add gabfaus/frontend-toolkit
 claude plugin install frontend-toolkit@frontend-toolkit
 ~~~
 
-O marketplace usa o asset Claude Code frontend-toolkit-claude-v1.2.0.zip, SHA-256 676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089. Esse apontamento registra a identidade congelada; a URL so deve ser usada apos a auditoria/publicacao do FTK-09M.
+O asset Claude da candidata corrente `1.3.0` e seu SHA-256 ainda não foram produzidos neste gate; eles serão definidos somente após o commit e a reconstrução do LOCK-07C. O asset `frontend-toolkit-claude-v1.2.0.zip`, SHA-256 `676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089`, permanece apenas como referência histórica da candidata anterior e não representa `1.3.0`.
 
 ## Importar pelo marketplace GitHub do Codex
 
@@ -126,9 +126,9 @@ O Claude usa `.claude-plugin/plugin.json`, `claude/mcp.json`, as facades locais 
 O artifact atual e `Desktop only` e `NOT SUPPORTED` no ChatGPT Web. Ele depende de `.mcp.json`, paths locais, PowerShell, Node, runners locais e, no caso do 21st, interpolacao de ambiente para credencial externa. Uma distribuicao Web-safe exige contrato oficialmente suportado e fica como follow-up.
 
 O marketplace GitHub Codex usa `.agents/plugins/marketplace.json` com `source: "local"` e caminho relativo `./plugin/frontend-toolkit`; `.claude-plugin/marketplace.json` continua sendo a superficie Claude.
-## FTK-09M current publication disposition
+## Current 1.3.0 candidate publication disposition
 
-**CHATGPT WEB v1.2.0:** `NOT SUPPORTED`; o artifact é Desktop only porque declara `.mcp.json`, incluindo Shadcn local e 21st remoto. Uma distribuição Web-safe exigirá contrato oficialmente suportado e fica como follow-up.
+**CHATGPT WEB — candidata 1.3.0:** `NOT SUPPORTED`; o artifact é Desktop only porque declara `.mcp.json`, incluindo Shadcn local e 21st remoto. Uma distribuição Web-safe exigirá contrato oficialmente suportado e fica como follow-up.
 
 **PLAYWRIGHT FINAL RELEASE ACCEPTANCE:** `ACCEPT_WITH_RESTRICTIONS`
 - exact version: `@playwright/cli@0.1.19`.
