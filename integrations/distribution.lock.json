@@ -6,7 +6,7 @@
   "sourcePlugin": "plugin/frontend-toolkit",
   "generator": "scripts/build-plugin-snapshot.ps1",
   "externalLock": "integrations/external.lock.json",
-  "observedSnapshotTreeSha256": "23c74faed4153944732e900195a62e09fc9240366fb5bfca2285d985df4c78bc",
+  "observedSnapshotTreeSha256": "28877159cda1f09afdb7d04d2a60b00c02749b4d7b862b247e5737a679b18e1b",
   "snapshotPersistence": "ephemeral-only",
   "sourceComposition": {
     "strategy": "git-head-explicit-file-allowlist",
@@ -23,7 +23,7 @@
       "sourceSelection": ["LICENSE", "NOTICE.md", "plugin/skills/impeccable"],
       "distributionAdapterPath": "skills/impeccable",
       "upstreamSnapshotPath": "third_party/upstreams/impeccable",
-      "snapshotTreeSha256": "2acc28d100263c6b5d91f9b75f4bb80e88d33ac7ffdef9a1b3618eeb2d97f2cd",
+      "snapshotTreeSha256": "43fe6a8a55ce559280d5a616aa603a550100519a4b5f7ac132760e59eba7a9b8",
       "distributionLicensePath": "third_party/upstreams/impeccable/LICENSE",
       "distributionNoticePath": "third_party/upstreams/impeccable/NOTICE.md"
     },
@@ -35,7 +35,7 @@
       "sourceSelection": ["repository-tree"],
       "distributionAdapterPath": "skills/img2threejs",
       "upstreamSnapshotPath": "third_party/upstreams/img2threejs",
-      "snapshotTreeSha256": "127017dbe14b33448ba0ada19a1512116f8d7b385de48811a6a54779fc107e32",
+      "snapshotTreeSha256": "4fc283ae6915ec74c87cc80216e7ec3105536dad9419d1473b1300fcc88486a4",
       "distributionLicensePath": "third_party/upstreams/img2threejs/LICENSE"
     }
   ],
