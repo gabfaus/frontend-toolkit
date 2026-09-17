@@ -8,6 +8,9 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $expected = @(Get-FrontendToolkitSecurityModuleAllowlist | Sort-Object)
 $sourceSecurity = @(Get-FrontendToolkitSourceFileAllowlist | Where-Object { $_ -like 'security/*' } | ForEach-Object { $_.Substring('security/'.Length) } | Sort-Object)
 Assert-True (($sourceSecurity -join "`n") -ceq ($expected -join "`n")) 'Release source allowlist and security inventory disagree.'
+foreach ($module in @('design-motion-adapter.mjs', 'design-motion-contract.ps1', 'design-motion-runner.ps1', 'design-motion-source-verifier.ps1')) {
+    Assert-True ($expected -contains $module) "03A security module is missing from the canonical inventory: $module"
+}
 
 $pluginRoot = Join-Path $repoRoot 'plugin/frontend-toolkit'
 $workingTree = @(Get-ChildItem -LiteralPath (Join-Path $pluginRoot 'security') -File -Force | ForEach-Object Name | Sort-Object)
@@ -23,5 +26,5 @@ $headPaths = @(& git -c "safe.directory=$safeRepo" -C $repoRoot ls-tree -r --nam
 if ($LASTEXITCODE -ne 0) { throw 'Committed security tree inventory failed.' }
 $headSecurity = @($headPaths | ForEach-Object { $_.Substring('plugin/frontend-toolkit/security/'.Length) } | Sort-Object)
 Assert-ExactStringSet -Name 'committed-head security inventory' -Actual $headSecurity -Expected $expected
-Assert-True ($expected.Count -eq 21) 'Converged security inventory is not exactly 21 reviewed modules.'
-Write-Output 'PASS: reconciler, release-safety, plugin packaging and committed HEAD agree on the exact 21-module convergence security inventory.'
+Assert-True ($expected.Count -eq 25) 'Converged security inventory is not exactly 25 reviewed modules.'
+Write-Output 'PASS: reconciler, release-safety, plugin packaging and committed HEAD agree on the exact 25-module convergence security inventory.'

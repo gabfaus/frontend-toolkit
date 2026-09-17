@@ -174,7 +174,7 @@ try {
     # Packaging is exact and discovery remains six Codex Skills, four plugin Skills, and two normal MCPs.
     . (Join-Path $repoRoot 'scripts/release-safety.ps1')
     $expectedSecurity = @(
-        'security/effect-policy.json','security/execution-contract.ps1','security/context7-operation-policy.json','security/figma-capability-mediator.mjs','security/figma-operation-policy.json','security/storybook-adapter.mjs','security/img2threejs-codec-mediator.mjs','security/img2threejs-foundation.ps1',
+        'security/effect-policy.json','security/execution-contract.ps1','security/context7-operation-policy.json','security/figma-capability-mediator.mjs','security/figma-operation-policy.json','security/storybook-adapter.mjs','security/design-motion-adapter.mjs','security/design-motion-contract.ps1','security/design-motion-runner.ps1','security/design-motion-source-verifier.ps1','security/img2threejs-codec-mediator.mjs','security/img2threejs-foundation.ps1',
         'security/img2threejs-runner.ps1','security/img2threejs-runtime-policy.json','security/img2threejs-state-guard.ps1',
         'security/img2threejs-structural-validation.ps1','security/impeccable-authority-policy.json',
         'security/impeccable-context-extractor.mjs','security/impeccable-context-mediator.mjs',

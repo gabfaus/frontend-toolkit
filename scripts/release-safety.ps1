@@ -204,6 +204,10 @@ function Get-FrontendToolkitSourceFileAllowlist {
         'figma-desktop.mcp.json'
         'FIGMA_THIRD_PARTY_NOTICE.md'
         'security/storybook-adapter.mjs'
+        'security/design-motion-adapter.mjs'
+        'security/design-motion-contract.ps1'
+        'security/design-motion-runner.ps1'
+        'security/design-motion-source-verifier.ps1'
     )
 }
 
@@ -446,6 +450,10 @@ function Get-FrontendToolkitSecurityModuleAllowlist {
         'figma-capability-mediator.mjs'
         'figma-operation-policy.json'
         'storybook-adapter.mjs'
+        'design-motion-adapter.mjs'
+        'design-motion-contract.ps1'
+        'design-motion-runner.ps1'
+        'design-motion-source-verifier.ps1'
     )
 }
 

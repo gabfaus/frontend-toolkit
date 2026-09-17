@@ -80,7 +80,8 @@ $requiredOperations = @(
     'figma.read','figma.design-to-code','figma.write','browser-qa.playwright','browser-qa.chrome-devtools',
     'accessibility.verify','accessibility.implement','accessibility.axe',
     'context7.resolve-library-id','context7.query-docs','storybook.detect','storybook.docs','storybook.preview',
-    'storybook.testing','storybook.remote-review','storybook.publication'
+    'storybook.testing','storybook.remote-review','storybook.publication',
+    'img2threejs.glb-procedural','img2threejs.glb-procedural.execute'
 )
 foreach ($operationId in $requiredOperations) {
     $definition = @($effectPolicy.operations | Where-Object id -CEQ $operationId)
@@ -93,6 +94,23 @@ foreach ($operationId in $requiredOperations) {
     }
 }
 Assert-True ($effectPolicy.unknownEffectPolicy -eq 'deny' -and @($effectPolicy.effectClasses) -contains 'UNKNOWN') 'Common effect policy is not fail-closed.'
+
+$phase1 = @($effectPolicy.operations | Where-Object id -CEQ 'img2threejs.glb-procedural')
+$phase2 = @($effectPolicy.operations | Where-Object id -CEQ 'img2threejs.glb-procedural.execute')
+$pipeline = @($effectPolicy.operations | Where-Object id -CEQ 'img2threejs.glb-pipeline')
+$preview = @($effectPolicy.operations | Where-Object { $_.id -match '^img2threejs\..*preview' })
+Assert-True ($phase1.Count -eq 1 -and $phase2.Count -eq 1 -and $preview.Count -eq 0) '03C operation registration is ambiguous or invented a preview surface.'
+Assert-True ($phase1[0].status -eq 'enabled' -and $phase1[0].handler -eq 'ftk.request-only' -and
+    $phase1[0].effect -eq 'LOCAL_READ_ONLY' -and (@($phase1[0].effects) -join ',') -eq 'LOCAL_READ_ONLY' -and
+    $phase1[0].projectCodeExecutes -eq $false -and $phase1[0].networkRequirement -eq 'none') '03C Phase 1 is not a local request-only contract.'
+Assert-True ($phase2[0].status -match '^authorization-required' -and $phase2[0].handler -eq 'none' -and
+    $phase2[0].projectCodeExecutes -eq $false -and $phase2[0].executableSource -match 'not registered') '03C Phase 2 exposed an executable handler or grant.'
+Assert-True ($pipeline[0].handler -eq 'ftk.img2threejs.glb-pipeline' -and $pipeline[0].status -eq 'enabled' -and
+    $pipeline[0].projectCodeExecutes -eq $true -and (@($pipeline[0].effects) -join ',') -eq 'LOCAL_PROJECT_WRITE,PROJECT_CODE_EXECUTION,LOOPBACK_EPHEMERAL') 'Existing GLB pipeline changed during 03C convergence.'
+Assert-ExactSet @($routing.operationSurface.capabilities.img2threejs.EXECUTABLE) @('img2threejs.capability-summary','img2threejs.glb-pipeline','img2threejs.codec-verify','img2threejs.typescript-build','img2threejs.vite-build','img2threejs.state.init','img2threejs.state.status','img2threejs.state.mark','img2threejs.state.next','img2threejs.state.create','img2threejs.state.read','img2threejs.state.write','img2threejs.state.update') 'Existing img2threejs executable operations'
+Assert-ExactSet @($routing.operationSurface.capabilities.img2threejs.REQUEST_ONLY) @('img2threejs.glb-procedural') '03C Phase 1 routing state'
+Assert-ExactSet @($routing.operationSurface.capabilities.img2threejs.REGISTERED_NO_HANDLER) @('img2threejs.glb-procedural.execute','img2threejs.network-helper') '03C Phase 2 routing state'
+Assert-True (@($routing.operationSurface.capabilities.img2threejs.UNAVAILABLE).Count -eq 0) '03C preview routing state is not unavailable.'
 
 $figmaPlan = Invoke-PowerShellFile -Path $dispatcher -Arguments @('-Operation','figma.read','-PlanOnly')
 Assert-True ($figmaPlan.ExitCode -eq 0) 'Figma request-only plan failed.'
@@ -107,6 +125,18 @@ $contextRequest = Invoke-PowerShellFile -Path $dispatcher -Arguments @('-Operati
 Assert-True ($contextRequest.ExitCode -eq 0) 'Context7 request-only dispatch failed.'
 $contextRequestJson = $contextRequest.Output | ConvertFrom-Json
 Assert-True ($contextRequestJson.requestOnly -and $contextRequestJson.externalCall -eq $false) 'Context7 dispatch escaped the facade boundary.'
+
+$phase1Request = Invoke-PowerShellFile -Path $dispatcher -Arguments @('-Operation','img2threejs.glb-procedural')
+Assert-True ($phase1Request.ExitCode -eq 0) 'img2threejs Phase 1 request-only dispatch failed.'
+$phase1RequestJson = $phase1Request.Output | ConvertFrom-Json
+Assert-True ($phase1RequestJson.requestOnly -and $phase1RequestJson.execution -eq 'not-performed' -and
+    $phase1RequestJson.handlerInvoked -eq $false -and $phase1RequestJson.externalCall -eq $false) '03C Phase 1 selection granted execution.'
+
+$phase2Plan = Invoke-PowerShellFile -Path $dispatcher -Arguments @('-Operation','img2threejs.glb-procedural.execute','-PlanOnly')
+Assert-True ($phase2Plan.ExitCode -eq 0) 'img2threejs Phase 2 blocked plan failed.'
+$phase2PlanJson = $phase2Plan.Output | ConvertFrom-Json
+Assert-True ($phase2PlanJson.authorizationDecision -eq 'authorization-required' -and $phase2PlanJson.handler -eq 'none' -and
+    $phase2PlanJson.handlerInvoked -eq $false -and $phase2PlanJson.externalCall -eq $false) '03C Phase 2 inherited executable authorization.'
 
 $authPlan = Invoke-PowerShellFile -Path $dispatcher -Arguments @('-Operation','design-motion.animate','-PlanOnly')
 Assert-True ($authPlan.ExitCode -eq 0 -and ($authPlan.Output | ConvertFrom-Json).authorizationDecision -eq 'authorization-required') 'Animate authorization plan drifted.'

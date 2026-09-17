@@ -155,8 +155,8 @@
                                                          },
                                                   "img2threejs":  {
                                                                       "EXECUTABLE": ["img2threejs.capability-summary", "img2threejs.glb-pipeline", "img2threejs.codec-verify", "img2threejs.typescript-build", "img2threejs.vite-build", "img2threejs.state.init", "img2threejs.state.status", "img2threejs.state.mark", "img2threejs.state.next", "img2threejs.state.create", "img2threejs.state.read", "img2threejs.state.write", "img2threejs.state.update"],
-                                                                      "REQUEST_ONLY": [],
-                                                                      "REGISTERED_NO_HANDLER": ["img2threejs.network-helper"],
+                                                                      "REQUEST_ONLY": ["img2threejs.glb-procedural"],
+                                                                      "REGISTERED_NO_HANDLER": ["img2threejs.glb-procedural.execute", "img2threejs.network-helper"],
                                                                       "UNAVAILABLE": []
                                                                   },
                                                   "FIGMA_READ":  { "EXECUTABLE": [], "REQUEST_ONLY": ["figma.read"], "REGISTERED_NO_HANDLER": [], "UNAVAILABLE": [] },
