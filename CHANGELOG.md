@@ -6,9 +6,11 @@ Este projeto segue [Semantic Versioning 2.0.0](https://semver.org/) e mantém mu
 
 ## [1.3.0] - 2026-09-17
 
-Candidata corrente de versão minor, com features backward-compatible, preparada
-para fechamento Git controlado. A tag `v1.3.0`, GitHub Release, publicação de
-marketplace e hashes derivados finais ainda não foram criados ou congelados.
+Release pública de versão minor, com features backward-compatible. A tag
+anotada imutável `v1.3.0` aponta para o source commit publicado, a GitHub
+Release está publicada e os assets oficiais Codex e Claude estão congelados
+com os hashes abaixo. O manifesto live do marketplace Claude foi reconciliado
+no estado ativo de `main`.
 
 ### Added
 
@@ -30,13 +32,26 @@ marketplace e hashes derivados finais ainda não foram criados ou congelados.
 - Canonicalização governada de archives externos no fluxo de release, sem
   transformar evidência de worktree em identidade persistente.
 - Infraestrutura de testes, cobertura de orchestrator, metadata multi-host e
-  validações de release alinhadas à identidade candidata `1.3.0`.
+  validações de release alinhadas à identidade publicada `1.3.0`.
+
+### Release artifacts
+
+- Codex: `frontend-toolkit-codex-v1.3.0.zip`
+  SHA-256: `d338790a7c52941048927c6f8bc1cb973a8a797cf49ac2b0e748e15b36c24f73`
+- Claude: `frontend-toolkit-claude-v1.3.0.zip`
+  SHA-256: `7bb4ab0cf59efa3f02f8e5d9c137a2f7703429f2b829ae69ed928d2df3a6c19f`
 
 ### Limitations
 
 - `REQUEST_ONLY` não é execução; nenhuma capability request-only é declarada
   como executável.
-- Nenhuma tag, release ou publicação remota foi realizada para `1.3.0`.
+- O artefato é **Desktop only** e não é suportado no ChatGPT Web.
+- Browser QA e Accessibility permanecem `REQUEST_ONLY`; a evidência dedicada
+  segura em navegador real permanece `PENDING_ENVIRONMENT`.
+- `animate` permanece `REGISTERED_NO_HANDLER`; img2threejs Phase 2 permanece
+  `REGISTERED_NO_HANDLER` e preview permanece `UNAVAILABLE`.
+- O 21st permanece search-only; somente `21st/search` é autorizado
+  automaticamente.
 
 ## [1.2.0] - 2026-09-07
 

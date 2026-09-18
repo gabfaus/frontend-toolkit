@@ -2,11 +2,11 @@
 
 Frontend Toolkit é um plugin open source para Codex e Claude Code que reúne workflows especializados de frontend, UX, componentes e reconstrução 3D sob um roteador único e conservador.
 
-O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.3.0` é a candidata corrente, classificada como MINOR_VERSION / BACKWARD_COMPATIBLE_FEATURES, e está preparada para fechamento Git controlado. A tag futura `v1.3.0` ainda não foi criada. A tag local anotada `v1.2.0` aponta para `6ddc02f4ee806b07d39b055054a9dd76f116e219`; isso comprova existência local, não publicação remota. Não há evidência neste gate de GitHub Release ou publicação de marketplace para `1.3.0`. A tag histórica `v1.0.0` permanece imutável.
+O projeto está licenciado sob Apache-2.0. A remediação de segurança G7-S e a remediação de canonicalização estão CLOSED/complete. O Frontend Toolkit `1.3.0` é a release pública corrente, classificada como MINOR_VERSION / BACKWARD_COMPATIBLE_FEATURES. A tag anotada imutável `v1.3.0` aponta para o commit publicado e a GitHub Release correspondente está publicada com assets oficiais separados para Codex e Claude Code. O manifesto live do marketplace Claude em `main` aponta para o asset Claude `v1.3.0`; o payload da tag permanece imutável e não incorpora esse fechamento de metadata pós-release. A tag histórica/local anotada `v1.2.0` aponta para `6ddc02f4ee806b07d39b055054a9dd76f116e219` e não é a fonte da distribuição atual. A tag histórica `v1.0.0` permanece imutável.
 
 ## Importação pelo marketplace GitHub do Codex
 
-Após a publicação do repositório, um administrador pode importar o marketplace Codex em **Workspace settings > Plugins > Add > Import marketplace**:
+Um administrador pode importar o marketplace Codex em **Workspace settings > Plugins > Add > Import marketplace**:
 
 ```text
 Source: https://github.com/gabfaus/frontend-toolkit
@@ -17,7 +17,7 @@ O manifest usa o schema oficial `source: "local"` com o caminho relativo `./plug
 
 ## ChatGPT Web e Desktop
 
-A candidata `1.3.0` é **Desktop only** e **NOT SUPPORTED** no ChatGPT Web. O plugin declara `.mcp.json`, incluindo Shadcn local e 21st remoto; plugins importados com MCP recebem a restrição Desktop only. Um profile Web-safe exigirá contrato oficial e trabalho futuro separado.
+A release `1.3.0` é **Desktop only** e **NOT SUPPORTED** no ChatGPT Web. O plugin declara `.mcp.json`, incluindo Shadcn local e 21st remoto; plugins importados com MCP recebem a restrição Desktop only. Um profile Web-safe exigirá contrato oficial e trabalho futuro separado.
 
 
 ## O que o plugin oferece
@@ -41,7 +41,7 @@ Frontend Toolkit
 
 Impeccable e img2threejs permanecem projetos upstream independentes. A descoberta usa adapters próprios do FTK; nenhum `SKILL.md` upstream fica em `.agents/skills` ou em `skills/` do artefato. O build gera snapshots imutáveis e byte-verificados dos SHAs pinados somente sob `third_party/upstreams/`, com provenance separada. O build de release continua extraindo o código próprio de `HEAD` por allowlist exata; o modo `-DevelopmentWorkingTree` existe apenas para validar gates ainda não commitados e mantém as mesmas verificações de composição, reparse points e paths sensíveis.
 
-Na candidata `1.3.0`, as fundações entregues permanecem explicitamente limitadas:
+Na release `1.3.0`, as fundações entregues permanecem explicitamente limitadas:
 
 - design-motion Phase 1: `taste`, `review-animations` e `improve-animations` são `REQUEST_ONLY`; `animate` é `REGISTERED_NO_HANDLER`;
 - Browser QA e Accessibility são `REQUEST_ONLY`; a evidência dedicada segura em navegador real permanece `PENDING_ENVIRONMENT`;
@@ -76,7 +76,18 @@ As versões e hashes validados estão em `integrations/toolchain.lock.json`, `in
 
 ## Instalação a partir do source
 
-A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. A distribuição pública futura deverá usar os assets oficiais da GitHub Release `v1.3.0`, após validar os SHA-256 publicados nas release notes ou manifest externo.
+A instalação a partir do source é destinada à reprodução controlada por mantenedores. Codex e Claude Code usam artefatos separados, gerados do mesmo source commit. Para instalação pública, use os assets oficiais da GitHub Release `v1.3.0` e valide os SHA-256 publicados nas release notes ou neste documento.
+
+## Artefatos oficiais da release v1.3.0
+
+A GitHub Release [Frontend Toolkit v1.3.0](https://github.com/gabfaus/frontend-toolkit/releases/tag/v1.3.0) é a fonte oficial dos ZIPs públicos:
+
+- Codex: `frontend-toolkit-codex-v1.3.0.zip`
+  SHA-256: `d338790a7c52941048927c6f8bc1cb973a8a797cf49ac2b0e748e15b36c24f73`
+- Claude: `frontend-toolkit-claude-v1.3.0.zip`
+  SHA-256: `7bb4ab0cf59efa3f02f8e5d9c137a2f7703429f2b829ae69ed928d2df3a6c19f`
+
+Não há assets `.sha256` separados; os hashes acima devem ser conferidos diretamente nos ZIPs baixados.
 
 Depois de clonar este repositório:
 
@@ -148,4 +159,4 @@ Código próprio e `frontend-orchestrator` usam Apache-2.0. Impeccable e img2thr
 
 ## Status
 
-FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.3.0` é a candidata corrente multi-host; os artefatos Codex e Claude são separados, a tag `v1.3.0` ainda não foi criada e nenhuma GitHub Release ou marketplace foi publicada para esta candidata. A tag local anotada `v1.2.0` permanece distinta de publicação remota.
+FTK-06 permanece **CLOSED** como marco histórico de 2026-08-29. G7-S está **CLOSED/complete**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. O Frontend Toolkit `1.3.0` é a release pública corrente multi-host; os artefatos Codex e Claude são separados, a tag anotada `v1.3.0` é imutável, a GitHub Release está publicada e o marketplace Claude live usa o asset oficial `v1.3.0` a partir do estado ativo de `main`. A tag local anotada `v1.2.0` permanece histórica e distinta da publicação atual.

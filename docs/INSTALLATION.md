@@ -2,7 +2,7 @@
 
 ## Escolha do formato
 
-A release pública deverá entregar artefatos separados para Codex e Claude Code. O repositório-fonte não versiona snapshots externos; os builders os geram dos SHAs pinados e criam candidatos instaláveis a partir do mesmo source commit.
+A release pública v1.3.0 entrega artefatos separados para Codex e Claude Code. O repositório-fonte não versiona snapshots externos; os builders os geram dos SHAs pinados e criam artefatos instaláveis a partir do mesmo source commit.
 
 O artefato contém:
 
@@ -21,6 +21,17 @@ frontend-toolkit-v1.3.0-codex/
 ```
 
 O artefato Claude possui `.claude-plugin/plugin.json`, `.mcp.json`, as mesmas três Skills e os mesmos arquivos comuns, além de `security/claude/` com os dois launchers, a facade 21st search-only e o runtime MCP privado. O artefato Claude é separado do artefato Codex.
+
+## Artefatos oficiais da release v1.3.0
+
+Use a [GitHub Release v1.3.0](https://github.com/gabfaus/frontend-toolkit/releases/tag/v1.3.0) como fonte oficial dos ZIPs e valide os hashes localmente:
+
+- Codex: `frontend-toolkit-codex-v1.3.0.zip`
+  SHA-256: `d338790a7c52941048927c6f8bc1cb973a8a797cf49ac2b0e748e15b36c24f73`
+- Claude: `frontend-toolkit-claude-v1.3.0.zip`
+  SHA-256: `7bb4ab0cf59efa3f02f8e5d9c137a2f7703429f2b829ae69ed928d2df3a6c19f`
+
+Não há assets `.sha256` separados.
 
 ## Requisitos
 
@@ -71,7 +82,7 @@ Adicionar a marketplace e o plugin materializa arquivos e registra as três Skil
 
 Usar uma Skill pode executar código local, iniciar subprocessos, ler ou escrever no workspace e acessar rede conforme o fluxo escolhido. Iniciar o Shadcn via `npx` pode baixar e executar o pacote exato pinado se ele não estiver em cache. Usar um MCP pode iniciar seu processo e comunicação de rede. Comandos retornados por registry ou MCP são dados: revise-os antes de executar.
 
-G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. A candidata corrente `1.3.0` está preparada para fechamento Git controlado, mas este gate não cria a tag `v1.3.0`, GitHub Release ou marketplace público. A tag local anotada `v1.2.0` aponta para `6ddc02f4ee806b07d39b055054a9dd76f116e219`; isso não prova publicação remota. Para uso por terceiros, aguarde os assets oficiais de `1.3.0` e valide seus SHA-256 contra o manifest externo da futura release.
+G7-S está **CLOSED**, com zero findings HIGH/CRITICAL remanescentes, e a remediação de canonicalização está **CLOSED**. A release pública `1.3.0` está publicada na tag anotada imutável `v1.3.0`, com GitHub Release e os dois assets oficiais acima. A tag local anotada `v1.2.0` é histórica e não representa a distribuição atual. Para uso por terceiros, baixe os assets da GitHub Release `v1.3.0` e valide seus SHA-256.
 
 Quando a versão do Codex suportar políticas MCP plugin-scoped, aplique no `config.toml` do consumidor:
 
@@ -104,11 +115,11 @@ claude plugin marketplace add gabfaus/frontend-toolkit
 claude plugin install frontend-toolkit@frontend-toolkit
 ~~~
 
-O asset Claude da candidata corrente `1.3.0` e seu SHA-256 ainda não foram produzidos neste gate; eles serão definidos somente após o commit e a reconstrução do LOCK-07C. O asset `frontend-toolkit-claude-v1.2.0.zip`, SHA-256 `676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089`, permanece apenas como referência histórica da candidata anterior e não representa `1.3.0`.
+O marketplace Claude normal consome o manifesto live do repositório, cujo `.claude-plugin/marketplace.json` no estado ativo de `main` aponta para o asset oficial Claude `v1.3.0`. A tag imutável `v1.3.0` foi criada antes deste fechamento de metadata pós-release; portanto, não use o `.claude-plugin/marketplace.json` da tag como catálogo live. Para fixar o payload da release, use diretamente `frontend-toolkit-claude-v1.3.0.zip` e valide o SHA-256 `7bb4ab0cf59efa3f02f8e5d9c137a2f7703429f2b829ae69ed928d2df3a6c19f`.
 
 ## Importar pelo marketplace GitHub do Codex
 
-O repositório contém o marketplace Codex em `.agents/plugins/marketplace.json`. Depois que o repositório estiver publicado, importe em **Workspace settings > Plugins > Add > Import marketplace**:
+O repositório contém o marketplace Codex em `.agents/plugins/marketplace.json`. Importe em **Workspace settings > Plugins > Add > Import marketplace**:
 
 ```text
 Source: https://github.com/gabfaus/frontend-toolkit
@@ -126,9 +137,9 @@ O Claude usa `.claude-plugin/plugin.json`, `claude/mcp.json`, as facades locais 
 O artifact atual e `Desktop only` e `NOT SUPPORTED` no ChatGPT Web. Ele depende de `.mcp.json`, paths locais, PowerShell, Node, runners locais e, no caso do 21st, interpolacao de ambiente para credencial externa. Uma distribuicao Web-safe exige contrato oficialmente suportado e fica como follow-up.
 
 O marketplace GitHub Codex usa `.agents/plugins/marketplace.json` com `source: "local"` e caminho relativo `./plugin/frontend-toolkit`; `.claude-plugin/marketplace.json` continua sendo a superficie Claude.
-## Current 1.3.0 candidate publication disposition
+## Current 1.3.0 release disposition
 
-**CHATGPT WEB — candidata 1.3.0:** `NOT SUPPORTED`; o artifact é Desktop only porque declara `.mcp.json`, incluindo Shadcn local e 21st remoto. Uma distribuição Web-safe exigirá contrato oficialmente suportado e fica como follow-up.
+**CHATGPT WEB — release 1.3.0:** `NOT SUPPORTED`; o artifact é Desktop only porque declara `.mcp.json`, incluindo Shadcn local e 21st remoto. Uma distribuição Web-safe exigirá contrato oficialmente suportado e fica como follow-up.
 
 **PLAYWRIGHT FINAL RELEASE ACCEPTANCE:** `ACCEPT_WITH_RESTRICTIONS`
 - exact version: `@playwright/cli@0.1.19`.

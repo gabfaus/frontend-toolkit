@@ -18,8 +18,8 @@
       "license": "Apache-2.0",
       "source": {
         "source": "archive",
-        "url": "https://github.com/gabfaus/frontend-toolkit/releases/download/v1.2.0/frontend-toolkit-claude-v1.2.0.zip",
-        "sha256": "676b833a9bd3fc79e01bb8c35a253379b5add4b4f13545a9763bd0fc65991089"
+        "url": "https://github.com/gabfaus/frontend-toolkit/releases/download/v1.3.0/frontend-toolkit-claude-v1.3.0.zip",
+        "sha256": "7bb4ab0cf59efa3f02f8e5d9c137a2f7703429f2b829ae69ed928d2df3a6c19f"
       }
     }
   ]
